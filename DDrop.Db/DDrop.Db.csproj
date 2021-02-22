@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8CE97B04-F51F-4350-A8CA-A82E40845793}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DDrop.Db</RootNamespace>
+    <AssemblyName>DDrop.Db</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DbEntities\DbComment.cs" />
+    <Compile Include="DbEntities\DbContour.cs" />
+    <Compile Include="DbEntities\DbDrop.cs" />
+    <Compile Include="DbEntities\DbDropPhoto.cs" />
+    <Compile Include="DbEntities\DbMeasurement.cs" />
+    <Compile Include="DbEntities\DbLogEntry.cs" />
+    <Compile Include="DbEntities\DbPlot.cs" />
+    <Compile Include="DbEntities\DbReferencePhoto.cs" />
+    <Compile Include="DbEntities\DbSeries.cs" />
+    <Compile Include="DbEntities\DbSubstances.cs" />
+    <Compile Include="DbEntities\DbThermalPhoto.cs" />
+    <Compile Include="DbEntities\DbUser.cs" />
+    <Compile Include="DDropContext.cs" />
+    <Compile Include="Migrations\202003162023104_initial.cs" />
+    <Compile Include="Migrations\202003162023104_initial.designer.cs">
+      <DependentUpon>202003162023104_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003210446365_AddedDateTime.cs" />
+    <Compile Include="Migrations\202003210446365_AddedDateTime.designer.cs">
+      <DependentUpon>202003210446365_AddedDateTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003220519027_UseAddedDateTime.cs" />
+    <Compile Include="Migrations\202003220519027_UseAddedDateTime.designer.cs">
+      <DependentUpon>202003220519027_UseAddedDateTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003220813329_PhotoOrder.cs" />
+    <Compile Include="Migrations\202003220813329_PhotoOrder.designer.cs">
+      <DependentUpon>202003220813329_PhotoOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003301909187_Contour.cs" />
+    <Compile Include="Migrations\202003301909187_Contour.designer.cs">
+      <DependentUpon>202003301909187_Contour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004140442599_LoggerAndContour.cs" />
+    <Compile Include="Migrations\202004140442599_LoggerAndContour.designer.cs">
+      <DependentUpon>202004140442599_LoggerAndContour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004181349412_ContourId.cs" />
+    <Compile Include="Migrations\202004181349412_ContourId.designer.cs">
+      <DependentUpon>202004181349412_ContourId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009201140160_DropTemperature.cs" />
+    <Compile Include="Migrations\202009201140160_DropTemperature.designer.cs">
+      <DependentUpon>202009201140160_DropTemperature.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009201300350_DropPhotoToMeasurement.cs" />
+    <Compile Include="Migrations\202009201300350_DropPhotoToMeasurement.designer.cs">
+      <DependentUpon>202009201300350_DropPhotoToMeasurement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010171949073_DbDropPhoto.cs" />
+    <Compile Include="Migrations\202010171949073_DbDropPhoto.designer.cs">
+      <DependentUpon>202010171949073_DbDropPhoto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010180910412_LinesAndContoursAsString.cs" />
+    <Compile Include="Migrations\202010180910412_LinesAndContoursAsString.designer.cs">
+      <DependentUpon>202010180910412_LinesAndContoursAsString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010191423297_ContoursToJson.cs" />
+    <Compile Include="Migrations\202010191423297_ContoursToJson.designer.cs">
+      <DependentUpon>202010191423297_ContoursToJson.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010191557172_LinesToJson.cs" />
+    <Compile Include="Migrations\202010191557172_LinesToJson.designer.cs">
+      <DependentUpon>202010191557172_LinesToJson.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010191606475_ReferenceLine.cs" />
+    <Compile Include="Migrations\202010191606475_ReferenceLine.designer.cs">
+      <DependentUpon>202010191606475_ReferenceLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010191610506_ReferenceLinesToJson.cs" />
+    <Compile Include="Migrations\202010191610506_ReferenceLinesToJson.designer.cs">
+      <DependentUpon>202010191610506_ReferenceLinesToJson.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010200420558_DbContoursComeback.cs" />
+    <Compile Include="Migrations\202010200420558_DbContoursComeback.designer.cs">
+      <DependentUpon>202010200420558_DbContoursComeback.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010200430233_DropContourTemp.cs" />
+    <Compile Include="Migrations\202010200430233_DropContourTemp.designer.cs">
+      <DependentUpon>202010200430233_DropContourTemp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010200445230_ContoursSimpleLines.cs" />
+    <Compile Include="Migrations\202010200445230_ContoursSimpleLines.designer.cs">
+      <DependentUpon>202010200445230_ContoursSimpleLines.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010200452378_ContorLinesToString.cs" />
+    <Compile Include="Migrations\202010200452378_ContorLinesToString.designer.cs">
+      <DependentUpon>202010200452378_ContorLinesToString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010200701475_NoMoreLinesTable.cs" />
+    <Compile Include="Migrations\202010200701475_NoMoreLinesTable.designer.cs">
+      <DependentUpon>202010200701475_NoMoreLinesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010210430241_DropMesDropPConstraints.cs" />
+    <Compile Include="Migrations\202010210430241_DropMesDropPConstraints.designer.cs">
+      <DependentUpon>202010210430241_DropMesDropPConstraints.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010211810239_MeasurementsToDropPhotos.cs" />
+    <Compile Include="Migrations\202010211810239_MeasurementsToDropPhotos.designer.cs">
+      <DependentUpon>202010211810239_MeasurementsToDropPhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010220638090_NoMeasurementContent.cs" />
+    <Compile Include="Migrations\202010220638090_NoMeasurementContent.designer.cs">
+      <DependentUpon>202010220638090_NoMeasurementContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221551338_DropConstraintsDropContour.cs" />
+    <Compile Include="Migrations\202010221551338_DropConstraintsDropContour.designer.cs">
+      <DependentUpon>202010221551338_DropConstraintsDropContour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221613249_DeleteUnusedMeasurementsColumns.cs" />
+    <Compile Include="Migrations\202010221613249_DeleteUnusedMeasurementsColumns.designer.cs">
+      <DependentUpon>202010221613249_DeleteUnusedMeasurementsColumns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221706335_DropContourIdDropPhotos.cs" />
+    <Compile Include="Migrations\202010221706335_DropContourIdDropPhotos.designer.cs">
+      <DependentUpon>202010221706335_DropContourIdDropPhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221908433_DropContourId.cs" />
+    <Compile Include="Migrations\202010221908433_DropContourId.designer.cs">
+      <DependentUpon>202010221908433_DropContourId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221914462_ReWireEverything.cs" />
+    <Compile Include="Migrations\202010221914462_ReWireEverything.designer.cs">
+      <DependentUpon>202010221914462_ReWireEverything.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221941526_Test.cs" />
+    <Compile Include="Migrations\202010221941526_Test.designer.cs">
+      <DependentUpon>202010221941526_Test.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010221943547_RewireContoursToPhotos.cs" />
+    <Compile Include="Migrations\202010221943547_RewireContoursToPhotos.designer.cs">
+      <DependentUpon>202010221943547_RewireContoursToPhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010241016025_ReferencePhotoId.cs" />
+    <Compile Include="Migrations\202010241016025_ReferencePhotoId.designer.cs">
+      <DependentUpon>202010241016025_ReferencePhotoId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010241045319_ReferencePhotoBaseMembers.cs" />
+    <Compile Include="Migrations\202010241045319_ReferencePhotoBaseMembers.designer.cs">
+      <DependentUpon>202010241045319_ReferencePhotoBaseMembers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010251253280_MeasurementOrder.cs" />
+    <Compile Include="Migrations\202010251253280_MeasurementOrder.designer.cs">
+      <DependentUpon>202010251253280_MeasurementOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202011010524011_ContourCascadeDelete.cs" />
+    <Compile Include="Migrations\202011010524011_ContourCascadeDelete.designer.cs">
+      <DependentUpon>202011010524011_ContourCascadeDelete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202011101603068_MeasurementDrop.cs" />
+    <Compile Include="Migrations\202011101603068_MeasurementDrop.designer.cs">
+      <DependentUpon>202011101603068_MeasurementDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202011101604297_RemoveDropPhotoDrop.cs" />
+    <Compile Include="Migrations\202011101604297_RemoveDropPhotoDrop.designer.cs">
+      <DependentUpon>202011101604297_RemoveDropPhotoDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202011291204478_ThermalPhotos.cs" />
+    <Compile Include="Migrations\202011291204478_ThermalPhotos.designer.cs">
+      <DependentUpon>202011291204478_ThermalPhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202012171931166_EllipseCoordinate.cs" />
+    <Compile Include="Migrations\202012171931166_EllipseCoordinate.designer.cs">
+      <DependentUpon>202012171931166_EllipseCoordinate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202012181953560_AmbientTemperature.cs" />
+    <Compile Include="Migrations\202012181953560_AmbientTemperature.designer.cs">
+      <DependentUpon>202012181953560_AmbientTemperature.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101031240339_Substances.cs" />
+    <Compile Include="Migrations\202101031240339_Substances.designer.cs">
+      <DependentUpon>202101031240339_Substances.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101131846239_Comment.cs" />
+    <Compile Include="Migrations\202101131846239_Comment.designer.cs">
+      <DependentUpon>202101131846239_Comment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101191644004_ThermalPhotoContour.cs" />
+    <Compile Include="Migrations\202101191644004_ThermalPhotoContour.designer.cs">
+      <DependentUpon>202101191644004_ThermalPhotoContour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101192042481_CommentCommonTable.cs" />
+    <Compile Include="Migrations\202101192042481_CommentCommonTable.designer.cs">
+      <DependentUpon>202101192042481_CommentCommonTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101192230031_CommentEntityType.cs" />
+    <Compile Include="Migrations\202101192230031_CommentEntityType.designer.cs">
+      <DependentUpon>202101192230031_CommentEntityType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101261642386_Plots.cs" />
+    <Compile Include="Migrations\202101261642386_Plots.designer.cs">
+      <DependentUpon>202101261642386_Plots.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101261658148_ROI.cs" />
+    <Compile Include="Migrations\202101261658148_ROI.designer.cs">
+      <DependentUpon>202101261658148_ROI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101262101489_TitlesPlot.cs" />
+    <Compile Include="Migrations\202101262101489_TitlesPlot.designer.cs">
+      <DependentUpon>202101262101489_TitlesPlot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101281819523_LessFieldsForPlot.cs" />
+    <Compile Include="Migrations\202101281819523_LessFieldsForPlot.designer.cs">
+      <DependentUpon>202101281819523_LessFieldsForPlot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101311053481_PlotType.cs" />
+    <Compile Include="Migrations\202101311053481_PlotType.designer.cs">
+      <DependentUpon>202101311053481_PlotType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102091946473_SeriesSettings.cs" />
+    <Compile Include="Migrations\202102091946473_SeriesSettings.designer.cs">
+      <DependentUpon>202102091946473_SeriesSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202003162023104_initial.resx">
+      <DependentUpon>202003162023104_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003210446365_AddedDateTime.resx">
+      <DependentUpon>202003210446365_AddedDateTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003220519027_UseAddedDateTime.resx">
+      <DependentUpon>202003220519027_UseAddedDateTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003220813329_PhotoOrder.resx">
+      <DependentUpon>202003220813329_PhotoOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003301909187_Contour.resx">
+      <DependentUpon>202003301909187_Contour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004140442599_LoggerAndContour.resx">
+      <DependentUpon>202004140442599_LoggerAndContour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004181349412_ContourId.resx">
+      <DependentUpon>202004181349412_ContourId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009201140160_DropTemperature.resx">
+      <DependentUpon>202009201140160_DropTemperature.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009201300350_DropPhotoToMeasurement.resx">
+      <DependentUpon>202009201300350_DropPhotoToMeasurement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010171949073_DbDropPhoto.resx">
+      <DependentUpon>202010171949073_DbDropPhoto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010180910412_LinesAndContoursAsString.resx">
+      <DependentUpon>202010180910412_LinesAndContoursAsString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010191423297_ContoursToJson.resx">
+      <DependentUpon>202010191423297_ContoursToJson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010191557172_LinesToJson.resx">
+      <DependentUpon>202010191557172_LinesToJson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010191606475_ReferenceLine.resx">
+      <DependentUpon>202010191606475_ReferenceLine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010191610506_ReferenceLinesToJson.resx">
+      <DependentUpon>202010191610506_ReferenceLinesToJson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010200420558_DbContoursComeback.resx">
+      <DependentUpon>202010200420558_DbContoursComeback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010200430233_DropContourTemp.resx">
+      <DependentUpon>202010200430233_DropContourTemp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010200445230_ContoursSimpleLines.resx">
+      <DependentUpon>202010200445230_ContoursSimpleLines.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010200452378_ContorLinesToString.resx">
+      <DependentUpon>202010200452378_ContorLinesToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010200701475_NoMoreLinesTable.resx">
+      <DependentUpon>202010200701475_NoMoreLinesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010210430241_DropMesDropPConstraints.resx">
+      <DependentUpon>202010210430241_DropMesDropPConstraints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010211810239_MeasurementsToDropPhotos.resx">
+      <DependentUpon>202010211810239_MeasurementsToDropPhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010220638090_NoMeasurementContent.resx">
+      <DependentUpon>202010220638090_NoMeasurementContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221551338_DropConstraintsDropContour.resx">
+      <DependentUpon>202010221551338_DropConstraintsDropContour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221613249_DeleteUnusedMeasurementsColumns.resx">
+      <DependentUpon>202010221613249_DeleteUnusedMeasurementsColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221706335_DropContourIdDropPhotos.resx">
+      <DependentUpon>202010221706335_DropContourIdDropPhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221908433_DropContourId.resx">
+      <DependentUpon>202010221908433_DropContourId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221914462_ReWireEverything.resx">
+      <DependentUpon>202010221914462_ReWireEverything.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221941526_Test.resx">
+      <DependentUpon>202010221941526_Test.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010221943547_RewireContoursToPhotos.resx">
+      <DependentUpon>202010221943547_RewireContoursToPhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010241016025_ReferencePhotoId.resx">
+      <DependentUpon>202010241016025_ReferencePhotoId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010241045319_ReferencePhotoBaseMembers.resx">
+      <DependentUpon>202010241045319_ReferencePhotoBaseMembers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010251253280_MeasurementOrder.resx">
+      <DependentUpon>202010251253280_MeasurementOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202011010524011_ContourCascadeDelete.resx">
+      <DependentUpon>202011010524011_ContourCascadeDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202011101603068_MeasurementDrop.resx">
+      <DependentUpon>202011101603068_MeasurementDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202011101604297_RemoveDropPhotoDrop.resx">
+      <DependentUpon>202011101604297_RemoveDropPhotoDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202011291204478_ThermalPhotos.resx">
+      <DependentUpon>202011291204478_ThermalPhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202012171931166_EllipseCoordinate.resx">
+      <DependentUpon>202012171931166_EllipseCoordinate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202012181953560_AmbientTemperature.resx">
+      <DependentUpon>202012181953560_AmbientTemperature.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101031240339_Substances.resx">
+      <DependentUpon>202101031240339_Substances.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101131846239_Comment.resx">
+      <DependentUpon>202101131846239_Comment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101191644004_ThermalPhotoContour.resx">
+      <DependentUpon>202101191644004_ThermalPhotoContour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101192042481_CommentCommonTable.resx">
+      <DependentUpon>202101192042481_CommentCommonTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101192230031_CommentEntityType.resx">
+      <DependentUpon>202101192230031_CommentEntityType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101261642386_Plots.resx">
+      <DependentUpon>202101261642386_Plots.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101261658148_ROI.resx">
+      <DependentUpon>202101261658148_ROI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101262101489_TitlesPlot.resx">
+      <DependentUpon>202101262101489_TitlesPlot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101281819523_LessFieldsForPlot.resx">
+      <DependentUpon>202101281819523_LessFieldsForPlot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101311053481_PlotType.resx">
+      <DependentUpon>202101311053481_PlotType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102091946473_SeriesSettings.resx">
+      <DependentUpon>202102091946473_SeriesSettings.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
+</Project>

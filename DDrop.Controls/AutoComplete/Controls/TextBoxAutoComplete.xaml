@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="DDrop.Controls.AutoComplete.Controls.TextBoxAutoComplete"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Focusable="True" 
+    IsTabStop="False" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:attachProp="clr-namespace:DDrop.Controls.AutoComplete.AttachProp"
+    xmlns:controls1="clr-namespace:DDrop.Controls.AutoComplete.Controls"
+    d:DesignHeight="26" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <controls1:VisToBool x:Key="TrueIfVisible" Inverted="False" Not="False" />
+        <controls1:VisToBool x:Key="TrueIfNotVisible" Inverted="False" Not="True" />
+        <controls1:VisToBool x:Key="VisibleIfTrue" Inverted="True" Not="False" />
+        <controls1:VisToBool x:Key="VisibleIfNotTrue" Inverted="True" Not="True" />
+    </UserControl.Resources>
+    <Grid x:Name="grid" >
+        <Border x:Name="brdButton" Grid.Column="1" BorderThickness="1" BorderBrush="Gray">
+            <DockPanel HorizontalAlignment="Stretch">
+                <Button 
+                    Name="EditModeButton"
+                    Visibility="{Binding Path=IsEdited, Converter={StaticResource VisibleIfNotTrue}}"
+                    HorizontalAlignment="Left"
+                    Width="27" Background="{x:Null}"
+                    BorderBrush="{x:Null}"
+                    Click="EditModeButton_OnClick" Margin="0,0,0,-1">
+                    <ContentControl Content="{StaticResource EditIcon}"
+                                    Height="20" />
+                </Button>
+                <Button 
+                    Name="DeleteSubstanceButton"
+                    IsEnabled="{Binding Path=IsDeleteEnabled}"
+                    Visibility="{Binding Path=IsEdited, Converter={StaticResource VisibleIfNotTrue}}"
+                    HorizontalAlignment="Left"
+                    Width="27" Background="{x:Null}"
+                    BorderBrush="{x:Null}"
+                    Margin="0,0,0,-1">
+                    <ContentControl Content="{StaticResource DeleteIcon}"
+                                    Height="20" />
+                </Button>
+                <Button 
+                    Name="SaveButton"
+                    Visibility="{Binding Path=IsEdited, Converter={StaticResource VisibleIfTrue}}"
+                    HorizontalAlignment="Left"
+                    Width="27" Background="{x:Null}"
+                    BorderBrush="{x:Null}" Margin="0,0,0,-1"
+                    Click="SaveButton_OnClick"
+                    >
+                    <ContentControl Content="{StaticResource SaveIcon}"
+                                    Height="20" />
+                </Button>
+                <Button 
+                    Name="CancelButton"
+                    Visibility="{Binding Path=IsEdited, Converter={StaticResource VisibleIfTrue}}"
+                    HorizontalAlignment="Left"
+                    Width="27" Background="{x:Null}"
+                    BorderBrush="{x:Null}"
+                    Margin="0,0,0,-1"
+                    Click="CancelButton_OnClick">
+                    <ContentControl Content="{StaticResource Cancel}"
+                                    Height="20" />
+                </Button>
+                <DockPanel DockPanel.Dock="Right" Visibility="{Binding Path=IsEdited, Converter={StaticResource VisibleIfTrue}}">
+                    <Viewbox Height="20" Margin="2"  Visibility="{Binding Path=IsBusy, Converter={StaticResource VisibleIfTrue}}">
+                        <controls1:CircularProgressBar/>
+                    </Viewbox>
+                    <Image Name="imgSearch" DockPanel.Dock="Right" Source="../Iconos/Search.png" Height="23" Width="23" Visibility="{Binding Path=IsBusy, Converter={StaticResource VisibleIfNotTrue}}"/>
+                </DockPanel>
+                <TextBox Text="{Binding ExistingValue}" x:Name="txtSearch" BorderThickness="0" attachProp:CueBannerService.CueBanner="{Binding Path=WatermarkText}" IsEnabled="{Binding Path=IsEdited}"/>
+            </DockPanel>
+        </Border>
+        <Popup x:Name="popup" 
+            Placement="RelativePoint" 
+            HorizontalOffset="0"
+            PopupAnimation="Slide"             
+            Width="{Binding ElementName=brdButton, Path=ActualWidth}">
+            <ListBox x:Name="listBox"
+                BorderThickness="1" 
+                MaxHeight="200"
+                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                ItemsSource="{Binding Path=SearchResults}" 
+                SelectedValuePath="Key" 
+                DisplayMemberPath="Value" 
+                SelectedItem="{Binding Path=SelectedListBoxItem}"
+                SelectedValue="{Binding Path=SelectedListBoxValue}" 
+                SelectedIndex="{Binding Path=SelectedListBoxIndex}" />
+        </Popup>
+    </Grid>
+</UserControl>

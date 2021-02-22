@@ -1,0 +1,19 @@
+﻿<Window x:Class="DDrop.Views.CommentEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DDrop"
+        mc:Ignorable="d"
+        x:Name="CommentW"
+        Title="Комментарий" Icon="../Resources/Icons/MainIcon.png" Height="450" Width="800">
+    <Grid>
+        <Border BorderThickness="1" BorderBrush="#34558b" Margin="10,10,10,35">
+            <TextBox IsEnabled="True" Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="-1" TextWrapping="Wrap"/>
+        </Border>
+        <Button Grid.Column="0" x:Name="SaveCommentButton" Command="{Binding SaveCommentCommand}" 
+                Content="Cохранить" HorizontalAlignment="Left" Margin="10,0,0,10" Width="109" Height="20" VerticalAlignment="Bottom" />
+        <Button Grid.Column="0" x:Name="CancelCommentEditButton" Command="{Binding CloseCommand}" 
+                Content="Отмена" HorizontalAlignment="Left" Margin="124,0,0,10" Width="109" Height="20" VerticalAlignment="Bottom" />
+    </Grid>
+</Window>

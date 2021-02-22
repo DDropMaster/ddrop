@@ -1,0 +1,332 @@
+﻿<Window x:Class="DDrop.Views.MeasurementsManager"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataGrid="clr-namespace:DDrop.Utility.DataGrid;assembly=DDrop.Utility"
+        xmlns:loadingSpinner="clr-namespace:DDrop.Controls.LoadingSpinner;assembly=DDrop.Controls"
+        xmlns:simpleSample="clr-namespace:SimpleSample;assembly=DDrop.Controls"
+        xmlns:zoomborder="clr-namespace:DDrop.Controls.Zoomborder;assembly=DDrop.Controls"
+        mc:Ignorable="d"
+        x:Name="AppMeasurementManagerWindow"
+        Title="Менеджер измерений"  Icon="../Resources/Icons/MainIcon.png"
+        Height="900" Width="1600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Border x:Name="FrontPhotoBar" Grid.Column="0" Grid.Row="0" Background="Gainsboro"
+                BorderThickness="1" Height="41" Margin="10,10,10,0" VerticalAlignment="Top">
+            <Grid>
+                <Button Grid.Column="0" Grid.Row="0" Name="AddFrontDropPhoto" HorizontalAlignment="Left"
+                                    VerticalAlignment="Top" Width="28" BorderBrush="{x:Null}" Background="{x:Null}"
+                                    Height="26" Click="AddNewFrontDropPhotos" Margin="10,6,0,0"
+                                    ToolTip="Добавить фотографию.">
+                    <ContentControl Content="{StaticResource AddIcon}" Height="22" Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="DeleteFrontUploadedPhotosButton" Margin="0,6,10,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="DeleteFrontUploadedPhotos"
+                        ToolTip="Удалить фотографии для серии." HorizontalAlignment="Right" Width="27">
+                    <ContentControl Content="{StaticResource DeleteIcon}" Height="21"
+                                    Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="AddBlankRowFrontButton" Margin="43,6,0,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="AddBlankRowFront"
+                        ToolTip="Добавить пустую строку." HorizontalAlignment="Left" Width="27">
+                    <ContentControl Content="{StaticResource AddRow}" Height="21"
+                                    Width="23" />
+                </Button>
+            </Grid>
+        </Border>
+        <Border Grid.Row="0" x:Name="SidePhotoBar" Grid.Column="2" Background="Gainsboro"
+                BorderThickness="1" Height="41" Margin="10,10,10,0" VerticalAlignment="Top">
+            <Grid>
+                <Button Name="AddSidePhoto" HorizontalAlignment="Left"
+                        VerticalAlignment="Top" Width="28" BorderBrush="{x:Null}" Background="{x:Null}"
+                        Height="26" Click="AddNewSideDropPhotos" Margin="10,6,0,0"
+                        ToolTip="Добавить фотографию.">
+                    <ContentControl Content="{StaticResource AddIcon}" Height="22" Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="DeleteSideUploadedPhotosButton" Margin="0,6,10,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="DeleteSideUploadedPhotos"
+                        ToolTip="Удалить загруженные фотографии." HorizontalAlignment="Right" Width="27">
+                    <ContentControl Content="{StaticResource DeleteIcon}" Height="21"
+                                    Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="AddBlankRowSideButton" Margin="43,6,0,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="AddBlankRowSide"
+                        ToolTip="Добавить пустую строку." HorizontalAlignment="Left" Width="27">
+                    <ContentControl Content="{StaticResource AddRow}" Height="21"
+                                    Width="23" />
+                </Button>
+            </Grid>
+        </Border>
+        <Border Grid.Row="0" x:Name="ThermalPhotoBar" Grid.Column="4" Background="Gainsboro"
+                BorderThickness="1" Height="41" Margin="10,10,10,0" VerticalAlignment="Top">
+            <Grid>
+                <Button Name="AddThermalPhoto" HorizontalAlignment="Left"
+                        VerticalAlignment="Top" Width="28" BorderBrush="{x:Null}" Background="{x:Null}"
+                        Height="26" Click="AddNewThermalDropPhotos" Margin="10,6,0,0"
+                        ToolTip="Добавить фотографию.">
+                    <ContentControl Content="{StaticResource AddIcon}" Height="22" Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="DeleteThermalUploadedPhotosButton" Margin="0,6,10,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="DeleteThermalUploadedPhotos"
+                        ToolTip="Удалить загруженные фотографии." HorizontalAlignment="Right" Width="27">
+                    <ContentControl Content="{StaticResource DeleteIcon}" Height="21"
+                                    Width="23" />
+                </Button>
+                <Button Grid.Row="0" Grid.Column="0" Name="AddBlankRowThermalButton" Margin="43,6,0,7" Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="AddBlankRowThermal"
+                        ToolTip="Добавить пустую строку." HorizontalAlignment="Left" Width="27">
+                    <ContentControl Content="{StaticResource AddRow}" Height="21"
+                                    Width="23" />
+                </Button>
+            </Grid>
+        </Border>
+        <loadingSpinner:AdornedControl Grid.Row="0" Grid.Column="0" Name="FrontPhotosLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <DataGrid 
+                Margin="10,56,10,10" 
+                ColumnWidth="*" dataGrid:VisualHelper.EnableRowsMove="True"
+                CanUserSortColumns="False"
+                CanUserAddRows="false" AutoGenerateColumns="false"
+                HorizontalAlignment="Stretch" Name="FrontDropPhotosTable"
+                SelectionMode="Single" SelectionChanged="FrontDropPhotosSelectionChanged"
+                IsReadOnly="False"
+                ItemsSource="{Binding FrontDropPhotos, ElementName=AppMeasurementManagerWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            >
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                 Value="True">
+                                <Setter Property="Background"
+                                    Value="#dde0eb" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Width="25" x:Name="FrontPhotosCheckedColumn"
+                                        IsReadOnly="False"
+                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                        CanUserResize="False">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox
+                                IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedFrontPhotos}"
+                                x:Name="ChooseAllSeries" Height="15" />
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn IsReadOnly="True" Header="Фронтальный снимок"
+                                    Binding="{Binding Name}" />
+                    <DataGridTextColumn IsReadOnly="True"
+                                    Header="Путь до файла"
+                                    Binding="{Binding FilePath}" />
+                    <DataGridTemplateColumn Width="30" x:Name="DeleteFrontPhotoColumn"
+                                            IsReadOnly="True" CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Name="DeleteSingleInputPhotoButton"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Width="27" Background="{x:Null}"
+                                        BorderBrush="{x:Null}" Height="25"
+                                        Click="DeleteFrontUploadingPhoto">
+                                    <ContentControl Content="{StaticResource DeleteIcon}"
+                                                    Height="20" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </loadingSpinner:AdornedControl>
+        <loadingSpinner:AdornedControl Grid.Row="0" Grid.Column="2" Name="SidePhotosLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <DataGrid 
+                Margin="10,56,10,10"
+                ColumnWidth="*" dataGrid:VisualHelper.EnableRowsMove="True"
+                CanUserSortColumns="False"
+                CanUserAddRows="false" AutoGenerateColumns="false"
+                HorizontalAlignment="Stretch" Name="SideDropPhotosTable"
+                SelectionMode="Single" SelectionChanged="SideDropPhotosSelectionChanged"
+                IsReadOnly="False"
+                ItemsSource="{Binding SideDropPhotos, ElementName=AppMeasurementManagerWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            >
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="#dde0eb" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Width="25" x:Name="SidePhotosCheckedColumn"
+                                            IsReadOnly="False"
+                                            Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                            CanUserResize="False">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox
+                                    IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedSidePhotos}"
+                                    x:Name="ChooseAllSeries" Height="15" />
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn IsReadOnly="True" Header="Боковой снимок"
+                                        Binding="{Binding Name}" />
+                    <DataGridTextColumn IsReadOnly="True"
+                                        Header="Путь до файла"
+                                        Binding="{Binding FilePath}" />
+                    <DataGridTemplateColumn Width="30" x:Name="DeleteSidePhotoColumn"
+                                            IsReadOnly="True" CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Name="DeleteSingleInputPhotoButton"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Width="27" Background="{x:Null}"
+                                        BorderBrush="{x:Null}" Height="25"
+                                        Click="DeleteSideUploadingPhoto">
+                                    <ContentControl Content="{StaticResource DeleteIcon}"
+                                                    Height="20" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </loadingSpinner:AdornedControl>
+        <loadingSpinner:AdornedControl Grid.Row="0" Grid.Column="4" Name="ThermalPhotosLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <DataGrid 
+                Margin="10,56,10,10" 
+                ColumnWidth="*" dataGrid:VisualHelper.EnableRowsMove="True"
+                CanUserSortColumns="False"
+                CanUserAddRows="false" AutoGenerateColumns="false"
+                HorizontalAlignment="Stretch" Name="ThermalPhotosTable"
+                SelectionMode="Single" SelectionChanged="ThermalPhotosSelectionChanged"
+                IsReadOnly="False"
+                ItemsSource="{Binding ThermalPhotos, ElementName=AppMeasurementManagerWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            >
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                 Value="True">
+                                <Setter Property="Background"
+                                    Value="#dde0eb" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Width="25" x:Name="ThermalPhotosCheckedColumn"
+                                        IsReadOnly="False"
+                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                        CanUserResize="False">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox
+                                IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedThermalPhotos}"
+                                x:Name="ChooseAllSeries" Height="15" />
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn IsReadOnly="True" Header="Тепловизорный снимок"
+                                    Binding="{Binding Name}" />
+                    <DataGridTextColumn IsReadOnly="True"
+                                    Header="Путь до файла"
+                                    Binding="{Binding FilePath}" />
+                    <DataGridTemplateColumn Width="30" x:Name="DeleteThermalPhotoColumn"
+                                            IsReadOnly="True" CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Name="DeleteSingleInputPhotoButton"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Width="27" Background="{x:Null}"
+                                        BorderBrush="{x:Null}" Height="25"
+                                        Click="DeleteThermalUploadingPhoto">
+                                    <ContentControl Content="{StaticResource DeleteIcon}"
+                                                    Height="20" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </loadingSpinner:AdornedControl>
+        <loadingSpinner:AdornedControl Grid.Row="2" Grid.Column="2" Name="SidePreviewLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <zoomborder:ZoomBorder HorizontalAlignment="Stretch" x:Name="SideImagePreviewViewer"
+                                   ClipToBounds="True" Background="Gray" Margin="10">
+                <Canvas x:Name="SidePreviewCanvas">
+                    <Image x:Name="ImgPreviewSide" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Width="{Binding Source.PixelWidth,RelativeSource={RelativeSource Self}}"
+                           Height="{Binding Source.PixelHeight,RelativeSource={RelativeSource Self}}"
+                           Stretch="Uniform" />
+                </Canvas>
+            </zoomborder:ZoomBorder>
+        </loadingSpinner:AdornedControl>
+        <loadingSpinner:AdornedControl Grid.Row="2" Grid.Column="0" Name="FrontPreviewLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <zoomborder:ZoomBorder HorizontalAlignment="Stretch" x:Name="FrontImagePreviewViewer"
+                                   ClipToBounds="True" Background="Gray" Margin="10">
+                <Canvas x:Name="FrontPreviewCanvas">
+                    <Image x:Name="ImgPreviewFront" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Width="{Binding Source.PixelWidth,RelativeSource={RelativeSource Self}}"
+                           Height="{Binding Source.PixelHeight,RelativeSource={RelativeSource Self}}"
+                           Stretch="Uniform" />
+                </Canvas>
+            </zoomborder:ZoomBorder>
+        </loadingSpinner:AdornedControl>
+        <loadingSpinner:AdornedControl Grid.Row="2" Grid.Column="4" Name="ThermalPreviewLoading">
+            <loadingSpinner:AdornedControl.AdornerContent>
+                <simpleSample:LoadingWait />
+            </loadingSpinner:AdornedControl.AdornerContent>
+            <zoomborder:ZoomBorder HorizontalAlignment="Stretch" x:Name="ThermalImagePreviewViewer"
+                                   ClipToBounds="True" Background="Gray" Margin="10">
+                <Canvas x:Name="ThermalPreviewCanvas">
+                    <Image x:Name="ImgPreviewThermal" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Width="{Binding Source.PixelWidth,RelativeSource={RelativeSource Self}}"
+                           Height="{Binding Source.PixelHeight,RelativeSource={RelativeSource Self}}"
+                           Stretch="Uniform" />
+                </Canvas>
+            </zoomborder:ZoomBorder>
+        </loadingSpinner:AdornedControl>
+        <Button Grid.Column="0" Grid.Row="3" x:Name="ChooseReferenceButton" Click="SaveUploadedPhotosAsync"
+                Content="Cохранить" HorizontalAlignment="Left" Margin="10,0,0,10" Width="109" Height="20" VerticalAlignment="Bottom" />
+        <ProgressBar Grid.Column="4" Grid.Row="3" x:Name="ProgressBar" Margin="0,10,10,10" HorizontalAlignment="Right" Width="100" />
+    </Grid>
+</Window>
