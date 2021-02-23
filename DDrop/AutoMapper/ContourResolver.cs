@@ -3,22 +3,19 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
 using DDrop.BE.Models;
-using DDrop.Db.DbEntities;
-using DDrop.Utility.SeriesLocalStorageOperations;
+using DDrop.Models;
 
 namespace DDrop.AutoMapper
 {
-    public class ContourResolver : IValueResolver<DbContour, Contour, ObservableCollection<Line>>
+    public class ContourResolver : IValueResolver<Contour, ContourView, ObservableCollection<Line>>
     {
-        public ObservableCollection<Line> Resolve(DbContour source, Contour destination, ObservableCollection<Line> destMember,
+        public ObservableCollection<Line> Resolve(Contour source, ContourView destination, ObservableCollection<Line> destMember,
             ResolutionContext context)
         {
-            if (source.ConnectedLines != null)
+            if (source.SimpleLines != null)
             {
-                var simpleLines = JsonSerializeProvider.DeserializeFromString<ObservableCollection<SimpleLine>>(source.ConnectedLines);
-
                 var lines = new ObservableCollection<Line>();
-                foreach (var dbSimpleLine in simpleLines)
+                foreach (var dbSimpleLine in source.SimpleLines)
                 {
                     lines.Add(new Line
                     {

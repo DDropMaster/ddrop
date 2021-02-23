@@ -22,7 +22,7 @@ namespace DDrop.Models
             set
             {
                 _contourId = value;
-                RaisePropertyChanged("CurrentSeriesId");
+                RaisePropertyChanged("ContourId");
             }
         }
 

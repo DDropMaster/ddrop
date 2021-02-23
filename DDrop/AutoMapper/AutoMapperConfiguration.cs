@@ -38,7 +38,9 @@ namespace DDrop.AutoMapper
 
 
                 cfg.CreateMap<ContourView, Contour>();
-                cfg.CreateMap<Contour, ContourView>();
+                cfg.CreateMap<Contour, ContourView>()
+                    .ForMember(x =>
+                        x.Lines, opt => opt.MapFrom<ContourResolver>());
                 cfg.CreateMap<Contour, DbContour>()
                     .ForMember(x =>
                         x.ConnectedLines, opt =>
@@ -60,8 +62,6 @@ namespace DDrop.AutoMapper
                         opt.MapFrom(src =>
                             (CalculationVariants)Enum.Parse(typeof(CalculationVariants), src.CalculationProvider,
                                 true)))
-                    .ForMember(x =>
-                        x.Lines, opt => opt.MapFrom<ContourResolver>())
                     .ForMember(x =>
                         x.SimpleLines, opt =>
                         opt.MapFrom(src => src.ConnectedLines != null ?
