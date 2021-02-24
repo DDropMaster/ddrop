@@ -69,11 +69,6 @@ namespace DDrop.BL.Measurement
 
         public async Task DeleteDropPhoto(DropPhoto dropPhoto)
         {
-            if (dropPhoto.Contour != null && dropPhoto.ContourId != null)
-            {
-                await _dDropRepository.DeleteContour(dropPhoto.ContourId.Value);
-            }
-
             await Task.Run(() => _dDropRepository.DeleteDropPhoto(_mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto)));
         }
 

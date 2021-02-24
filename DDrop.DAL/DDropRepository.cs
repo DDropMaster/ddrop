@@ -990,7 +990,26 @@ namespace DDrop.DAL
             {
                 var existingContour = await context.Contours.FirstOrDefaultAsync(x => x.ContourId == contourId);
 
-                if (existingContour != null) context.Contours.Remove(existingContour);
+                if (existingContour != null)
+                {
+                    var relatedPhoto = await context.DropPhotos.FirstOrDefaultAsync(x => x.ContourId == contourId);
+
+                    if (relatedPhoto != null)
+                    {
+                        relatedPhoto.Contour = null;
+                        relatedPhoto.ContourId = null;
+                    }
+
+                    var relatedThermalPhoto = await context.ThermalPhotos.FirstOrDefaultAsync(x => x.ContourId == contourId);
+
+                    if (relatedThermalPhoto != null)
+                    {
+                        relatedThermalPhoto.Contour = null;
+                        relatedThermalPhoto.ContourId = null;
+                    }
+
+                    context.Contours.Remove(existingContour);
+                }
 
                 context.SaveChanges();
             }
@@ -1141,10 +1160,35 @@ namespace DDrop.DAL
                 try
                 {
                     if (measurement.FrontDropPhotoId != null)
+                    {
+                        if (measurement.FrontDropPhoto.Contour != null && measurement.FrontDropPhoto.ContourId != null)
+                        {
+                            await DeleteContour(measurement.FrontDropPhoto.ContourId.Value);
+                        }
+
                         await DeleteDropPhoto(measurement.FrontDropPhoto);
+                    }
+
 
                     if (measurement.SideDropPhotoId != null)
+                    {
+                        if (measurement.SideDropPhoto.Contour != null && measurement.SideDropPhoto.ContourId != null)
+                        {
+                            await DeleteContour(measurement.SideDropPhoto.ContourId.Value);
+                        }
+
                         await DeleteDropPhoto(measurement.SideDropPhoto);
+                    }
+
+                    if (measurement.ThermalPhoto != null)
+                    {
+                        if (measurement.ThermalPhoto.Contour != null && measurement.ThermalPhoto.ContourId != null)
+                        {
+                            await DeleteContour(measurement.ThermalPhoto.ContourId.Value);
+                        }
+
+                        await DeleteThermalPhoto(measurement.ThermalPhoto);
+                    }
                     
                     context.Measurements.Attach(measurement);
 
