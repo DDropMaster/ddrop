@@ -14,7 +14,7 @@ namespace DDrop.BE.Models
 
         public SimpleLine SimpleVerticalLine { get; set; }
 
-        public Guid ContourId { get; set; }
+        public Guid? ContourId { get; set; }
 
         public Contour Contour { get; set; }
 

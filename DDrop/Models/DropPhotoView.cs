@@ -87,8 +87,8 @@ namespace DDrop.Models
             }
         }
 
-        private Guid _contourId;
-        public Guid ContourId
+        private Guid? _contourId;
+        public Guid? ContourId
         {
             get => _contourId;
             set

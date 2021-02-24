@@ -3588,7 +3588,8 @@ namespace DDrop.Views
                         var points = await GetPoints(photo, photo.Content, parameters);
                         photo.Contour = _geometryBL.CreateContour(photo.Contour, points, currentCalculationVariant, parameters,
                             CurrentDropPhoto?.Contour, ImgCurrent);
-   
+                        photo.ContourId = photo.Contour.ContourId;
+
                         _geometryBL.CreateDiameters(photo, points);
                     }
 
@@ -3601,6 +3602,8 @@ namespace DDrop.Views
                         var points = await GetPoints(photo, photo.Content, parameters);
                         photo.Contour = _geometryBL.CreateContour(photo.Contour, points,
                             currentCalculationVariant, parameters, photo.Contour, ImgCurrent);
+                        photo.ContourId = photo.Contour.ContourId;
+
                         _geometryBL.CreateDiameters(photo, points);
                     }
 
@@ -3616,6 +3619,7 @@ namespace DDrop.Views
                             var points = await GetPoints(photo, photo.FlirImage.Image.GetRGBValues(), parameters);
                             photo.Contour = _geometryBL.CreateContour(photo.Contour, points, currentCalculationVariant,
                                 parameters, photo.Contour, ImgCurrent);
+                            photo.ContourId = photo.Contour.ContourId;
                         }
                         else
                         {

@@ -54,8 +54,6 @@ namespace DDrop.BL.Measurement
         {
             var dbPhoto = _mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto);
 
-            await Task.Run(() => _dDropRepository.UpdateDropPhoto(dbPhoto, updateContent));
-
             if (dropPhoto.Contour != null)
             {
                 var contour = _mapper.Map<Contour, DbContour>(dropPhoto.Contour);
@@ -65,13 +63,15 @@ namespace DDrop.BL.Measurement
             {
                 await _dDropRepository.DeleteContour(dropPhoto.PhotoId);
             }
+
+            await Task.Run(() => _dDropRepository.UpdateDropPhoto(dbPhoto, updateContent));
         }
 
         public async Task DeleteDropPhoto(DropPhoto dropPhoto)
         {
-            if (dropPhoto.Contour != null)
+            if (dropPhoto.Contour != null && dropPhoto.ContourId != null)
             {
-                await _dDropRepository.DeleteContour(dropPhoto.ContourId);
+                await _dDropRepository.DeleteContour(dropPhoto.ContourId.Value);
             }
 
             await Task.Run(() => _dDropRepository.DeleteDropPhoto(_mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto)));
