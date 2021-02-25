@@ -187,7 +187,11 @@ namespace DDrop.AutoMapper
                     .ForMember(x =>
                         x.Processed, opt => opt.Ignore());
                 cfg.CreateMap<ThermalPhotoView, ThermalPhoto>();
-                cfg.CreateMap<ThermalPhoto, DbThermalPhoto>();
+                cfg.CreateMap<ThermalPhoto, DbThermalPhoto>()
+                    .ForMember(x =>
+                        x.EllipseCoordinate, opt =>
+                        opt.MapFrom(src => src.EllipseCoordinate != null ?
+                            JsonSerializeProvider.SerializeToString(src.EllipseCoordinate) : null));
                 cfg.CreateMap<DbThermalPhoto, ThermalPhoto>()
                     .ForMember(x => x.FlirImage, opt =>
                         opt.Ignore())
@@ -199,6 +203,9 @@ namespace DDrop.AutoMapper
 
                 cfg.CreateMap<ThermalPhoto, BasePhoto>().ReverseMap();
                 cfg.CreateMap<DropPhoto, BasePhoto>().ReverseMap();
+
+                cfg.CreateMap<ThermalPhotoView, BasePhotoView>().ReverseMap();
+                cfg.CreateMap<DropPhotoView, BasePhotoView>().ReverseMap();
 
 
                 cfg.CreateMap<Comment, CommentView>()
