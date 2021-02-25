@@ -1885,13 +1885,14 @@ namespace DDrop.Views
                     foreach (var line in contour.Lines)
                         canvas.Children.Add(line);
 
-                ImgCurrent.CanDrawing.Children.Remove(CurrentThermalPhoto.Ellipse);
+                if (CurrentThermalPhoto.Ellipse != null)
+                {
+                    ImgCurrent.CanDrawing.Children.Remove(CurrentThermalPhoto.Ellipse);
+                    ImgCurrent.CanDrawing.Children.Add(CurrentThermalPhoto.Ellipse);
 
-                ImgCurrent.CanDrawing.Children.Add(CurrentThermalPhoto.Ellipse);
-
-                Canvas.SetLeft(CurrentThermalPhoto.Ellipse, CurrentThermalPhoto.EllipseCoordinate.X);
-                Canvas.SetTop(CurrentThermalPhoto.Ellipse, CurrentThermalPhoto.EllipseCoordinate.Y);
-
+                    Canvas.SetLeft(CurrentThermalPhoto.Ellipse, CurrentThermalPhoto.EllipseCoordinate.X);
+                    Canvas.SetTop(CurrentThermalPhoto.Ellipse, CurrentThermalPhoto.EllipseCoordinate.Y);
+                }
 
                 if (CurrentSeries?.RegionOfInterest != null)
                 {

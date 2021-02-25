@@ -51,6 +51,7 @@ namespace DDrop.DAL
         Task UpdateThermalPhotoEllipseCoordinate(string temperatureCoordinate, Guid editedPhotoId);
         Task UpdateSubstance(DbSubstances substance);
         Task DeleteSubstance(Guid substanceId);
+        Task DeleteComment(DbComment comment);
         Task UpdateComment(DbComment comment, Guid entityId);
     }
 }

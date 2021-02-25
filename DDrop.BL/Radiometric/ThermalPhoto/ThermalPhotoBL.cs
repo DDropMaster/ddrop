@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using DDrop.BE.Models;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
 using DDrop.Utility.ImageOperations;
@@ -70,6 +71,11 @@ namespace DDrop.BL.Radiometric.ThermalPhoto
             if (thermalPhoto.Contour != null && thermalPhoto.ContourId != null)
             {
                 await _dDropRepository.DeleteContour(thermalPhoto.ContourId.Value);
+            }
+
+            if (thermalPhoto.Comment != null)
+            {
+                await _dDropRepository.DeleteComment(_mapper.Map<Comment, DbComment>(thermalPhoto.Comment));
             }
 
             await Task.Run(() => _dDropRepository.DeleteThermalPhoto(_mapper.Map<BE.Models.ThermalPhoto, DbThermalPhoto>(thermalPhoto)));

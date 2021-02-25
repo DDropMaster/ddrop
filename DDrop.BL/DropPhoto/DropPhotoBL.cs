@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AutoMapper;
 using DDrop.BE.Models;
+using DDrop.BL.Comments;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
 using DDrop.Utility.ImageOperations;
@@ -72,6 +73,11 @@ namespace DDrop.BL.Measurement
             if (dropPhoto.Contour != null && dropPhoto.ContourId != null)
             {
                 await _dDropRepository.DeleteContour(dropPhoto.ContourId.Value);
+            }
+
+            if (dropPhoto.Comment != null)
+            {
+                await _dDropRepository.DeleteComment(_mapper.Map<Comment, DbComment>(dropPhoto.Comment));
             }
 
             await Task.Run(() => _dDropRepository.DeleteDropPhoto(_mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto)));

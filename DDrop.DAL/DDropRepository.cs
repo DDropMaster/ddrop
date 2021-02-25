@@ -211,6 +211,61 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task DeleteComment(DbComment comment)
+        {
+            using (var context = new DDropContext())
+            {
+                try
+                {
+                    if (comment.Type == "DropPhoto")
+                    {
+                        var dropPhoto = await context.DropPhotos.FirstOrDefaultAsync(x => x.CommentId == comment.CommentId);
+
+                        if (dropPhoto != null)
+                        {
+                            dropPhoto.CommentId = null;
+                        }
+                    }
+                    else if (comment.Type == "ThermalPhoto")
+                    {
+                        var thermalPhoto = await context.ThermalPhotos.FirstOrDefaultAsync(x => x.CommentId == comment.CommentId);
+
+                        if (thermalPhoto != null)
+                        {
+                            thermalPhoto.CommentId = null;
+                        }
+                    }
+                    else if (comment.Type == "Series")
+                    {
+                        var series = await context.Series.FirstOrDefaultAsync(x => x.CommentId == comment.CommentId);
+
+                        if (series != null)
+                        {
+                            series.CommentId = null;
+                        }
+                    }
+                    else if (comment.Type == "Measurement")
+                    {
+                        var measurement = await context.Measurements.FirstOrDefaultAsync(x => x.CommentId == comment.CommentId);
+
+                        if (measurement != null)
+                        {
+                            measurement.CommentId = null;
+                        }
+                    }
+
+                    context.Comments.Attach(comment);
+                    context.Comments.Remove(comment);
+
+                    await context.SaveChangesAsync();
+                }
+                catch (SqlException e)
+                {
+                    throw new TimeoutException(e.Message, e);
+                }
+            }
+        }
+
         public async Task UpdateComment(DbComment comment, Guid entityId)
         {
             using (var context = new DDropContext())
@@ -823,6 +878,16 @@ namespace DDrop.DAL
                         await DeleteMeasurement(series.MeasurementsSeries[i]);
                     }
 
+                    if (series.Substance != null)
+                    {
+                        await DeleteSubstance(series.Substance.SubstanceId);
+                    }
+
+                    if (series.Comment != null)
+                    {
+                        await DeleteComment(series.Comment);
+                    }
+
                     context.Series.Attach(series);
 
                     context.Series.Remove(series);
@@ -1166,6 +1231,11 @@ namespace DDrop.DAL
                             await DeleteContour(measurement.FrontDropPhoto.ContourId.Value);
                         }
 
+                        if (measurement.FrontDropPhoto.Comment != null)
+                        {
+                            await DeleteComment(measurement.FrontDropPhoto.Comment);
+                        }
+
                         await DeleteDropPhoto(measurement.FrontDropPhoto);
                     }
 
@@ -1174,6 +1244,11 @@ namespace DDrop.DAL
                         if (measurement.SideDropPhoto.Contour != null && measurement.SideDropPhoto.ContourId != null)
                         {
                             await DeleteContour(measurement.SideDropPhoto.ContourId.Value);
+                        }
+
+                        if (measurement.SideDropPhoto.Comment != null)
+                        {
+                            await DeleteComment(measurement.SideDropPhoto.Comment);
                         }
 
                         await DeleteDropPhoto(measurement.SideDropPhoto);
@@ -1186,9 +1261,19 @@ namespace DDrop.DAL
                             await DeleteContour(measurement.ThermalPhoto.ContourId.Value);
                         }
 
+                        if (measurement.ThermalPhoto.Comment != null)
+                        {
+                            await DeleteComment(measurement.ThermalPhoto.Comment);
+                        }
+
                         await DeleteThermalPhoto(measurement.ThermalPhoto);
                     }
-                    
+
+                    if (measurement.Comment != null)
+                    {
+                        await DeleteComment(measurement.Comment);
+                    }
+
                     context.Measurements.Attach(measurement);
 
                     context.Measurements.Remove(measurement);
