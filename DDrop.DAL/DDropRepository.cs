@@ -1169,7 +1169,6 @@ namespace DDrop.DAL
                         await DeleteDropPhoto(measurement.FrontDropPhoto);
                     }
 
-
                     if (measurement.SideDropPhotoId != null)
                     {
                         if (measurement.SideDropPhoto.Contour != null && measurement.SideDropPhoto.ContourId != null)

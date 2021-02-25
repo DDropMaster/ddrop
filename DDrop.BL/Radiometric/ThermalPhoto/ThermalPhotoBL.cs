@@ -67,6 +67,11 @@ namespace DDrop.BL.Radiometric.ThermalPhoto
 
         public async Task DeleteThermalPhoto(BE.Models.ThermalPhoto thermalPhoto)
         {
+            if (thermalPhoto.Contour != null && thermalPhoto.ContourId != null)
+            {
+                await _dDropRepository.DeleteContour(thermalPhoto.ContourId.Value);
+            }
+
             await Task.Run(() => _dDropRepository.DeleteThermalPhoto(_mapper.Map<BE.Models.ThermalPhoto, DbThermalPhoto>(thermalPhoto)));
         }
 

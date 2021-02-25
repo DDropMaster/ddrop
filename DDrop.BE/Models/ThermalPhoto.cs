@@ -16,7 +16,7 @@ namespace DDrop.BE.Models
 
         public Comment Comment { get; set; }
 
-        public Guid ContourId { get; set; }
+        public Guid? ContourId { get; set; }
 
         public Contour Contour { get; set; }
     }
