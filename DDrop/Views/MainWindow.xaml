@@ -1470,8 +1470,17 @@
                                 <ContentControl Content="{StaticResource SaveIcon}" Height="21"
                                                 Width="23" />
                             </Button>
+                            <Button Visibility="Hidden" Grid.Row="0" Grid.Column="0"
+                                    Name="ImportPlot"
+                                    Margin="42,6,0,7"
+                                    Background="{x:Null}" BorderBrush="{x:Null}"
+                                    Click="ImportPlot_OnClick"
+                                    ToolTip="Импортировать график." HorizontalAlignment="Left" Width="27">
+                                <ContentControl Content="{StaticResource ImportLocalSeries}" Height="21"
+                                                Width="23" />
+                            </Button>
                             <Button Grid.Row="0" Grid.Column="0" Name="DiscardPlotEdit"
-                                    HorizontalAlignment="Left" Margin="42,7,0,0"
+                                    HorizontalAlignment="Left" Margin="72,7,0,0"
                                     VerticalAlignment="Top" Width="27" Background="{x:Null}"
                                     BorderBrush="{x:Null}" Height="26"
                                     Click="DiscardPlotEdit_OnClick"

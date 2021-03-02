@@ -275,7 +275,7 @@ namespace DDrop.Views
             DependencyProperty.Register("CurrentMeasurement", typeof(MeasurementView), typeof(MainWindow));
 
         public static readonly DependencyProperty CurrentPlotProperty =
-            DependencyProperty.Register("CurrentPlot", typeof(Plot), typeof(MainWindow));
+            DependencyProperty.Register("CurrentPlot", typeof(PlotView), typeof(MainWindow));
 
         public static readonly DependencyProperty CurrentThermalPhotosProperty =
             DependencyProperty.Register("CurrentThermalPhotos", typeof(ObservableCollection<ThermalPhotoView>), typeof(MainWindow));
@@ -5796,6 +5796,7 @@ namespace DDrop.Views
 
             DiscardPlotEdit.Visibility = Visibility.Visible;
             SavePlot.Visibility = Visibility.Visible;
+            ImportPlot.Visibility = Visibility.Visible;
 
             switch (_currentPlotType)
             {
@@ -5859,6 +5860,7 @@ namespace DDrop.Views
 
             DiscardPlotEdit.Visibility = Visibility.Hidden;
             SavePlot.Visibility = Visibility.Hidden;
+            ImportPlot.Visibility = Visibility.Hidden;
 
             await AnimationHelper.AnimateGridColumnExpandCollapseAsync(CustomPlotsColumn, true, 300, 0,
                 CustomPlotsColumn.MinWidth, 0, 200);
@@ -5894,23 +5896,7 @@ namespace DDrop.Views
                     Points = new ObservableCollection<SimplePointView>()
                 };
 
-                await _customPlotsBl.CreatePlot(_mapper.Map<PlotView, Plot>(plotForAdd));
-
-                User.Plots.Add(plotForAdd);
-
-                switch (_currentPlotType)
-                {
-                    case PlotTypeView.Radius:
-                        plotForAdd.PropertyChanged += PlotsOnPropertyChanged;
-                        AvailableRadiusPlots.Add(plotForAdd);
-                        break;
-                    case PlotTypeView.Temperature:
-                        plotForAdd.PropertyChanged += TemperaturePlotsOnPropertyChanged;
-                        AvailableTemperaturePlots.Add(plotForAdd);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                await SaveAddedPlot(plotForAdd);
 
                 _notifier.ShowSuccess("График добавлен");
 
@@ -5919,6 +5905,29 @@ namespace DDrop.Views
 
                 await EditPlotModeOn();
             }
+        }
+
+        private async Task SaveAddedPlot(PlotView plotForAdd)
+        {
+            await _customPlotsBl.CreatePlot(_mapper.Map<PlotView, Plot>(plotForAdd));
+
+            User.Plots.Add(plotForAdd);
+
+            switch (_currentPlotType)
+            {
+                case PlotTypeView.Radius:
+                    plotForAdd.PropertyChanged += PlotsOnPropertyChanged;
+                    AvailableRadiusPlots.Add(plotForAdd);
+                    break;
+                case PlotTypeView.Temperature:
+                    plotForAdd.PropertyChanged += TemperaturePlotsOnPropertyChanged;
+                    AvailableTemperaturePlots.Add(plotForAdd);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            _notifier.ShowSuccess("График добавлен");
         }
 
         private async void CustomPlots_OnCellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -5946,6 +5955,7 @@ namespace DDrop.Views
         private async void SavePlot_OnClick(object sender, RoutedEventArgs e)
         {
             await _customPlotsBl.UpdatePlot(_mapper.Map<PlotView, Plot>(CurrentPlot));
+            _notifier.ShowSuccess("График обновлен");
             await EditPlotModeOff();
         }
 
@@ -6344,6 +6354,23 @@ namespace DDrop.Views
                 CurrentSeries.SeriesId);
 
             _notifier.ShowSuccess("Настройки обновлены");
+        }
+
+        private async void ImportPlot_OnClick(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Excel files (*.xlsx)|*.xlsx|(*.xls)|*.xls|All files (*.*)|*.*",
+                Multiselect = false,
+                AddExtension = true,
+                CheckFileExists = true,
+                CheckPathExists = true
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                CurrentPlot.Points = ExcelOperations.GetPlotPointsFromFile(openFileDialog.FileName);
+            }
         }
     }
 }
