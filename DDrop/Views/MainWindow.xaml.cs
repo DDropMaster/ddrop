@@ -2668,14 +2668,15 @@ namespace DDrop.Views
         {
             if (CurrentSeries != null)
             {
-                CurrentSeries.UseCreationDateTime = true;
+                CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime = true;
 
                 try
                 {
                     ProgressBar.IsIndeterminate = true;
 
-                    var seriesId = CurrentSeries.SeriesId;
-                    await Task.Run(() => _seriesBL.UseCreationDateTime(true, seriesId));
+                    var currentSeries = CurrentSeries;
+                    await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
+                        currentSeries.SeriesId));
 
                     _logger.LogInfo(new LogEntry
                     {
@@ -2715,13 +2716,14 @@ namespace DDrop.Views
         {
             if (CurrentSeries != null)
             {
-                CurrentSeries.UseCreationDateTime = false;
+                CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime = false;
                 try
                 {
                     ProgressBar.IsIndeterminate = true;
 
-                    var seriesId = CurrentSeries.SeriesId;
-                    await Task.Run(() => _seriesBL.UseCreationDateTime(false, seriesId));
+                    var currentSeries = CurrentSeries;
+                    await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
+                        currentSeries.SeriesId));
 
                     _logger.LogInfo(new LogEntry
                     {

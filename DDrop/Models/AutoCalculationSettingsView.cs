@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using DDrop.Enums;
 
 namespace DDrop.Models
@@ -155,6 +156,7 @@ namespace DDrop.Models
 
 
         private SeriesView _currentSeries;
+        [JsonIgnore]
         public SeriesView CurrentSeries
         {
             get => _currentSeries;

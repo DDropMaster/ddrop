@@ -16,7 +16,6 @@ namespace DDrop.Db.DbEntities
         public virtual DbSubstances Substance { get; set; }
         public double IntervalBetweenPhotos { get; set; }
         public string AddedDate { get; set; }
-        public bool UseCreationDateTime { get; set; }
         public Guid CurrentUserId { get; set; }
         public DbUser CurrentUser { get; set; }
 

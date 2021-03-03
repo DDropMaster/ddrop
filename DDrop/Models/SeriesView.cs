@@ -33,8 +33,6 @@ namespace DDrop.Models
 
         private string _title;
 
-        private bool _useCreationDateTime;
-
         public SeriesView()
         {
             _measurementsSeries = new ObservableCollection<MeasurementView>();
@@ -265,16 +263,6 @@ namespace DDrop.Models
             }
         }
 
-        public bool UseCreationDateTime
-        {
-            get => _useCreationDateTime;
-            set
-            {
-                _useCreationDateTime = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("UseCreationDateTime"));
-            }
-        }
-
         private Guid? _commentId;
         public Guid? CommentId
         {
@@ -336,7 +324,7 @@ namespace DDrop.Models
             if (e.PropertyName == nameof(IntervalBetweenPhotos))
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
 
-            if (e.PropertyName == nameof(UseCreationDateTime))
+            if (e.PropertyName == nameof(Settings.GeneralSeriesSettings.UseCreationDateTime))
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
             
             if (e.PropertyName == nameof(IsChecked))

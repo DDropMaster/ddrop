@@ -66,7 +66,7 @@ namespace DDrop.Logic.Plotting
                             if (dropRadiusInMeters != null)
                                 plot.Points.Add(new SimplePointView()
                                 {
-                                    X = series.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                    X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
                                     Y = dropRadiusInMeters.Value
                                 });
                         }
@@ -99,7 +99,7 @@ namespace DDrop.Logic.Plotting
                             if (dropTemperature != null)
                                 plot.Points.Add(new SimplePointView()
                                 {
-                                    X = series.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                    X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
                                     Y = dropTemperature.Value
                                 });
                         }

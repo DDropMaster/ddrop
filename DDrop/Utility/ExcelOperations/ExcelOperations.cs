@@ -79,7 +79,7 @@ namespace DDrop.Utility.ExcelOperations
 
                             var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
 
-                            if (currentSeries.UseCreationDateTime)
+                            if (currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime)
                             {
                                 var orderedMeasurements = currentSeries.MeasurementsSeries
                                     .OrderBy(x => DateTime.Parse(x.CreationDateTime, CultureInfo.InvariantCulture))

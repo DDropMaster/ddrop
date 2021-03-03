@@ -17,14 +17,16 @@ namespace DDrop.AutoMapper
                 {
                     return new SeriesSettings()
                     {
-                        AutoCalculationSettings = GetAutoCalculationSettings(seriesSettings, destination)
+                        AutoCalculationSettings = GetAutoCalculationSettings(seriesSettings, destination),
+                        GeneralSeriesSettings = GetGeneralSeriesSettings(seriesSettings, destination)
                     };
                 }
             }
 
             return new SeriesSettings()
             {
-                AutoCalculationSettings = new AutoCalculationSettings()
+                AutoCalculationSettings = new AutoCalculationSettings(),
+                GeneralSeriesSettings = new GeneralSeriesSettings(),
             };
         }
 
@@ -45,6 +47,20 @@ namespace DDrop.AutoMapper
             }
             
             return new AutoCalculationSettings();
+        }
+
+        private GeneralSeriesSettings GetGeneralSeriesSettings(SeriesSettings seriesSettings, Series series)
+        {
+            if (seriesSettings.GeneralSeriesSettings != null)
+            {
+                return new GeneralSeriesSettings()
+                {
+                    UseCreationDateTime = seriesSettings.GeneralSeriesSettings.UseCreationDateTime,
+                    UseThermalPlot = seriesSettings.GeneralSeriesSettings.UseThermalPlot,
+                };
+            }
+
+            return new GeneralSeriesSettings();
         }
     }
 }

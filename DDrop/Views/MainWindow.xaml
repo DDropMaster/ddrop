@@ -81,6 +81,7 @@
                                       CanUserAddRows="false" IsReadOnly="False" AutoGenerateColumns="False"
                                       SelectionMode="Single" Margin="0" BorderThickness="0" ClipToBounds="True"
                                       ItemsSource="{Binding User.UserSeries}"
+                                      CanUserSortColumns="False"
                                       SelectionChanged="SeriesDataGrid_OnSelectionChanged" Name="SeriesDataGrid">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="DataGridRow">
@@ -342,7 +343,7 @@
                                                    VerticalAlignment="Top" Height="27" Background="{x:Null}"
                                                    HorizontalAlignment="Right" Width="180" />
                                             <CheckBox Name="CreationTimeCheckBox"
-                                                      IsChecked="{Binding CurrentSeries.UseCreationDateTime, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                       Checked="CreationTimeCheckBox_Checked"
                                                       Unchecked="CreationTimeCheckBox_Unchecked"
                                                       Content="Использовать время создания снимка" Margin="0,12,347,9"

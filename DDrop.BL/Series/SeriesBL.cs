@@ -60,11 +60,6 @@ namespace DDrop.BL.Series
             return _mapper.Map<List<DbSeries>, List<BE.Models.Series>>(dbSeries);
         }
 
-        public async Task UseCreationDateTime(bool useCreationDateTime, Guid seriesId)
-        {
-            await Task.Run(() => _dDropRepository.UseCreationDateTime(useCreationDateTime, seriesId));
-        }
-
         public async Task UpdateSeriesRegionOfInterest(string regionOfInterest, Guid seriesId)
         {
             await Task.Run(() => _dDropRepository.UpdateRegionOfInterest(seriesId, regionOfInterest));

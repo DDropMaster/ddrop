@@ -261,6 +261,10 @@
     <Compile Include="Migrations\202102091946473_SeriesSettings.designer.cs">
       <DependentUpon>202102091946473_SeriesSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103031042343_RemoveWeirdColumn.cs" />
+    <Compile Include="Migrations\202103031042343_RemoveWeirdColumn.designer.cs">
+      <DependentUpon>202103031042343_RemoveWeirdColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -418,6 +422,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202102091946473_SeriesSettings.resx">
       <DependentUpon>202102091946473_SeriesSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103031042343_RemoveWeirdColumn.resx">
+      <DependentUpon>202103031042343_RemoveWeirdColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

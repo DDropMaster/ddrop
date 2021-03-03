@@ -15,7 +15,6 @@ namespace DDrop.BL.Series
         Task UpdateSeriesName(string text, Guid seriesId);
         Task UpdateSeriesIntervalBetweenPhotos(int intervalBetweenPhotos, Guid seriesId);
         Task<List<BE.Models.Series>> GetSeriesByUserId(Guid userId);
-        Task UseCreationDateTime(bool useCreationDateTime, Guid seriesId);
         Task UpdateSeriesRegionOfInterest(string regionOfInterest, Guid seriesId);
         Task UpdateSeriesSettings(string settings, Guid seriesId);
     }

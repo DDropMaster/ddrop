@@ -322,7 +322,6 @@ namespace DDrop.DAL
                             x.IntervalBetweenPhotos,
                             x.AddedDate,
                             x.CurrentUserId,
-                            x.UseCreationDateTime,
                             x.CommentId,
                             x.RegionOfInterest,
                             x.Settings
@@ -336,7 +335,6 @@ namespace DDrop.DAL
                         {
                             Title = series.Title,
                             AddedDate = series.AddedDate,
-                            UseCreationDateTime = series.UseCreationDateTime,
                             CurrentUserId = series.CurrentUserId,
                             IntervalBetweenPhotos = series.IntervalBetweenPhotos,
                             SeriesId = series.SeriesId,
@@ -661,7 +659,6 @@ namespace DDrop.DAL
                         {
                             x.Title,
                             x.IntervalBetweenPhotos,
-                            x.UseCreationDateTime
                         }).FirstOrDefaultAsync();
 
                     var referencePhotoForSeries = context.ReferencePhotos.Where(x => x.Series.SeriesId == seriesId)
@@ -832,7 +829,6 @@ namespace DDrop.DAL
                     return new DbSeries
                     {
                         Title = series?.Title,
-                        UseCreationDateTime = series.UseCreationDateTime,
                         IntervalBetweenPhotos = series.IntervalBetweenPhotos,
                         ReferencePhotoForSeries = referencePhotoForAdd,
                         MeasurementsSeries = dbMeasurementForAdd.OrderBy(x => x.MeasurementOrderInSeries).ToList()
@@ -929,25 +925,6 @@ namespace DDrop.DAL
                     var series = await context.Series.FirstOrDefaultAsync(x => x.SeriesId == seriesId);
 
                     if (series != null) series.Title = seriesName;
-
-                    await context.SaveChangesAsync();
-                }
-                catch (SqlException e)
-                {
-                    throw new TimeoutException(e.Message, e);
-                }
-            }
-        }
-
-        public async Task UseCreationDateTime(bool useCreationDateTime, Guid seriesId)
-        {
-            using (var context = new DDropContext())
-            {
-                try
-                {
-                    var series = await context.Series.FirstOrDefaultAsync(x => x.SeriesId == seriesId);
-
-                    if (series != null) series.UseCreationDateTime = useCreationDateTime;
 
                     await context.SaveChangesAsync();
                 }

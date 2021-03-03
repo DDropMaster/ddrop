@@ -23,7 +23,6 @@ namespace DDrop.BE.Models
 
         public string AddedDate { get; set; }
 
-        public bool UseCreationDateTime { get; set; }
         public Guid? CommentId { get; set; }
 
         public Comment Comment { get; set; }
