@@ -89,26 +89,28 @@ namespace DDrop.Logic.Plotting
                 case PlotTypeView.Temperature:
                     if (series.CanDrawTemperaturePlot)
                     {
-                        if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
-                        {
-                            series.ThermalPlot.IsEditable = true;
-                            return series.ThermalPlot;
-                        }
-
                         double averageAmbientTemperatures = 0;
 
-                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                        if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
                         {
-                            averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                            var time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
+                            plot = series.ThermalPlot;
+                            plot.IsEditable = true;
+                        }
+                        else
+                        {
+                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                            {
+                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
+                                var time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
 
-                            var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
-                            if (dropTemperature != null)
-                                plot.Points.Add(new SimplePointView()
-                                {
-                                    X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
-                                    Y = dropTemperature.Value
-                                });
+                                var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
+                                if (dropTemperature != null)
+                                    plot.Points.Add(new SimplePointView()
+                                    {
+                                        X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                        Y = dropTemperature.Value
+                                    });
+                            }
                         }
 
                         if (dimensionless)
