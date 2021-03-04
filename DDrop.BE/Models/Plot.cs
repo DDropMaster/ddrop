@@ -17,5 +17,7 @@ namespace DDrop.BE.Models
         public PlotType PlotType { get; set; }
 
         public User CurrentUser { get; set; }
+
+        public Series Series { get; set; }
     }
 }

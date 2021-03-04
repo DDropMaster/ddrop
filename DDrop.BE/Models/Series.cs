@@ -30,5 +30,6 @@ namespace DDrop.BE.Models
         public SeriesSettings Settings { get; set; }
 
         public ObservableCollection<TypedRectangle> RegionOfInterest { get; set; }
+        public Plot ThermalPlot { get; set; }
     }
 }

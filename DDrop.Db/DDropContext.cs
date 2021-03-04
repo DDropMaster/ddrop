@@ -35,6 +35,11 @@ namespace DDrop.Db
                 .WithRequired(g => g.CurrentUser)
                 .HasForeignKey(s => s.CurrentUserId);
 
+            modelBuilder.Entity<DbPlot>()
+                .HasOptional(x => x.Series)
+                .WithOptionalDependent(s => s.ThermalPlot)
+                .Map(x => x.MapKey("SeriesId"));
+
             modelBuilder.Entity<DbSeries>()
                 .HasMany(s => s.MeasurementsSeries)
                 .WithRequired(g => g.CurrentSeries)

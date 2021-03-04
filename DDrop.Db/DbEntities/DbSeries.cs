@@ -25,5 +25,6 @@ namespace DDrop.Db.DbEntities
         public Guid? CommentId { get; set; }
         [ForeignKey("CommentId")]
         public virtual DbComment Comment { get; set; }
+        public DbPlot ThermalPlot { get; set; }
     }
 }

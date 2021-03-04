@@ -179,6 +179,11 @@ namespace DDrop.Models
         {
             get
             {
+                if (ThermalPlot != null && Settings.GeneralSeriesSettings.UseThermalPlot)
+                {
+                    return true;
+                }
+
                 if (_measurementsSeries.Count > 0 && _measurementsSeries.All(x => x.ProcessedThermal))
                 {
                     return true;
@@ -304,6 +309,18 @@ namespace DDrop.Models
             {
                 _regionOfInterest = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("RegionOfInterest"));
+            }
+        }
+
+        private PlotView _thermalPlot;
+
+        public PlotView ThermalPlot
+        {
+            get => _thermalPlot;
+            set
+            {
+                _thermalPlot = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("ThermalPlot"));
             }
         }
 

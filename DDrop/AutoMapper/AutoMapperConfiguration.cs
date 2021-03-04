@@ -219,7 +219,9 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<Plot, PlotView>()
                     .ForMember(x => x.IsChecked, opt =>
                         opt.Ignore())
-                    .ForMember(x => x.IsReadOnly, opt =>
+                    .ForMember(x => x.IsDeletable, opt =>
+                        opt.Ignore())
+                    .ForMember(x => x.IsEditable, opt =>
                         opt.Ignore());
                 cfg.CreateMap<PlotView, Plot>();
                 cfg.CreateMap<Plot, DbPlot>()

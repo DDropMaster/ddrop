@@ -265,6 +265,10 @@
     <Compile Include="Migrations\202103031042343_RemoveWeirdColumn.designer.cs">
       <DependentUpon>202103031042343_RemoveWeirdColumn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103031451066_SeriesThermalPlot.cs" />
+    <Compile Include="Migrations\202103031451066_SeriesThermalPlot.designer.cs">
+      <DependentUpon>202103031451066_SeriesThermalPlot.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -425,6 +429,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103031042343_RemoveWeirdColumn.resx">
       <DependentUpon>202103031042343_RemoveWeirdColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103031451066_SeriesThermalPlot.resx">
+      <DependentUpon>202103031451066_SeriesThermalPlot.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

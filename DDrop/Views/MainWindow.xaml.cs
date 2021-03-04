@@ -6036,7 +6036,12 @@ namespace DDrop.Views
             foreach (var userPlot in User.Plots)
             {
                 if (userPlot.PlotType == plotType && plots.FirstOrDefault(x => x.PlotId == userPlot.PlotId) == null)
+                {
+                    userPlot.IsDeletable = true;
+                    userPlot.IsEditable = true;
+
                     plots.Add(userPlot);
+                }
             }
 
             return plots;
@@ -6372,6 +6377,122 @@ namespace DDrop.Views
             if (openFileDialog.ShowDialog() == true)
             {
                 CurrentPlot.Points = ExcelOperations.GetPlotPointsFromFile(openFileDialog.FileName);
+            }
+        }
+
+        private async void UseThermalPlotCheckBox_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if (CurrentSeries != null)
+            {
+                CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot = true;
+
+                try
+                {
+                    ProgressBar.IsIndeterminate = true;
+
+                    var currentSeries = CurrentSeries;
+                    await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
+                        currentSeries.SeriesId));
+
+                    if (currentSeries.ThermalPlot == null)
+                    {
+                        PlotView plotForAdd = new PlotView()
+                        {
+                            CurrentUser = User,
+                            CurrentUserId = User.UserId,
+                            PlotId = Guid.NewGuid(),
+                            Name = CurrentSeries.Title,
+                            PlotType = PlotTypeView.Temperature,
+                            Points = new ObservableCollection<SimplePointView>(),
+                            Series = CurrentSeries
+                        };
+
+                        await _customPlotsBl.CreatePlot(_mapper.Map<PlotView, Plot>(plotForAdd));
+
+                        CurrentSeries.ThermalPlot = plotForAdd;
+
+                        UpdatePlots();
+                    }
+
+                    _logger.LogInfo(new LogEntry
+                    {
+                        Username = User.Email,
+                        LogCategory = LogCategory.Measurement,
+                        Message =
+                            $"Серия {CurrentSeries.Title} использует термический график. Тепловизорные фотографии будут проигнорированы."
+                    });
+                    _notifier.ShowSuccess(
+                        $"Серия {CurrentSeries.Title} использует термический график. Тепловизорные фотографии будут проигнорированы.");
+                }
+                catch (TimeoutException)
+                {
+                    _notifier.ShowError(
+                        "Не удалось изменить режим построения графика. Не удалось установить подключение. Проверьте интернет соединение.");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(new LogEntry
+                    {
+                        Exception = exception.ToString(),
+                        LogCategory = LogCategory.Common,
+                        InnerException = exception.InnerException?.Message,
+                        Message = exception.Message,
+                        StackTrace = exception.StackTrace,
+                        Username = User.Email,
+                        Details = exception.TargetSite.Name
+                    });
+                    throw;
+                }
+
+                ProgressBar.IsIndeterminate = false;
+            }
+        }
+
+        private async void UseThermalPlotCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            if (CurrentSeries != null)
+            {
+                CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot = false;
+
+                try
+                {
+                    ProgressBar.IsIndeterminate = true;
+
+                    var currentSeries = CurrentSeries;
+                    await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
+                        currentSeries.SeriesId));
+
+                    _logger.LogInfo(new LogEntry
+                    {
+                        Username = User.Email,
+                        LogCategory = LogCategory.Measurement,
+                        Message =
+                            $"Серия {CurrentSeries.Title} использует тепловизорные фотографии. Термический график будет проигнорирован."
+                    });
+                    _notifier.ShowSuccess(
+                        $"Серия {CurrentSeries.Title} использует тепловизорные фотографии. Термический график будет проигнорирован.");
+                }
+                catch (TimeoutException)
+                {
+                    _notifier.ShowError(
+                        "Не удалось изменить режим построения графика. Не удалось установить подключение. Проверьте интернет соединение.");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(new LogEntry
+                    {
+                        Exception = exception.ToString(),
+                        LogCategory = LogCategory.Common,
+                        InnerException = exception.InnerException?.Message,
+                        Message = exception.Message,
+                        StackTrace = exception.StackTrace,
+                        Username = User.Email,
+                        Details = exception.TargetSite.Name
+                    });
+                    throw;
+                }
+
+                ProgressBar.IsIndeterminate = false;
             }
         }
     }

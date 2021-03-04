@@ -346,7 +346,13 @@
                                                       IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                                       Checked="CreationTimeCheckBox_Checked"
                                                       Unchecked="CreationTimeCheckBox_Unchecked"
-                                                      Content="Использовать время создания снимка" Margin="0,12,347,9"
+                                                      Content="Использовать время создания снимка" Margin="0,21,347,0"
+                                                      HorizontalAlignment="Right" Width="245" />
+                                            <CheckBox Name="UseThermalPlotCheckBox"
+                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                      Checked="UseThermalPlotCheckBox_OnChecked"
+                                                      Unchecked="UseThermalPlotCheckBox_OnUnchecked"
+                                                      Content="Использовать температурный график" Margin="0,2,347,19"
                                                       HorizontalAlignment="Right" Width="245" />
                                             <Button Grid.Row="0" Grid.Column="0" Name="EditIntervalBetweenPhotos"
                                                     HorizontalAlignment="Right" Margin="0,6,10,0"
@@ -857,7 +863,8 @@
                                                 VerticalAlignment="Center"
                                                 Grid.Row="2" Grid.Column="0" ResizeBehavior="PreviousAndNext"
                                                 Height="5" Margin="0,95,0,0" />
-                                            <DataGrid 
+                                            <DataGrid
+                                                IsEnabled="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBooleanConverter}}"
                                                 dataGrid:SingleSelectionGroup.GroupName="A"
                                                 Grid.Row="3"
                                                 Name="ThermalDetails"
@@ -1574,7 +1581,7 @@
                                                         Binding="{Binding Name}">
                                                     <DataGridTextColumn.CellStyle>
                                                         <Style>
-                                                            <Setter Property="UIElement.IsEnabled" Value="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}" />
+                                                            <Setter Property="UIElement.IsEnabled" Value="{Binding IsEditable, Converter={StaticResource InverseBooleanConverter}}" />
                                                         </Style>
                                                     </DataGridTextColumn.CellStyle>
                                                 </DataGridTextColumn>
@@ -1583,7 +1590,7 @@
                                                         <DataTemplate>
                                                             <Button 
                                                                 Name="EditPlotButton"
-                                                                Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                Visibility="{Binding IsEditable, Converter={StaticResource VisibleIfTrue}}"
                                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
                                                                 Width="27" Background="{x:Null}"
                                                                 BorderBrush="{x:Null}" Height="25"
@@ -1599,7 +1606,7 @@
                                                         <DataTemplate>
                                                             <Button 
                                                                 Name="DeleteSinglePlotButton"
-                                                                Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                Visibility="{Binding IsDeletable, Converter={StaticResource VisibleIfTrue}}"
                                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
                                                                 Width="27" Background="{x:Null}"
                                                                 BorderBrush="{x:Null}" Height="25"
@@ -1616,7 +1623,7 @@
                                                             <Grid>
                                                                 <Button
                                                                     Background="Transparent"
-                                                                    Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                    Visibility="{Binding IsEditable, Converter={StaticResource VisibleIfTrue}}"
                                                                     x:Name="MeasurementCommentToolTip"
                                                                     ToolTip="Добавить комментарий."
                                                                     Height="25" Width="25"
@@ -1688,7 +1695,7 @@
                                                 >
                                                     <DataGridTextColumn.CellStyle>
                                                         <Style>
-                                                            <Setter Property="UIElement.IsEnabled" Value="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}" />
+                                                            <Setter Property="UIElement.IsEnabled" Value="{Binding IsEdtiable, Converter={StaticResource InverseBooleanConverter}}" />
                                                         </Style>
                                                     </DataGridTextColumn.CellStyle>
                                                 </DataGridTextColumn>
@@ -1697,7 +1704,7 @@
                                                         <DataTemplate>
                                                             <Button 
                                                                 Name="EditPlotButton"
-                                                                Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                Visibility="{Binding IsEditable, Converter={StaticResource VisibleIfTrue}}"
                                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
                                                                 Width="27" Background="{x:Null}"
                                                                 BorderBrush="{x:Null}" Height="25"
@@ -1713,7 +1720,7 @@
                                                         <DataTemplate>
                                                             <Button 
                                                                 Name="DeleteSinglePlotButton"
-                                                                Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                Visibility="{Binding IsDeletable, Converter={StaticResource VisibleIfTrue}}"
                                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
                                                                 Width="27" Background="{x:Null}"
                                                                 BorderBrush="{x:Null}" Height="25"
@@ -1730,7 +1737,7 @@
                                                             <Grid>
                                                                 <Button
                                                                     Background="Transparent"
-                                                                    Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIfNotTrue}}"
+                                                                    Visibility="{Binding IsEditable, Converter={StaticResource VisibleIfTrue}}"
                                                                     x:Name="MeasurementCommentToolTip"
                                                                     ToolTip="Добавить комментарий."
                                                                     Height="25" Width="25"

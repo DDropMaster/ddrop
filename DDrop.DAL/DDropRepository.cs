@@ -79,7 +79,15 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    return await context.Users.Include(x => x.Plots).FirstOrDefaultAsync(x => x.Email == email);
+                    var users = await context.Users.Include(x => x.Plots).FirstOrDefaultAsync(x => x.Email == email);
+
+                    if (users != null)
+                    {
+                        users.Plots = users.Plots.Where(x => x.Series == null).ToList();
+                        users.UserSeries = null;
+                    }
+
+                    return users;
                 }
                 catch (SqlException e)
                 {
@@ -95,6 +103,12 @@ namespace DDrop.DAL
                 try
                 {
                     context.Users.Attach(plot.CurrentUser);
+
+                    if (plot.Series != null)
+                    {
+                        context.Series.Attach(plot.Series);
+                    }
+
                     context.Plots.Add(plot);
 
                     await context.SaveChangesAsync();
@@ -349,7 +363,8 @@ namespace DDrop.DAL
                         seriesToAdd.ReferencePhotoForSeries = GetReferencePhotoById(seriesToAdd.SeriesId, seriesToAdd);
                         seriesToAdd.MeasurementsSeries = GetMeasurements(seriesToAdd.SeriesId, seriesToAdd).OrderBy(x => x.MeasurementOrderInSeries).ToList();
                         seriesToAdd.Substance = GetSubstanceById(seriesToAdd.SeriesId, seriesToAdd);
-                        
+                        seriesToAdd.ThermalPlot = GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
+
                         dbSeries.Add(seriesToAdd);
                     }
 
@@ -468,6 +483,40 @@ namespace DDrop.DAL
                     Series = series,
                     AddedDate = referencePhotoForSeries.AddedDate,
                     CreationDateTime = referencePhotoForSeries.CreationDateTime
+                };
+            }
+        }
+
+        private DbPlot GetSeriesPlot(Guid seriesId, DbSeries series)
+        {
+            using (var context = new DDropContext())
+            {
+                var seriesPlot = context.Plots
+                    .Where(x => x.Series.SeriesId == seriesId)
+                    .Select(x => new
+                    {
+                        x.Name,
+                        x.Points,
+                        x.CurrentUser,
+                        x.CurrentUserId,
+                        x.PlotId,
+                        x.PlotType,
+                    }).FirstOrDefault();
+
+                if (seriesPlot == null)
+                {
+                    return null;
+                }
+
+                return new DbPlot
+                {
+                    Name = seriesPlot.Name,
+                    Series = series,
+                    Points = seriesPlot.Points,
+                    CurrentUserId = seriesPlot.CurrentUserId,
+                    CurrentUser = seriesPlot.CurrentUser,
+                    PlotType = seriesPlot.PlotType,
+                    PlotId = seriesPlot.PlotId
                 };
             }
         }

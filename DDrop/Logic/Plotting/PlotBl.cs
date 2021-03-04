@@ -49,7 +49,8 @@ namespace DDrop.Logic.Plotting
                 CurrentUserId = series.CurrentUserId,
                 Name = series.Title,
                 PlotId = series.SeriesId,
-                IsReadOnly = true,
+                IsEditable = false,
+                IsDeletable = false,
                 Points = new ObservableCollection<SimplePointView>(),
             };
 
@@ -88,6 +89,12 @@ namespace DDrop.Logic.Plotting
                 case PlotTypeView.Temperature:
                     if (series.CanDrawTemperaturePlot)
                     {
+                        if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
+                        {
+                            series.ThermalPlot.IsEditable = true;
+                            return series.ThermalPlot;
+                        }
+
                         double averageAmbientTemperatures = 0;
 
                         for (var j = 0; j < series.MeasurementsSeries.Count; j++)

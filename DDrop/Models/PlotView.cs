@@ -85,14 +85,37 @@ namespace DDrop.Models
             }
         }
 
-        private bool _isReadOnly;
-        public bool IsReadOnly
+        private SeriesView _series;
+        public SeriesView Series
         {
-            get => _isReadOnly;
+            get => _series;
             set
             {
-                _isReadOnly = value;
-                RaisePropertyChanged("IsReadOnly");
+                _series = value;
+                RaisePropertyChanged("Series");
+            }
+        }
+
+        private bool _isEditable;
+        public bool IsEditable
+        {
+            get => _isEditable;
+            set
+            {
+                _isEditable = value;
+                RaisePropertyChanged("IsEditable");
+            }
+        }
+
+        private bool _isDeletable;
+
+        public bool IsDeletable
+        {
+            get => _isDeletable;
+            set
+            {
+                _isDeletable = value;
+                RaisePropertyChanged("IsDeletable");
             }
         }
     }
