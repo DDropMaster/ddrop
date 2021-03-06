@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\CommentableEntityType.cs" />
+    <Compile Include="Enums\PlotBuildingMode.cs" />
     <Compile Include="Enums\PlotType.cs" />
     <Compile Include="Enums\TemperatureDetectingMode.cs" />
     <Compile Include="Enums\TempUnit.cs" />

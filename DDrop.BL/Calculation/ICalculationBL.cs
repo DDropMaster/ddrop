@@ -4,7 +4,7 @@ namespace DDrop.BL.Calculation
 {
     public interface ICalculationBL
     {
-        Task CalculateDropParameters(BE.Models.Measurement measurement, string pixelsInMillimeter, bool frontProcessed, bool sideProcessed);
-        void ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, string pixelsInMillimeterTextBox);
+        Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, string pixelsInMillimeter, bool frontProcessed, bool sideProcessed);
+        BE.Models.Measurement ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, string pixelsInMillimeterTextBox);
     }
 }

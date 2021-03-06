@@ -225,6 +225,32 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task DeleteDrop(DbDrop drop)
+        {
+            using (var context = new DDropContext())
+            {
+                try
+                {
+                    context.Drops.Attach(drop);
+
+                    var measurement = await context.Measurements.FirstOrDefaultAsync(x => x.Drop.DropId == drop.DropId);
+
+                    if (measurement != null)
+                    {
+                        measurement.Drop = null;
+                    }
+
+                    context.Drops.Remove(drop);
+
+                    await context.SaveChangesAsync();
+                }
+                catch (SqlException e)
+                {
+                    throw new TimeoutException(e.Message, e);
+                }
+            }
+        }
+
         public async Task DeleteComment(DbComment comment)
         {
             using (var context = new DDropContext())
@@ -1047,7 +1073,6 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.Series.Attach(measurement.CurrentSeries);
                     context.Measurements.Add(measurement);
 
                     await context.SaveChangesAsync();
@@ -1299,6 +1324,11 @@ namespace DDrop.DAL
                     {
                         await DeleteComment(measurement.Comment);
                     }
+
+                    //if (measurement.Drop != null)
+                    //{
+                    //    await DeleteDrop(measurement.Drop);
+                    //}
 
                     context.Measurements.Attach(measurement);
 

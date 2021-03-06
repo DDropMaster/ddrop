@@ -15,7 +15,7 @@ namespace DDrop.BL.Calculation
             _dropBl = dropBl;
         }
 
-        public async Task CalculateDropParameters(BE.Models.Measurement measurement, string pixelsInMillimeter, bool frontProcessed, bool sideProcessed)
+        public async Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, string pixelsInMillimeter, bool frontProcessed, bool sideProcessed)
         {
             var pixelsInMillimeterForCalculation = Convert.ToInt32(pixelsInMillimeter);
 
@@ -52,9 +52,11 @@ namespace DDrop.BL.Calculation
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
+
+            return measurement.Drop;
         }
 
-        public void ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, string pixelsInMillimeterTextBox)
+        public BE.Models.Measurement ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, string pixelsInMillimeterTextBox)
         {
             var pixelsInMillimeterForCalculation = Convert.ToInt32(pixelsInMillimeterTextBox);
 
@@ -198,6 +200,8 @@ namespace DDrop.BL.Calculation
                     0,
                     measurement.Drop);
             }
+
+            return measurement;
         }
     }
 }

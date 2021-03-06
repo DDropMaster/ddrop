@@ -867,7 +867,14 @@ namespace DDrop.Views
                 };
 
                 if (e.RemovedItems.Count > 0)
+                {
                     old = e.RemovedItems[0] as SeriesView;
+
+                    if (old.ReferencePhotoForSeries?.Content != null)
+                    {
+                        old.ReferencePhotoForSeries.Content = null;
+                    }
+                }
 
                 CurrentSeries = User.UserSeries[SeriesDataGrid.SelectedIndex];
 
@@ -1854,7 +1861,7 @@ namespace DDrop.Views
 
                 if (e.RemovedItems.Count > 0)
                 {
-                    var oldCurrentMeasurement = e.RemovedItems[0] as Measurement;
+                    var oldCurrentMeasurement = e.RemovedItems[0] as MeasurementView;
                     var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
                         oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
@@ -1863,6 +1870,9 @@ namespace DDrop.Views
 
                     if (singleOldMeasurement?.SideDropPhoto?.Content != null)
                         singleOldMeasurement.SideDropPhoto.Content = null;
+
+                    if (singleOldMeasurement?.ThermalPhoto?.Content != null)
+                        singleOldMeasurement.ThermalPhoto.Content = null;
                 }
             }
             else
@@ -2265,7 +2275,7 @@ namespace DDrop.Views
 
                 PixelsInMillimeterHorizontalTextBox.Visibility = Visibility.Hidden;
                 PixelsInMillimeterZTextBox.Visibility = Visibility.Hidden;
-                PixelsInMillimeterTextBox.Visibility = Visibility.Hidden;
+                PixelsInMillimeterTextBox.Visibility = Visibility.Visible;
                 TemperatureTextBox.Visibility = Visibility.Visible;
                 TemperatureLabel.Visibility = Visibility.Visible;
                 PixelsInMillimeterLabel.Visibility = Visibility.Hidden;
@@ -2300,7 +2310,7 @@ namespace DDrop.Views
             }
         }
 
-        public async Task PhotoEditModeOff(PhotoType photoType)
+        public async Task PhotoEditModeOff(PhotoTypeView photoType)
         {
             _photoEditModeOn = false;
             _autoCalculationModeOn = false;
@@ -2317,7 +2327,7 @@ namespace DDrop.Views
 
             VisualHelper.SetEnableRowsMove(Photos, false);
 
-            if (photoType == PhotoType.SideDropPhoto || photoType == PhotoType.FrontDropPhoto)
+            if (photoType == PhotoTypeView.SideDropPhoto || photoType == PhotoTypeView.FrontDropPhoto)
             {
                 ThermalDetails.Visibility = Visibility.Visible;
                 ManualEditMenu.Visibility = Visibility.Hidden;
@@ -2331,7 +2341,7 @@ namespace DDrop.Views
                 ImageForEdit = ImageInterpreter.LoadImage(CurrentDropPhoto.Content);
             }
 
-            if (photoType == PhotoType.ThermalPhoto)
+            if (photoType == PhotoTypeView.ThermalPhoto)
             {
                 await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, true, 100,
                     0, 0, 0, 200);
@@ -2341,10 +2351,10 @@ namespace DDrop.Views
 
                 CurrentThermalPhotos.Clear();
 
-                CurrentThermalPhotos.Add(CurrentMeasurement.ThermalPhoto ?? new ThermalPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
+                CurrentThermalPhotos.Add(CurrentMeasurement.ThermalPhoto ?? new ThermalPhotoView() { PhotoType = PhotoTypeView.ThermalPhoto });
 
-                ThermalDetails.SelectedItem = CurrentThermalPhotos;
-                ImageForEdit = CurrentThermalPhoto.FlirImage.Image.ToBitmapImage();
+                ThermalDetails.SelectedItem = CurrentThermalPhotos; 
+                //ImageForEdit = CurrentThermalPhoto.FlirImage.Image.ToBitmapImage();
             }
 
             if (PhotosPreviewRow.ActualHeight > PhotosGrid.ActualHeight * 0.5)
@@ -2395,7 +2405,7 @@ namespace DDrop.Views
         {
             if (IsSaveRequired()) await SavePixelDiameters();
 
-            await PhotoEditModeOff(PhotoType.FrontDropPhoto);
+            await PhotoEditModeOff(PhotoTypeView.FrontDropPhoto);
             ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
         }
 
@@ -2510,7 +2520,7 @@ namespace DDrop.Views
                 }
             }
 
-            await PhotoEditModeOff(PhotoType.FrontDropPhoto);
+            await PhotoEditModeOff(PhotoTypeView.FrontDropPhoto);
             ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
         }
 
@@ -3252,7 +3262,9 @@ namespace DDrop.Views
                     var frontProcessed = measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed;
                     var sideProcessed = measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed;
 
-                    await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), PixelsInMillimeterTextBox.Text, frontProcessed, sideProcessed);
+                    var drop = await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), PixelsInMillimeterTextBox.Text, frontProcessed, sideProcessed);
+
+                    measurement.Drop = _mapper.Map<Drop, DropView>(drop);
 
                     _logger.LogInfo(new LogEntry
                     {
@@ -3558,8 +3570,6 @@ namespace DDrop.Views
                 {
                     if (checkedCount > 0 && !CurrentSeries.MeasurementsSeries[i].IsChecked) continue;
 
-                    CurrentSeries.MeasurementsSeries[i].RequireSaving = true;
-
                     AutoCalculationParametersView parameters;
                     var currentCalculationVariant = (CalculationVariantsView) Settings.Default.AutoCalculationType;
 
@@ -3601,8 +3611,12 @@ namespace DDrop.Views
                         var photo = CurrentSeries.MeasurementsSeries[i].FrontDropPhoto;
 
                         photo.Content = await GetContent(photo);
-
+                        
                         var points = await GetPoints(photo, photo.Content, parameters);
+
+                        if (points == null)
+                            continue;
+
                         photo.Contour = _geometryBL.CreateContour(photo.Contour, points,
                             currentCalculationVariant, parameters, photo.Contour, ImgCurrent);
                         photo.ContourId = photo.Contour.ContourId;
@@ -3677,8 +3691,12 @@ namespace DDrop.Views
                             thermalPhoto.Content = null;
                     }
 
-                    _calculationBL.ReCalculateAllParametersFromLines(_mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
-                        PixelsInMillimeterTextBox.Text);
+                    CurrentSeries.MeasurementsSeries[i] = _mapper.Map<Measurement, MeasurementView>(
+                        _calculationBL.ReCalculateAllParametersFromLines(
+                            _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
+                            PixelsInMillimeterTextBox.Text));
+
+                    CurrentSeries.MeasurementsSeries[i].RequireSaving = true;
                 }
 
                 pbu.ResetValue(pbuHandle1);
@@ -4080,18 +4098,35 @@ namespace DDrop.Views
                             if (checkedCount > 0 && !CurrentSeries.MeasurementsSeries[i].IsChecked) continue;
 
                             if (!CurrentSeries.MeasurementsSeries[i].RequireSaving) continue;
-                            
+
                             if (CurrentSeries.MeasurementsSeries[i].FrontDropPhoto != null)
+                            {
                                 await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(CurrentSeries.MeasurementsSeries[i].FrontDropPhoto));
+                                await _dropBl.UpdateDrop(
+                                    _mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
+                            }
+
 
                             if (CurrentSeries.MeasurementsSeries[i].SideDropPhoto != null)
+                            {
                                 await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(CurrentSeries.MeasurementsSeries[i].SideDropPhoto));
+                                await _dropBl.UpdateDrop(
+                                    _mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
+                            }
+                                
 
                             if (CurrentMeasurement != null && CurrentSeries.MeasurementsSeries[i].MeasurementId !=
                                 CurrentMeasurement.MeasurementId)
                             {
-                                CurrentSeries.MeasurementsSeries[i].FrontDropPhoto.Content = null;
-                                CurrentSeries.MeasurementsSeries[i].SideDropPhoto.Content = null;
+                                if (CurrentSeries.MeasurementsSeries[i].FrontDropPhoto != null)
+                                {
+                                    CurrentSeries.MeasurementsSeries[i].FrontDropPhoto.Content = null;
+                                }
+
+                                if (CurrentSeries.MeasurementsSeries[i].SideDropPhoto != null)
+                                {
+                                    CurrentSeries.MeasurementsSeries[i].SideDropPhoto.Content = null;
+                                }
                             }
 
                             _notifier.ShowSuccess(
@@ -5419,7 +5454,7 @@ namespace DDrop.Views
         {
             if (IsThermalPhotoSaveRequired()) await SaveTemperature();
 
-            await PhotoEditModeOff(PhotoType.ThermalPhoto);
+            await PhotoEditModeOff(PhotoTypeView.ThermalPhoto);
         }
 
         private async void DiscardThermalPhotoEdit_OnClick(object sender, RoutedEventArgs e)
@@ -5445,7 +5480,7 @@ namespace DDrop.Views
                 }
             }
 
-            await PhotoEditModeOff(PhotoType.ThermalPhoto);
+            await PhotoEditModeOff(PhotoTypeView.ThermalPhoto);
         }
 
         private bool IsThermalPhotoSaveRequired()
@@ -5582,7 +5617,7 @@ namespace DDrop.Views
 
         private void PixelDrawer_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (DrawnShapes == null) return;
+            if (DrawnShapes == null || (!ImgCurrent.DrawningIsEnabled && !MainWindowPixelDrawer.DrawningIsEnabled)) return;
 
             if (DrawnShapes.Rectangle == null && DrawnShapes.Line == null && DrawnShapes.Ellipse == null) return;
 
@@ -5630,7 +5665,7 @@ namespace DDrop.Views
                     }
 
                     _seriesBL.UpdateSeriesRegionOfInterest(
-                        JsonSerializeProvider.SerializeToString(CurrentSeries.RegionOfInterest),
+                        JsonSerializeProvider.SerializeToString(_mapper.Map<ObservableCollection<TypedRectangleView>, List<TypedRectangle>>(CurrentSeries.RegionOfInterest)),
                         CurrentSeries.SeriesId);
 
                     DrawnShapes.Rectangle = null;

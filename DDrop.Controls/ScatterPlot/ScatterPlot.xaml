@@ -11,6 +11,7 @@
             Series="{Binding SeriesCollectionToPlot}"
             AxisY="{Binding YAxesCollection}"
             AxisX="{Binding XAxesCollection}"
-            LegendLocation="Right"/>
+            LegendLocation="Right"
+        />
     </Grid>
 </UserControl>

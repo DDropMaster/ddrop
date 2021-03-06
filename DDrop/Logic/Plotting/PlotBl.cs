@@ -37,7 +37,8 @@ namespace DDrop.Logic.Plotting
                 Values = temp,
                 LineSmoothness = 0,
                 Fill = System.Windows.Media.Brushes.Transparent,
-                ScalesYAt = scale
+                ScalesYAt = scale,
+                PointGeometry = null
             };
         }
 

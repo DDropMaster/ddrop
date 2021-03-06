@@ -30,7 +30,9 @@ namespace DDrop.AutoMapper
                         x.SubstanceId, opt => opt.Ignore());
 
                 cfg.CreateMap<DropView, Drop>();
-                cfg.CreateMap<Drop, DropView>();
+                cfg.CreateMap<Drop, DropView>()
+                    .ForMember(x =>
+                        x.Measurement, opt => opt.Ignore());
                 cfg.CreateMap<Drop, DbDrop>();
                 cfg.CreateMap<DbDrop, Drop>()
                     .ForMember(x =>
@@ -68,7 +70,9 @@ namespace DDrop.AutoMapper
                             JsonSerializeProvider.DeserializeFromString<ObservableCollection<SimpleLine>>(src.ConnectedLines) : null));
 
 
-                cfg.CreateMap<MeasurementView, Measurement>();
+                cfg.CreateMap<MeasurementView, Measurement>()
+                    .ForMember(x =>
+                        x.CurrentSeries, opt => opt.Ignore());
                 cfg.CreateMap<Measurement, MeasurementView>()
                     .ForMember(x =>
                         x.ProcessedThermal, opt => opt.Ignore())
