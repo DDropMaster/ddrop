@@ -17,8 +17,6 @@ using Unity.Injection;
 using Unity.Lifetime;
 using DDrop.BL.Drop;
 using DDrop.BL.ExportBL;
-using DDrop.BL.Radiometric.COX;
-using DDrop.BL.Radiometric.COX.COXBL;
 using DDrop.BL.Radiometric.ThermalDataExtractor;
 using DDrop.BL.Radiometric.ThermalPhoto;
 using DDrop.BL.ReferenceBL;
@@ -63,7 +61,6 @@ namespace DDrop
             container.RegisterType<IAppStateBL, AppStateBL>();
             container.RegisterType<IExportBl, ExportBl>();
             container.RegisterType<IPlotBl, PlotBl>();
-            container.RegisterType<ICOXAccessor, COXAccessor>();
             container.RegisterType<ICustomPlotsBl, CustomPlotsBl>();
             container.RegisterType<ISettingsRepository, SettingsRepository>();
             container.RegisterType<ISubstanceBL, SubstanceBL>();
@@ -76,7 +73,6 @@ namespace DDrop
             container.RegisterType<ICommentsBL, CommentsBL>();
             container.RegisterType<IDDropRepository, DDropRepository>();
             container.RegisterType<IDropletImageProcessor, DropletImageProcessor>();
-            container.RegisterType<ICOXBL, COXBL>();
             container.RegisterType<IPythonProvider, PythonProvider>();
             container.RegisterType<ILogger, Logger>(new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(
