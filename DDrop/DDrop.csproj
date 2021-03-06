@@ -512,9 +512,6 @@
     <Resource Include="MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExternalLibs\COX\ThermalCamDll.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\ExternalLibs\EmguCV\x86\cvextern.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

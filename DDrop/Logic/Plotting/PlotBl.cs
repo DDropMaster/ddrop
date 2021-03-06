@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using DDrop.Enums;
 using DDrop.Models;
 using LiveCharts;
@@ -94,6 +95,11 @@ namespace DDrop.Logic.Plotting
 
                         if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
                         {
+                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                            {
+                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
+                            }
+
                             plot = series.ThermalPlot;
                             plot.IsEditable = true;
                         }
@@ -116,7 +122,7 @@ namespace DDrop.Logic.Plotting
 
                         if (dimensionless)
                         {
-                            averageAmbientTemperatures = averageAmbientTemperatures / series.MeasurementsSeries.Count;
+                            averageAmbientTemperatures = averageAmbientTemperatures / series.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
                             var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
                             for (int j = 0; j < plot.Points.Count; j++)
                             {

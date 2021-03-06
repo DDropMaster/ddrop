@@ -184,7 +184,7 @@ namespace DDrop.Models
                     return true;
                 }
 
-                if (_measurementsSeries.Count > 0 && _measurementsSeries.All(x => x.ProcessedThermal))
+                if (_measurementsSeries.Count > 0 && _measurementsSeries.Any(x => x.ThermalPhoto != null) && _measurementsSeries.Where(x => x.ThermalPhoto != null).All(x => x.ProcessedThermal))
                 {
                     return true;
                 }

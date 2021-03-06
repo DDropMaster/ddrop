@@ -13,6 +13,7 @@ using DDrop.BE.Enums.Logger;
 using DDrop.BE.Models;
 using DDrop.BL.AppStateBL;
 using DDrop.BL.Measurement;
+using DDrop.Controls.InputDIalog;
 using DDrop.Enums;
 using DDrop.Models;
 using DDrop.Utility.ImageOperations;
@@ -728,17 +729,37 @@ namespace DDrop.Views
 
         private void AddBlankRowFront(object sender, RoutedEventArgs e)
         {
-            FrontDropPhotos.Add(new UploadingPhoto());
+            InputDialog rowAmountDialog = new InputDialog("Сколько добавить строк?");
+            rowAmountDialog.ShowDialog();
+
+            for (int i = 0; i < Convert.ToInt64(rowAmountDialog.Answer); i++)
+            {
+                FrontDropPhotos.Add(new UploadingPhoto());
+            }
         }
 
         private void AddBlankRowSide(object sender, RoutedEventArgs e)
         {
-            SideDropPhotos.Add(new UploadingPhoto());
+            InputDialog rowAmountDialog = new InputDialog("Сколько добавить строк?");
+            rowAmountDialog.ShowDialog();
+
+            for (int i = 0; i < Convert.ToInt64(rowAmountDialog.Answer); i++)
+            {
+
+                SideDropPhotos.Add(new UploadingPhoto());
+            }
         }
 
         private void AddBlankRowThermal(object sender, RoutedEventArgs e)
         {
-            ThermalPhotos.Add(new UploadingPhoto());
+            InputDialog rowAmountDialog = new InputDialog("Сколько добавить строк?");
+            rowAmountDialog.ShowDialog();
+
+            for (int i = 0; i < Convert.ToInt64(rowAmountDialog.Answer); i++)
+            {
+
+                ThermalPhotos.Add(new UploadingPhoto());
+            }
         }
 
         private void DeleteSideUploadingPhoto(object sender, RoutedEventArgs e)

@@ -1575,6 +1575,7 @@ namespace DDrop.DAL
             {
                 try
                 {
+                    thermalPhoto.Measurement = null;
                     context.ThermalPhotos.Attach(thermalPhoto);
 
                     var measurement = await context.Measurements.FirstOrDefaultAsync(x => x.MeasurementId == thermalPhoto.PhotoId);

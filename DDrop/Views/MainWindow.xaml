@@ -149,10 +149,10 @@
                                             <DataTemplate>
                                                 <Grid>
                                                     <TextBlock x:Name="PhotosStatusToolTip"
-                                                               ToolTip="Чтобы построить график, необходимо указать интервал между снимками, рассчитать радиус для каждой фотографии серии."
+                                                               ToolTip="Чтобы построить график, необходимо указать интервал между снимками, рассчитать радиус и(или) температуру для каждой фотографии серии."
                                                                Height="25" Width="25" />
                                                     <ContentControl x:Name="PhotosStatus"
-                                                                    ToolTip="Радиусы всех капель должны быть расчитаны, чтобы построить график."
+                                                                    ToolTip="Измерения должны быть обработаны, чтобы построить график."
                                                                     Content="{StaticResource Warning}" Height="25"
                                                                     Width="25" HorizontalAlignment="Center" />
                                                 </Grid>
@@ -630,10 +630,10 @@
                                                             <DataTemplate DataType="models:Measurement">
                                                                 <Grid>
                                                                     <TextBlock x:Name="PhotosStatusToolTip"
-                                                                           ToolTip="Радиусы всех капель должны быть расчитаны, чтобы построить график."
+                                                                           ToolTip="Измерение должно быть обработано, чтобы построить график."
                                                                            Height="25" Width="25" />
                                                                     <ContentControl x:Name="PhotosStatus"
-                                                                                ToolTip="Радиусы всех капель должны быть расчитаны, чтобы построить график."
+                                                                                ToolTip="Измерение должно быть обработано, чтобы построить график."
                                                                                 Content="{StaticResource Warning}"
                                                                                 Height="25" Width="25"
                                                                                 HorizontalAlignment="Center" />
@@ -644,10 +644,10 @@
                                                                             Value="{StaticResource Ok}"
                                                                             TargetName="PhotosStatus" />
                                                                         <Setter Property="ToolTip"
-                                                                            Value="Радиус капли расчитан успешно."
+                                                                            Value="Измерение обработано успешно."
                                                                             TargetName="PhotosStatusToolTip" />
                                                                         <Setter Property="ToolTip"
-                                                                            Value="Радиус капли расчитан успешно."
+                                                                            Value="Измерение обработано успешно."
                                                                             TargetName="PhotosStatus" />
                                                                     </DataTrigger>
                                                                 </DataTemplate.Triggers>

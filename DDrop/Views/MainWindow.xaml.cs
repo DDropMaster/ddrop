@@ -28,7 +28,6 @@ using DDrop.BL.ExportBL;
 using DDrop.BL.ImageProcessing.CSharp;
 using DDrop.BL.ImageProcessing.Python;
 using DDrop.BL.Measurement;
-using DDrop.BL.Radiometric.COX;
 using DDrop.BL.Radiometric.ThermalDataExtractor;
 using DDrop.BL.Radiometric.ThermalPhoto;
 using DDrop.BL.ReferenceBL;
@@ -84,7 +83,7 @@ namespace DDrop.Views
             IDropletImageProcessor dropletImageProcessor, IPythonProvider pythonProvider, ILogger logger,
             IGeometryBL geometryBL, IAppStateBL appStateBL, ICalculationBL calculationBL, IMapper mapper, IPlotBl plotBl, 
             IThermalBL thermalBl, IThermalPhotoBL thermalPhotoBl, ISubstanceBL substanceBl,
-            IReferenceBl referenceBl, IUserBl userBl, ICommentsBL commentsBl, ICustomPlotsBl customPlotsBl, ICOXAccessor coxAccessor, IExportBl exportBl,
+            IReferenceBl referenceBl, IUserBl userBl, ICommentsBL commentsBl, ICustomPlotsBl customPlotsBl, IExportBl exportBl,
             ISeriesLogic seriesLogic)
         {
             InitializeComponent();
@@ -118,7 +117,6 @@ namespace DDrop.Views
             _dropBl = dropBl;
             _commentsBl = commentsBl;
             _customPlotsBl = customPlotsBl;
-            _coxAccessor = coxAccessor;
             _exportBl = exportBl;
             _seriesLogic = seriesLogic;
 
@@ -126,31 +124,6 @@ namespace DDrop.Views
 
             SeriesManagerIsLoading();
             ProgressBar.IsIndeterminate = true;
-
-            //IntPtr handle = new IntPtr(0);
-            //uint size = 0;
-
-            //IRF_IR_FILE_HEADER_T pFileHeader = new IRF_IR_FILE_HEADER_T();
-            //IRF_IR_DATA_HEADER_T pFileAddHeader = new IRF_IR_DATA_HEADER_T();
-            //uint curPosition;
-
-            //var loadIrImage = _coxAccessor.LoadIRImageInternal(out handle,
-            //    "D:\\fallingsappy\\Data\\Programming\\DDropRep\\DDrop\\DDrop\\DDrop\\Resources\\Thermal_IRS_20210125151323.crd", out size);
-            //var b = coxAccessor.GetIRHeadersInternal(handle, out pFileHeader, out pFileAddHeader,
-            //    out curPosition);
-            //IRF_IMAGE_INFO_T imageInfo = pFileHeader.image_info;
-            //IRF_IR_CAM_DATA_T cpy_cam_data = new IRF_IR_CAM_DATA_T();
-            //cpy_cam_data.ir_image = (ushort) (imageInfo.xSize * (imageInfo.ySize + 1));
-
-            //float tempLut;
-            //coxAccessor.GetTempMapTableInternal(out tempLut, IRF_DYNAMIC_RANGE_T._IRF_LOW_RANGE);
-
-            //byte m_image = (byte) (imageInfo.xSize * imageInfo.ySize);
-            //float level, span;
-            //IRF_AUTO_RANGE_METHOD_T method = new IRF_AUTO_RANGE_METHOD_T();
-
-            //var getImage = coxAccessor.GetImageInternal(out m_image, handle, imageInfo.xSize * imageInfo.ySize,
-            //    out tempLut, out level, out span, out method);
 
             Login();
 
@@ -203,7 +176,6 @@ namespace DDrop.Views
         private readonly IDropBL _dropBl;
         private readonly ICommentsBL _commentsBl;
         private readonly ICustomPlotsBl _customPlotsBl;
-        private readonly ICOXAccessor _coxAccessor;
         private readonly IExportBl _exportBl;
         private readonly ISeriesLogic _seriesLogic;
 

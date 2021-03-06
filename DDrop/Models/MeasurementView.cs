@@ -147,6 +147,9 @@ namespace DDrop.Models
                         return true;
                 }
 
+                if (ProcessedThermal)
+                    return true;
+
                 return false;
             }
         }
@@ -156,6 +159,8 @@ namespace DDrop.Models
         {
             get
             {
+
+
                 if (Drop.Temperature != null && AmbientTemperature != 0)
                     return true;
 
