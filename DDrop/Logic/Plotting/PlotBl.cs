@@ -76,6 +76,16 @@ namespace DDrop.Logic.Plotting
 
                         if (dimensionless)
                         {
+                            var xDiv = plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != null ||
+                                       plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != 0
+                                ? plot.Settings?.DimensionlessSettings?.XDimensionlessDivider
+                                : null;
+
+                            var yDiv = plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != null ||
+                                       plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != 0
+                                ? plot.Settings?.DimensionlessSettings?.YDimensionlessDivider
+                                : null;
+
                             var initialRadius = plot.Points[0].Y;
                             var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
                             for (int j = 0; j < plot.Points.Count; j++)

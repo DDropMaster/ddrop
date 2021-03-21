@@ -19,5 +19,7 @@ namespace DDrop.BE.Models
         public User CurrentUser { get; set; }
 
         public Series Series { get; set; }
+
+        public PlotSettings Settings { get; set; }
     }
 }

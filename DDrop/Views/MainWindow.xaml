@@ -1368,10 +1368,47 @@
                         </TabItem>
                         <TabItem x:Name="ReferenceTab" Header="Референс">
                             <Grid Background="#FFE5E5E5">
-                                <Grid>
+                                <DataGrid Margin="10,42,10,0" Height="70" VerticalAlignment="Top">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Название"/>
+                                        <DataGridTextColumn Header="Пикселей в миллиметре"/>
+                                        <DataGridTemplateColumn Width="30" x:Name="EditReferencePhoto"
+                                                                IsReadOnly="True" CanUserResize="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate  DataType="models:DropPhoto">
+                                                    <Button 
+                                                        Name="EditReferencePhotoButton"
+                                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                        Width="27" Background="{x:Null}"
+                                                        BorderBrush="{x:Null}" Height="25"
+                                                        Click="EditReferencePhotoButton_OnClick">
+                                                        <ContentControl Content="{StaticResource EditIcon}"
+                                                                        Height="20" />
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Width="30" x:Name="DeleteReferencePhotoColumn"
+                                                                    IsReadOnly="True" CanUserResize="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate DataType="models:DropPhoto">
+                                                    <Button Name="DeleteReferencePhotoButton"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                            Width="27" Background="{x:Null}"
+                                                            BorderBrush="{x:Null}" Height="25"
+                                                            Click="DeleteReferencePhotoButton_OnClick">
+                                                        <ContentControl Content="{StaticResource DeleteIcon}" Height="20" />
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <Grid Margin="0,112,0,0">
+
                                     <Border Name="Border" BorderThickness="1" BorderBrush="#34558b"
-                                            Margin="10,44,10,10">
-                                        <loadingSpinner:AdornedControl Name="ReferenceImageLoading">
+                                            Margin="10">
+                                        <loadingSpinner:AdornedControl Name="ReferenceImageLoading" Margin="0,-1,0,0">
                                             <loadingSpinner:AdornedControl.AdornerContent>
                                                 <simpleSample:LoadingWait />
                                             </loadingSpinner:AdornedControl.AdornerContent>
@@ -1496,6 +1533,14 @@
                                 <ContentControl Content="{StaticResource Cancel}" Height="22"
                                                 Width="23" />
                             </Button>
+                            <Label x:Name="XDimensionlessDividerLabel" Visibility="Hidden" FontSize="10" Padding="0 2 0 0" Content="Обезразмеривающий коэффициент по X:" Margin="104,10,0,10" HorizontalAlignment="Left" Width="192"/>
+                            <TextBox Visibility="Hidden" Grid.Column="0" Grid.Row="0" Name="XDimensionlessDividerTextBox" Height="19"
+                                     VerticalAlignment="Top" Margin="301,10,0,0" HorizontalAlignment="Left" Width="65" 
+                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.XDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Label x:Name="YDimensionlessDividerLabel" Visibility="Hidden" FontSize="10" Padding="0 2 0 0" Content="Обезразмеривающий коэффициент по Y:" Margin="402,10,0,10" HorizontalAlignment="Left" Width="192"/>
+                            <TextBox Visibility="Hidden" Grid.Column="0" Grid.Row="0" Name="YDimensionlessDividerTextBox" Height="19"
+                                     VerticalAlignment="Top" Margin="599,10,0,0" HorizontalAlignment="Left" Width="65" 
+                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.YDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
                     </Border>
                     <scatterPlot:ScatterPlot
@@ -1719,12 +1764,12 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Button 
-                                                                Name="DeleteSinglePlotButton"
+                                                                Name="DeleteSingleTemperaturePlotButton"
                                                                 Visibility="{Binding IsDeletable, Converter={StaticResource VisibleIfTrue}}"
                                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
                                                                 Width="27" Background="{x:Null}"
                                                                 BorderBrush="{x:Null}" Height="25"
-                                                                Click="DeleteSinglePlotButton_OnClick">
+                                                                Click="DeleteSingleTemperaturePlotButton_OnClick">
                                                                 <ContentControl Content="{StaticResource DeleteIcon}"
                                                                                 Height="20" />
                                                             </Button>
@@ -1778,7 +1823,7 @@
                             ColumnWidth="*" 
                             CanUserAddRows="True" AutoGenerateColumns="false"
                             HorizontalAlignment="Stretch" Name="CustomPlotsDetails" Margin="10,10,10,5"
-                            SelectionMode="Single" SelectionChanged="Photos_SelectionChanged"
+                            SelectionMode="Extended" SelectionChanged="Photos_SelectionChanged"
                             IsReadOnly="False"
                             ItemsSource="{Binding CurrentPlot.Points, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}">
                         <DataGrid.RowStyle>

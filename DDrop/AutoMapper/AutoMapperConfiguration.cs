@@ -9,6 +9,7 @@ using DDrop.Db.DbEntities;
 using DDrop.Models;
 using DDrop.Models.Thermal;
 using DDrop.Utility.SeriesLocalStorageOperations;
+using PlotSettingsView = DDrop.Models.PlotSettingsView;
 
 namespace DDrop.AutoMapper
 {
@@ -232,14 +233,24 @@ namespace DDrop.AutoMapper
                     .ForMember(dest =>
                         dest.Points, opt =>
                         opt.MapFrom(src => src.Points != null ?
-                            JsonSerializeProvider.SerializeToString(src.Points) : null));
+                            JsonSerializeProvider.SerializeToString(src.Points) : null))
+                    .ForMember(x =>
+                        x.Settings, opt =>
+                        opt.MapFrom(src => src.Settings != null ?
+                            JsonSerializeProvider.SerializeToString(src.Settings) : null));
                 cfg.CreateMap<DbPlot, Plot>()
                     .ForMember(x =>
                         x.Points, opt =>
                         opt.MapFrom(src =>
                             src.Points != null
                                 ? JsonSerializeProvider.DeserializeFromString<ObservableCollection<SimplePoint>>(src.Points)
-                                : null));
+                                : null))
+                    .ForMember(x =>
+                        x.Settings, opt =>
+                        opt.MapFrom(src =>
+                            src.Settings != null
+                                ? JsonSerializeProvider.DeserializeFromString<PlotSettings>(src.Settings)
+                                : new PlotSettings {DimensionlessSettings = new DimensionlessSettings()}));
 
 
                 cfg.CreateMap<CameraInfoView, CameraInfo>().ReverseMap();
@@ -256,6 +267,8 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<AutoCalculationSettingsView, AutoCalculationSettings>().ReverseMap();
                 cfg.CreateMap<GeneralSeriesSettingsView, GeneralSeriesSettings>().ReverseMap();
                 cfg.CreateMap<TypedRectangleView, TypedRectangle>().ReverseMap();
+                cfg.CreateMap<PlotSettingsView, PlotSettings>().ReverseMap();
+                cfg.CreateMap<DimensionlessSettingsView, DimensionlessSettings>().ReverseMap();
             });
 
             IMapper mapper = config.CreateMapper();

@@ -5593,6 +5593,8 @@ namespace DDrop.Views
 
             if (DrawnShapes.Rectangle == null && DrawnShapes.Line == null && DrawnShapes.Ellipse == null) return;
 
+            if (e.ChangedButton == MouseButton.Left) return;
+
             switch (DrawningMode)
             {
                 case PixelDrawerMode.Rectangle:
@@ -5793,6 +5795,19 @@ namespace DDrop.Views
             }
         }
 
+        private void DeleteSingleTemperaturePlotButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Удалить график?", "Предупреждение", MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                var plotForForRemove = AvailableTemperaturePlots[TemperaturePlots.SelectedIndex];
+
+                _customPlotsBl.DeletePlot(_mapper.Map<PlotView, Plot>(plotForForRemove));
+                AvailableTemperaturePlots.Remove(plotForForRemove);
+                _notifier.ShowSuccess("График удален");
+            }
+        }
+
         private async void EditPlotButton_OnClick(object sender, RoutedEventArgs e)
         {
             await EditPlotModeOn();
@@ -5806,6 +5821,11 @@ namespace DDrop.Views
             DiscardPlotEdit.Visibility = Visibility.Visible;
             SavePlot.Visibility = Visibility.Visible;
             ImportPlot.Visibility = Visibility.Visible;
+
+            XDimensionlessDividerLabel.Visibility = Visibility.Visible;
+            XDimensionlessDividerTextBox.Visibility = Visibility.Visible;
+            YDimensionlessDividerLabel.Visibility = Visibility.Visible;
+            YDimensionlessDividerTextBox.Visibility = Visibility.Visible;
 
             switch (_currentPlotType)
             {
@@ -5870,6 +5890,10 @@ namespace DDrop.Views
             DiscardPlotEdit.Visibility = Visibility.Hidden;
             SavePlot.Visibility = Visibility.Hidden;
             ImportPlot.Visibility = Visibility.Hidden;
+            XDimensionlessDividerLabel.Visibility = Visibility.Hidden;
+            XDimensionlessDividerTextBox.Visibility = Visibility.Hidden;
+            YDimensionlessDividerLabel.Visibility = Visibility.Hidden;
+            YDimensionlessDividerTextBox.Visibility = Visibility.Hidden;
 
             await AnimationHelper.AnimateGridColumnExpandCollapseAsync(CustomPlotsColumn, true, 300, 0,
                 CustomPlotsColumn.MinWidth, 0, 200);
@@ -5963,6 +5987,18 @@ namespace DDrop.Views
 
         private async void SavePlot_OnClick(object sender, RoutedEventArgs e)
         {
+            if (!string.IsNullOrEmpty(XDimensionlessDividerTextBox.Text))
+            {
+                CurrentPlot.Settings.DimensionlessSettings.XDimensionlessDivider =
+                    double.Parse(XDimensionlessDividerTextBox.Text, CultureInfo.InvariantCulture);
+            }
+
+            if (!string.IsNullOrEmpty(YDimensionlessDividerTextBox.Text))
+            {
+                CurrentPlot.Settings.DimensionlessSettings.YDimensionlessDivider =
+                    double.Parse(YDimensionlessDividerTextBox.Text, CultureInfo.InvariantCulture);
+            }
+
             await _customPlotsBl.UpdatePlot(_mapper.Map<PlotView, Plot>(CurrentPlot));
             _notifier.ShowSuccess("График обновлен");
             await EditPlotModeOff();
@@ -6046,6 +6082,18 @@ namespace DDrop.Views
                 {
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
+
+                    if (Settings.Default.DimensionlessPlots)
+                    {
+                        foreach (var point in userPlot.Points)
+                        {
+                            if (userPlot.Settings?.DimensionlessSettings?.XDimensionlessDivider != null)
+                                point.X = point.X / userPlot.Settings.DimensionlessSettings.XDimensionlessDivider;
+
+                            if (userPlot.Settings?.DimensionlessSettings?.YDimensionlessDivider != null)
+                                point.Y = point.Y / userPlot.Settings.DimensionlessSettings.YDimensionlessDivider;
+                        }
+                    }
 
                     plots.Add(userPlot);
                 }
@@ -6457,7 +6505,7 @@ namespace DDrop.Views
 
         private async void UseThermalPlotCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
         {
-            if (CurrentSeries != null)
+            if (CurrentSeries?.Settings != null)
             {
                 CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot = false;
 
@@ -6501,6 +6549,14 @@ namespace DDrop.Views
 
                 ProgressBar.IsIndeterminate = false;
             }
+        }
+
+        private void EditReferencePhotoButton_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void DeleteReferencePhotoButton_OnClick(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

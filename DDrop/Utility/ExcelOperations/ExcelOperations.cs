@@ -256,21 +256,21 @@ namespace DDrop.Utility.ExcelOperations
                     var tnew = new T();
                     colnames.ForEach(colname =>
                     {
-                //This is the real wrinkle to using reflection - Excel stores all numbers as double including int
-                var val = row[colname.index];
+                        //This is the real wrinkle to using reflection - Excel stores all numbers as double including int
+                        var val = row[colname.index];
                         var type = types[colname.index];
                         var prop = tprops.First(p => p.Name == colname.Name);
 
-                //If it is numeric it is a double since that is how excel stores all numbers
-                if (type == typeof(double))
+                        //If it is numeric it is a double since that is how excel stores all numbers
+                        if (type == typeof(double))
                         {
                             if (!string.IsNullOrWhiteSpace(val?.ToString()))
                             {
-                        //Unbox it
-                        var unboxedVal = (double)val;
+                                //Unbox it
+                                var unboxedVal = (double)val;
 
-                        //FAR FROM A COMPLETE LIST!!!
-                        if (prop.PropertyType == typeof(Int32))
+                                //FAR FROM A COMPLETE LIST!!!
+                                if (prop.PropertyType == typeof(Int32))
                                     prop.SetValue(tnew, (int)unboxedVal);
                                 else if (prop.PropertyType == typeof(double))
                                     prop.SetValue(tnew, unboxedVal);
@@ -282,8 +282,8 @@ namespace DDrop.Utility.ExcelOperations
                         }
                         else
                         {
-                    //Its a string
-                    prop.SetValue(tnew, val);
+                            //Its a string
+                            prop.SetValue(tnew, val);
                         }
                     });
 

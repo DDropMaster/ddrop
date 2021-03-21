@@ -5,7 +5,6 @@ namespace DDrop.Models
     public class SeriesSettingsView : BindableObject
     {
         private GeneralSeriesSettingsView _generalSeriesSettings;
-
         public GeneralSeriesSettingsView GeneralSeriesSettings
         {
             get => _generalSeriesSettings;

@@ -11,7 +11,7 @@ namespace DDrop.DAL
         Task CreateUserAsync(DbUser user);
         Task CreatePlot(DbPlot plot);
         Task DeletePlot(DbPlot plot);
-        Task UpdatePlot(Guid plotId, string points);
+        Task UpdatePlot(DbPlot plotToUpdate);
         Task UpdateUserAsync(DbUser user);
         Task UpdatePlotName(string text, Guid plotId);
         Task<DbUser> GetUserByLogin(string email);

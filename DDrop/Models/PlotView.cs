@@ -96,6 +96,18 @@ namespace DDrop.Models
             }
         }
 
+        private PlotSettingsView _settings;
+
+        public PlotSettingsView Settings
+        {
+            get => _settings;
+            set
+            {
+                _settings = value;
+                RaisePropertyChanged("Settings");
+            }
+        }
+
         private bool _isEditable;
         public bool IsEditable
         {

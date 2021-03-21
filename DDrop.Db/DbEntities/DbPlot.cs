@@ -13,6 +13,7 @@ namespace DDrop.Db.DbEntities
         public Guid CurrentUserId { get; set; }
         public DbUser CurrentUser { get; set; }
         public string PlotType { get; set; }
+        public string Settings { get; set; }
         public virtual DbSeries Series { get; set; }
     }
 }

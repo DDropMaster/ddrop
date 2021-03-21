@@ -32,7 +32,7 @@ namespace DDrop.BL.CustomPlots
         {
             var dbPlot = _mapper.Map<Plot, DbPlot>(plot);
 
-            await _dDropRepository.UpdatePlot(dbPlot.PlotId, dbPlot.Points);
+            await _dDropRepository.UpdatePlot(dbPlot);
         }
 
         public async Task UpdatePlotName(string text, Guid plotId)

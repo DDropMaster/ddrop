@@ -126,9 +126,9 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.Plots.Attach(plot);
+                    var savedPlot = context.Plots.FirstOrDefault(x => x.PlotId == plot.PlotId);
 
-                    context.Plots.Remove(plot);
+                    context.Plots.Remove(savedPlot ?? throw new InvalidOperationException());
 
                     await context.SaveChangesAsync();
                 }
@@ -158,15 +158,16 @@ namespace DDrop.DAL
             }
         }
 
-        public async Task UpdatePlot(Guid plotId, string points)
+        public async Task UpdatePlot(DbPlot plotToUpdate)
         {
             using (var context = new DDropContext())
             {
-                var plot = await context.Plots.FirstOrDefaultAsync(x => x.PlotId == plotId);
+                var plot = await context.Plots.FirstOrDefaultAsync(x => x.PlotId == plotToUpdate.PlotId);
 
                 if (plot != null)
                 {
-                    plot.Points = points;
+                    plot.Points = plotToUpdate.Points;
+                    plot.Settings = plotToUpdate.Settings;
 
                     await context.SaveChangesAsync();
                 }
@@ -527,6 +528,7 @@ namespace DDrop.DAL
                         x.CurrentUserId,
                         x.PlotId,
                         x.PlotType,
+                        x.Settings,
                     }).FirstOrDefault();
 
                 if (seriesPlot == null)
@@ -542,7 +544,8 @@ namespace DDrop.DAL
                     CurrentUserId = seriesPlot.CurrentUserId,
                     CurrentUser = seriesPlot.CurrentUser,
                     PlotType = seriesPlot.PlotType,
-                    PlotId = seriesPlot.PlotId
+                    PlotId = seriesPlot.PlotId,
+                    Settings = seriesPlot.Settings
                 };
             }
         }

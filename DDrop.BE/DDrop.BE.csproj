@@ -122,12 +122,14 @@
     <Compile Include="Models\BasePhoto.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Contour.cs" />
+    <Compile Include="Models\DimensionlessSettings.cs" />
     <Compile Include="Models\Drop.cs" />
     <Compile Include="Models\DropPhoto.cs" />
     <Compile Include="Models\GeneralSeriesSettings.cs" />
     <Compile Include="Models\Measurement.cs" />
     <Compile Include="Models\LogEntry.cs" />
     <Compile Include="Models\Plot.cs" />
+    <Compile Include="Models\PlotSettings.cs" />
     <Compile Include="Models\ReferencePhoto.cs" />
     <Compile Include="Models\SeriesSettings.cs" />
     <Compile Include="Models\SimpleLine.cs" />
