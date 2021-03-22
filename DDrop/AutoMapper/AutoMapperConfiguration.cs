@@ -33,7 +33,9 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<DropView, Drop>();
                 cfg.CreateMap<Drop, DropView>()
                     .ForMember(x =>
-                        x.Measurement, opt => opt.Ignore());
+                        x.Measurement, opt => opt.Ignore())
+                    .ForMember(x =>
+                        x.Series, opt => opt.Ignore());
                 cfg.CreateMap<Drop, DbDrop>();
                 cfg.CreateMap<DbDrop, Drop>()
                     .ForMember(x =>
@@ -87,6 +89,8 @@ namespace DDrop.AutoMapper
 
                 cfg.CreateMap<ReferencePhotoView, ReferencePhoto>();
                 cfg.CreateMap<ReferencePhoto, ReferencePhotoView>()
+                    .ForMember(x =>
+                        x.Series, opt => opt.Ignore())
                     .ForMember(x =>
                         x.Line, opt => opt.MapFrom<ReferencePhotoResolver>());
                 cfg.CreateMap<ReferencePhoto, DbReferencePhoto>()
@@ -157,7 +161,9 @@ namespace DDrop.AutoMapper
                         x.Loaded, opt => opt.Ignore())
                     .ForMember(x =>
                         x.RegionOfInterest, opt => opt.MapFrom<RegionOfInterestResolver>());
-                cfg.CreateMap<SeriesView, Series>();
+                cfg.CreateMap<SeriesView, Series>()
+                    .ForMember(x =>
+                        x.CurrentUser, opt => opt.Ignore());
                 cfg.CreateMap<Series, DbSeries>()
                     .ForMember(x =>
                         x.RegionOfInterest, opt =>
@@ -191,7 +197,9 @@ namespace DDrop.AutoMapper
                         x.Ellipse, opt => opt.MapFrom<ThermalPhotoEllipseResolver>())
                     .ForMember(x =>
                         x.Processed, opt => opt.Ignore());
-                cfg.CreateMap<ThermalPhotoView, ThermalPhoto>();
+                cfg.CreateMap<ThermalPhotoView, ThermalPhoto>()
+                    .ForMember(x =>
+                        x.Measurement, opt => opt.Ignore());
                 cfg.CreateMap<ThermalPhoto, DbThermalPhoto>()
                     .ForMember(x =>
                         x.EllipseCoordinate, opt =>

@@ -1,26 +1,10 @@
-﻿using System.ComponentModel;
-using System.Windows.Shapes;
+﻿using System.Windows.Shapes;
 
 namespace DDrop.Models
 {
     public class ReferencePhotoView : BasePhotoView
     {
-        private Line _line;
-
-        private int _pixelsInMillimeter;
-        private SeriesView _series;
         private SimpleLineView _simpleLine;
-
-        public SeriesView Series
-        {
-            get => _series;
-            set
-            {
-                _series = value;
-                RaisePropertyChanged("Series");
-            }
-        }
-
         public SimpleLineView SimpleLine
         {
             get => _simpleLine;
@@ -31,6 +15,7 @@ namespace DDrop.Models
             }
         }
 
+        private Line _line;
         public Line Line
         {
             get => _line;
@@ -41,6 +26,7 @@ namespace DDrop.Models
             }
         }
 
+        private int _pixelsInMillimeter;
         public int PixelsInMillimeter
         {
             get => _pixelsInMillimeter;

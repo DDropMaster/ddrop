@@ -60,7 +60,13 @@ namespace DDrop.Models
             {
                 _drop = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Drop"));
+                _drop.PropertyChanged += DropPropertyChanged;
             }
+        }
+
+        void DropPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs("Drop"));
         }
 
         public string AddedDate
