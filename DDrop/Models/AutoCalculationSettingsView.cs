@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using DDrop.Enums;
+﻿using DDrop.Enums;
 
 namespace DDrop.Models
 {
@@ -151,19 +149,6 @@ namespace DDrop.Models
             {
                 _useThermalRoiIsEnabled = value;
                 RaisePropertyChanged("UseThermalRoiIsEnabled");
-            }
-        }
-
-
-        private SeriesView _currentSeries;
-        [JsonIgnore]
-        public SeriesView CurrentSeries
-        {
-            get => _currentSeries;
-            set
-            {
-                _currentSeries = value;
-                RaisePropertyChanged("CurrentSeries");
             }
         }
     }

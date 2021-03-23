@@ -36,10 +36,9 @@ namespace DDrop.AutoMapper
                         x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>
                         x.Series, opt => opt.Ignore());
-                cfg.CreateMap<Drop, DbDrop>();
-                cfg.CreateMap<DbDrop, Drop>()
-                    .ForMember(x =>
-                        x.Series, opt => opt.Ignore());
+                cfg.CreateMap<Drop, DbDrop>()
+                    .ForMember(x => x.Measurement, opt => opt.Ignore());
+                cfg.CreateMap<DbDrop, Drop>();
 
 
                 cfg.CreateMap<ContourView, Contour>();
@@ -73,9 +72,7 @@ namespace DDrop.AutoMapper
                             JsonSerializeProvider.DeserializeFromString<ObservableCollection<SimpleLine>>(src.ConnectedLines) : null));
 
 
-                cfg.CreateMap<MeasurementView, Measurement>()
-                    .ForMember(x =>
-                        x.CurrentSeries, opt => opt.Ignore());
+                cfg.CreateMap<MeasurementView, Measurement>();
                 cfg.CreateMap<Measurement, MeasurementView>()
                     .ForMember(x =>
                         x.ProcessedThermal, opt => opt.Ignore())
@@ -83,14 +80,16 @@ namespace DDrop.AutoMapper
                         x.IsChecked, opt => opt.Ignore())
                     .ForMember(x =>
                         x.RequireSaving, opt => opt.Ignore());
-                cfg.CreateMap<Measurement, DbMeasurement>();
+                cfg.CreateMap<Measurement, DbMeasurement>()
+                    .ForMember(x =>
+                        x.CurrentSeries, opt => opt.Ignore());
                 cfg.CreateMap<DbMeasurement, Measurement>();
 
 
-                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>();
-                cfg.CreateMap<ReferencePhoto, ReferencePhotoView>()
+                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>()
                     .ForMember(x =>
-                        x.Series, opt => opt.Ignore())
+                        x.Series, opt => opt.Ignore());
+                cfg.CreateMap<ReferencePhoto, ReferencePhotoView>()
                     .ForMember(x =>
                         x.Line, opt => opt.MapFrom<ReferencePhotoResolver>());
                 cfg.CreateMap<ReferencePhoto, DbReferencePhoto>()
@@ -161,10 +160,10 @@ namespace DDrop.AutoMapper
                         x.Loaded, opt => opt.Ignore())
                     .ForMember(x =>
                         x.RegionOfInterest, opt => opt.MapFrom<RegionOfInterestResolver>());
-                cfg.CreateMap<SeriesView, Series>()
-                    .ForMember(x =>
-                        x.CurrentUser, opt => opt.Ignore());
+                cfg.CreateMap<SeriesView, Series>();
                 cfg.CreateMap<Series, DbSeries>()
+                    .ForMember(x =>
+                        x.CurrentUser, opt => opt.Ignore())
                     .ForMember(x =>
                         x.RegionOfInterest, opt =>
                         opt.MapFrom(src => src.RegionOfInterest != null ?
@@ -197,10 +196,9 @@ namespace DDrop.AutoMapper
                         x.Ellipse, opt => opt.MapFrom<ThermalPhotoEllipseResolver>())
                     .ForMember(x =>
                         x.Processed, opt => opt.Ignore());
-                cfg.CreateMap<ThermalPhotoView, ThermalPhoto>()
-                    .ForMember(x =>
-                        x.Measurement, opt => opt.Ignore());
+                cfg.CreateMap<ThermalPhotoView, ThermalPhoto>();
                 cfg.CreateMap<ThermalPhoto, DbThermalPhoto>()
+                    .ForMember(x => x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>
                         x.EllipseCoordinate, opt =>
                         opt.MapFrom(src => src.EllipseCoordinate != null ?
@@ -238,6 +236,10 @@ namespace DDrop.AutoMapper
                         opt.Ignore());
                 cfg.CreateMap<PlotView, Plot>();
                 cfg.CreateMap<Plot, DbPlot>()
+                    .ForMember(x => x.CurrentUser, opt =>
+                        opt.Ignore())
+                    .ForMember(x => x.Series, opt =>
+                        opt.Ignore())
                     .ForMember(dest =>
                         dest.Points, opt =>
                         opt.MapFrom(src => src.Points != null ?
@@ -272,7 +274,8 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<AutoCalculationParametersView, AutoCalculationParameters>().ReverseMap();
                 cfg.CreateMap<SimplePointView, SimplePoint>().ReverseMap();
                 cfg.CreateMap<SeriesSettingsView, SeriesSettings>().ReverseMap();
-                cfg.CreateMap<AutoCalculationSettingsView, AutoCalculationSettings>().ReverseMap();
+                cfg.CreateMap<AutoCalculationSettingsView, AutoCalculationSettings>();
+                cfg.CreateMap<AutoCalculationSettings, AutoCalculationSettingsView>();
                 cfg.CreateMap<GeneralSeriesSettingsView, GeneralSeriesSettings>().ReverseMap();
                 cfg.CreateMap<TypedRectangleView, TypedRectangle>().ReverseMap();
                 cfg.CreateMap<PlotSettingsView, PlotSettings>().ReverseMap();

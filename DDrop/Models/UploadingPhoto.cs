@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace DDrop.Models
+﻿namespace DDrop.Models
 {
     public class UploadingPhoto : BasePhotoView
     {

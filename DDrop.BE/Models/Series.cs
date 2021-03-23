@@ -7,8 +7,6 @@ namespace DDrop.BE.Models
     {
         public Guid CurrentUserId { get; set; }
 
-        public User CurrentUser { get; set; }
-
         public Guid SeriesId { get; set; }
 
         public string Title { get; set; }

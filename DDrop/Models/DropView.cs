@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace DDrop.Models
 {
-    public class DropView : INotifyPropertyChanged
+    public class DropView : BindableObject
     {
         private double? _radiusInMeters;
         private SeriesView _series;
@@ -23,7 +23,7 @@ namespace DDrop.Models
             set
             {
                 _series = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Series"));
+                RaisePropertyChanged("Series");
             }
         }
 
@@ -35,7 +35,7 @@ namespace DDrop.Models
             set
             {
                 _xDiameterInMeters = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("XDiameterInMeters"));
+                RaisePropertyChanged("XDiameterInMeters");
             }
         }
 
@@ -45,7 +45,7 @@ namespace DDrop.Models
             set
             {
                 _yDiameterInMeters = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("YDiameterInMeters"));
+                RaisePropertyChanged("YDiameterInMeters");
             }
         }
 
@@ -55,7 +55,7 @@ namespace DDrop.Models
             set
             {
                 _zDiameterInMeters = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ZDiameterInMeters"));
+                RaisePropertyChanged("ZDiameterInMeters");
             }
         }
 
@@ -65,7 +65,7 @@ namespace DDrop.Models
             set
             {
                 _volumeInCubicalMeters = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("VolumeInCubicalMeters"));
+                RaisePropertyChanged("VolumeInCubicalMeters");
             }
         }
 
@@ -77,7 +77,7 @@ namespace DDrop.Models
                 _radiusInMeters = value;
                 _series?.OnPropertyChanged(new PropertyChangedEventArgs(nameof(Series.CanDrawPlot)));
                 _measurement?.OnPropertyChanged(new PropertyChangedEventArgs(nameof(Measurement.Processed)));
-                OnPropertyChanged(new PropertyChangedEventArgs("RadiusInMeters"));
+                RaisePropertyChanged("RadiusInMeters");
             }
         }
 
@@ -87,7 +87,7 @@ namespace DDrop.Models
             set
             {
                 _temperature = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Temperature"));
+                RaisePropertyChanged("Temperature");
             }
         }
 
@@ -100,15 +100,8 @@ namespace DDrop.Models
             set
             {
                 _measurement = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Measurement"));
+                RaisePropertyChanged("Measurement");
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            PropertyChanged?.Invoke(this, e);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace DDrop.Models
 {
-    public class MeasurementView : INotifyPropertyChanged
+    public class MeasurementView : BindableObject
     {
         private string _addedDate;
 
@@ -26,17 +26,7 @@ namespace DDrop.Models
             set
             {
                 _currentSeriesId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CurrentSeriesId"));
-            }
-        }
-
-        public SeriesView CurrentSeries
-        {
-            get => _currentSeries;
-            set
-            {
-                _currentSeries = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CurrentSeries"));
+                RaisePropertyChanged("CurrentSeriesId");
             }
         }
 
@@ -48,7 +38,7 @@ namespace DDrop.Models
             set
             {
                 _name = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Name"));
+                RaisePropertyChanged("Name");
             }
         }
 
@@ -59,14 +49,14 @@ namespace DDrop.Models
             set
             {
                 _drop = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Drop"));
+                RaisePropertyChanged("Drop");
                 _drop.PropertyChanged += DropPropertyChanged;
             }
         }
 
         void DropPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            OnPropertyChanged(new PropertyChangedEventArgs("Drop"));
+            RaisePropertyChanged("Drop");
         }
 
         public string AddedDate
@@ -75,7 +65,7 @@ namespace DDrop.Models
             set
             {
                 _addedDate = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("AddedDate"));
+                RaisePropertyChanged("AddedDate");
             }
         }
 
@@ -85,7 +75,7 @@ namespace DDrop.Models
             set
             {
                 _isChecked = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
+                RaisePropertyChanged("IsChecked");
             }
         }
 
@@ -95,7 +85,7 @@ namespace DDrop.Models
             set
             {
                 _creationDateTime = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CreationDateTime"));
+                RaisePropertyChanged("CreationDateTime");
             }
         }
 
@@ -105,7 +95,7 @@ namespace DDrop.Models
             set
             {
                 _requireSaving = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("RequireSaving"));
+                RaisePropertyChanged("RequireSaving");
             }
         }
 
@@ -115,7 +105,7 @@ namespace DDrop.Models
             set
             {
                 _measurementOrderInSeries = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("MeasurementOrderInSeries"));
+                RaisePropertyChanged("MeasurementOrderInSeries");
             }
         }
 
@@ -175,7 +165,7 @@ namespace DDrop.Models
             set
             {
                 _processedThermal = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ProcessedThermal"));
+                RaisePropertyChanged("ProcessedThermal");
             }
         }
 
@@ -186,8 +176,8 @@ namespace DDrop.Models
             set
             {
                 _ambientTemperature = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("AmbientTemperature"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(ProcessedThermal)));
+                RaisePropertyChanged("AmbientTemperature");
+                RaisePropertyChanged(nameof(ProcessedThermal));
             }
         }
 
@@ -198,7 +188,7 @@ namespace DDrop.Models
             set
             {
                 _frontDropPhotoId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("FrontDropPhotoId"));
+                RaisePropertyChanged("FrontDropPhotoId");
             }
         }
 
@@ -209,8 +199,8 @@ namespace DDrop.Models
             set
             {
                 _frontDropPhoto = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("FrontDropPhoto"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Processed)));
+                RaisePropertyChanged("FrontDropPhoto");
+                RaisePropertyChanged(nameof(Processed));
             }
         }
 
@@ -221,8 +211,8 @@ namespace DDrop.Models
             set
             {
                 _sideDropPhotoId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("SideDropPhotoId"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Processed)));
+                RaisePropertyChanged("SideDropPhotoId");
+                RaisePropertyChanged(nameof(Processed));
             }
         }
 
@@ -233,7 +223,7 @@ namespace DDrop.Models
             set
             {
                 _sideDropPhoto = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("SideDropPhoto"));
+                RaisePropertyChanged("SideDropPhoto");
             }
         }
 
@@ -244,7 +234,7 @@ namespace DDrop.Models
             set
             {
                 _thermalPhoto = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ThermalPhoto"));
+                RaisePropertyChanged("ThermalPhoto");
             }
         }
 
@@ -255,7 +245,7 @@ namespace DDrop.Models
             set
             {
                 _commentId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CommentId"));
+                RaisePropertyChanged("CommentId");
             }
         }
 
@@ -266,7 +256,7 @@ namespace DDrop.Models
             set
             {
                 _comment = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Comment"));
+                RaisePropertyChanged("Comment");
             }
         }
 

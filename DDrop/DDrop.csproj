@@ -245,9 +245,7 @@
     <Compile Include="AutoMapper\ReferencePhotoResolver.cs" />
     <Compile Include="AutoMapper\SeriesSettingsResolver.cs" />
     <Compile Include="AutoMapper\ThermalPhotoEllipseResolver.cs" />
-    <Compile Include="AutoMapper\DbUserPlotsResolver.cs" />
     <Compile Include="AutoMapper\RegionOfInterestResolver.cs" />
-    <Compile Include="AutoMapper\UserPlotsResolver.cs" />
     <Compile Include="Views\CommentEdit.xaml.cs">
       <DependentUpon>CommentEdit.xaml</DependentUpon>
     </Compile>

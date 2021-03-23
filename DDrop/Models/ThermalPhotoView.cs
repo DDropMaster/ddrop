@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Shapes;
 using FlirImageView = DDrop.Models.Thermal.FlirImageView;
@@ -8,17 +7,6 @@ namespace DDrop.Models
 {
     public class ThermalPhotoView : BasePhotoView
     {
-        private MeasurementView _measurement;
-        public MeasurementView Measurement
-        {
-            get => _measurement;
-            set
-            {
-                _measurement = value;
-                RaisePropertyChanged("Measurement");
-            }
-        }
-
         private FlirImageView _flirImage;
         public FlirImageView FlirImage
         {

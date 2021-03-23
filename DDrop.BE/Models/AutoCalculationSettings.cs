@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using DDrop.BE.Enums;
+﻿using DDrop.BE.Enums;
 
 namespace DDrop.BE.Models
 {
@@ -22,9 +21,5 @@ namespace DDrop.BE.Models
         public bool UseSideRoiIsEnabled { get; set; }
 
         public bool UseThermalRoiIsEnabled { get; set; }
-
-
-        [JsonIgnore]
-        public Series CurrentSeries { get; set; }
     }
 }

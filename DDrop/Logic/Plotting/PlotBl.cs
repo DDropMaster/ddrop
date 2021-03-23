@@ -47,7 +47,6 @@ namespace DDrop.Logic.Plotting
         {
             var plot = new PlotView()
             {
-                CurrentUser = series.CurrentUser,
                 CurrentUserId = series.CurrentUserId,
                 Name = series.Title,
                 PlotId = series.SeriesId,

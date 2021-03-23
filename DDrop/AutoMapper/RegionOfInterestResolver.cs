@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using DDrop.BE.Models;
-using DDrop.Db.DbEntities;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using DDrop.Enums;
 using DDrop.Models;
-using DDrop.Utility.SeriesLocalStorageOperations;
 
 namespace DDrop.AutoMapper
 {

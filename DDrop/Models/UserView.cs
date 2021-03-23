@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace DDrop.Models
 {
-    public class UserView : INotifyPropertyChanged
+    public class UserView : BindableObject
     {
         private string _email;
 
@@ -39,7 +39,7 @@ namespace DDrop.Models
             set
             {
                 _firstName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("FirstName"));
+                RaisePropertyChanged("FirstName");
             }
         }
 
@@ -49,7 +49,7 @@ namespace DDrop.Models
             set
             {
                 _lastName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("LastName"));
+                RaisePropertyChanged("LastName");
             }
         }
 
@@ -59,7 +59,7 @@ namespace DDrop.Models
             set
             {
                 _userPhoto = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("UserPhoto"));
+                RaisePropertyChanged("UserPhoto");
             }
         }
 
@@ -69,7 +69,7 @@ namespace DDrop.Models
             set
             {
                 _password = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Password"));
+                RaisePropertyChanged("Password");
             }
         }
 
@@ -79,7 +79,7 @@ namespace DDrop.Models
             set
             {
                 _email = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Email"));
+                RaisePropertyChanged("Email");
             }
         }
 
@@ -89,8 +89,18 @@ namespace DDrop.Models
             set
             {
                 _userSeries = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("UserSeries"));
+                RaisePropertyChanged("UserSeries");
+
+                foreach (var userSeries in _userSeries)
+                {
+                    userSeries.PropertyChanged += SeriesPropertyChanged;
+                }
             }
+        }
+
+        void SeriesPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            RaisePropertyChanged("UserSeries");
         }
 
         [NotMapped]
@@ -115,7 +125,7 @@ namespace DDrop.Models
             set
             {
                 _isAnySelectedSeriesCantDrawPlot = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsAnySelectedSeriesCantDrawPlot"));
+                RaisePropertyChanged("IsAnySelectedSeriesCantDrawPlot");
             }
         }
 
@@ -125,7 +135,7 @@ namespace DDrop.Models
             set
             {
                 _isLoggedIn = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsLoggedIn"));
+                RaisePropertyChanged("IsLoggedIn");
             }
         }
 
@@ -136,20 +146,14 @@ namespace DDrop.Models
             set
             {
                 _plots = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Plots"));
+                RaisePropertyChanged("Plots");
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void _userSeries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsAnySelectedSeriesCanDrawPlot)));
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            PropertyChanged?.Invoke(this, e);
+            RaisePropertyChanged(nameof(IsAnySelectedSeriesCanDrawPlot));
         }
     }
 }

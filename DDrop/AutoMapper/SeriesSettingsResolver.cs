@@ -36,7 +36,6 @@ namespace DDrop.AutoMapper
             {
                 return new AutoCalculationSettings()
                 {
-                    CurrentSeries = series,
                     UseSideRoi = seriesSettings.AutoCalculationSettings.UseSideRoi,
                     UseThermalRoi = seriesSettings.AutoCalculationSettings.UseThermalRoi,
                     UseFrontRoi = seriesSettings.AutoCalculationSettings.UseFrontRoi,

@@ -212,11 +212,6 @@ namespace DDrop.Views
                         
                         UserLogin.UserSeries = _mapper.Map<List<Series>, ObservableCollection<SeriesView>>(dbSeries);
 
-                        foreach (var series in UserLogin.UserSeries)
-                        {
-                            series.CurrentUser = UserLogin;
-                        }
-
                         LoginSucceeded = true;
 
                         if (RememberMe.IsChecked == true && shouldRemember) StoreUserLocal(email, password);

@@ -609,7 +609,6 @@ namespace DDrop.Views
                         MeasurementId = Guid.NewGuid(),
                         Name = (_currentSeries.MeasurementsSeries.Count + i).ToString(),
                         AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                        CurrentSeries = _currentSeries,
                         CurrentSeriesId = _currentSeries.SeriesId,
                         CreationDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
                         MeasurementOrderInSeries = _currentSeries.MeasurementsSeries.Count + i,

@@ -2,9 +2,7 @@
 using System.Windows.Shapes;
 using AutoMapper;
 using DDrop.BE.Models;
-using DDrop.Db.DbEntities;
 using DDrop.Models;
-using DDrop.Utility.SeriesLocalStorageOperations;
 
 namespace DDrop.AutoMapper
 {

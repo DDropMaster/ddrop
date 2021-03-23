@@ -6,8 +6,6 @@ namespace DDrop.BE.Models
 {
     public class ThermalPhoto : BasePhoto
     {
-        public Measurement Measurement { get; set; }
-
         public FlirImage FlirImage { get; set; }
 
         public Point EllipseCoordinate { get; set; }

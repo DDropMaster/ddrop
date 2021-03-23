@@ -4,8 +4,6 @@ namespace DDrop.BE.Models
 {
     public class Drop
     {
-        public Series Series { get; set; }
-
         public Guid DropId { get; set; }
 
         public double XDiameterInMeters { get; set; }
@@ -19,7 +17,5 @@ namespace DDrop.BE.Models
         public double? RadiusInMeters { get; set; }
 
         public double? Temperature { get; set; }
-
-        public Measurement Measurement { get; set; }
     }
 }

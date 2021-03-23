@@ -184,7 +184,7 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.Users.Attach(series.CurrentUser);
+                    //context.Users.Attach(series.CurrentUser);
                     context.Series.Add(series);
 
                     await context.SaveChangesAsync();

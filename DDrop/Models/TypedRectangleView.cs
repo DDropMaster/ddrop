@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows.Shapes;
+﻿using System.Windows.Shapes;
 using DDrop.Enums;
 
 namespace DDrop.Models

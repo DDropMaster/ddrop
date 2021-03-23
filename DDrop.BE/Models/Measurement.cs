@@ -6,8 +6,6 @@ namespace DDrop.BE.Models
     {
         public Guid CurrentSeriesId { get; set; }
 
-        public Series CurrentSeries { get; set; }
-
         public Guid MeasurementId { get; set; }
 
         public string Name { get; set; }

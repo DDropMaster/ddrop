@@ -51,13 +51,13 @@ namespace DDrop.Models
             }
         }
 
-        private Guid _currentSeriesId;
+        private Guid _currentUserId;
         public Guid CurrentUserId
         {
-            get => _currentSeriesId;
+            get => _currentUserId;
             set
             {
-                _currentSeriesId = value;
+                _currentUserId = value;
                 RaisePropertyChanged("CurrentUserId");
             }
         }
@@ -74,30 +74,7 @@ namespace DDrop.Models
             }
         }
 
-        private UserView _currentUser;
-        public UserView CurrentUser
-        {
-            get => _currentUser;
-            set
-            {
-                _currentUser = value;
-                RaisePropertyChanged("CurrentUser");
-            }
-        }
-
-        private SeriesView _series;
-        public SeriesView Series
-        {
-            get => _series;
-            set
-            {
-                _series = value;
-                RaisePropertyChanged("Series");
-            }
-        }
-
         private PlotSettingsView _settings;
-
         public PlotSettingsView Settings
         {
             get => _settings;

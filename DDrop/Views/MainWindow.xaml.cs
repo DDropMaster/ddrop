@@ -740,7 +740,6 @@ namespace DDrop.Views
                     SeriesId = Guid.NewGuid(),
                     Title = OneLineSetterValue.Text,
                     AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                    CurrentUser = User,
                     CurrentUserId = User.UserId
                 };
 
@@ -834,7 +833,6 @@ namespace DDrop.Views
 
                 var old = new SeriesView
                 {
-                    CurrentUser = User,
                     CurrentUserId = User.UserId
                 };
 
@@ -1560,10 +1558,10 @@ namespace DDrop.Views
                     Settings.Default.ShowLinesOnPreview);
                 _geometryBL.PrepareContour(measurement.FrontDropPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
 
-                if (measurement.CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
+                if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
                     x.PhotoType == PhotoTypeView.FrontDropPhoto)?.RegionOfInterest != null && Settings.Default.ShowRegionOfInterest)
                 {
-                    _typedRectangleSeriesPreview.RegionOfInterest = measurement.CurrentSeries.RegionOfInterest
+                    _typedRectangleSeriesPreview.RegionOfInterest = CurrentSeries.RegionOfInterest
                         .FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto).RegionOfInterest;
                 }
                 
@@ -1594,10 +1592,10 @@ namespace DDrop.Views
                     Settings.Default.ShowLinesOnPreview);
                 _geometryBL.PrepareContour(measurement.SideDropPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
 
-                if (measurement.CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
+                if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
                     x.PhotoType == PhotoTypeView.FrontDropPhoto)?.RegionOfInterest != null && Settings.Default.ShowRegionOfInterest)
                 {
-                    _typedRectangleSeriesPreview.RegionOfInterest = measurement.CurrentSeries.RegionOfInterest
+                    _typedRectangleSeriesPreview.RegionOfInterest = CurrentSeries.RegionOfInterest
                         .FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto).RegionOfInterest;
                 }
 
@@ -2822,7 +2820,7 @@ namespace DDrop.Views
 
                         _logger.LogInfo(new LogEntry
                         {
-                            Username = CurrentSeries.CurrentUser.Email,
+                            Username = User.Email,
                             LogCategory = LogCategory.Measurement,
                             Message = $"Порядок снимков для серии {CurrentSeries.Title} обновлен."
                         });
@@ -2846,7 +2844,7 @@ namespace DDrop.Views
                             InnerException = exception.InnerException?.Message,
                             Message = exception.Message,
                             StackTrace = exception.StackTrace,
-                            Username = CurrentSeries.CurrentUser.Email,
+                            Username = User.Email,
                             Details = exception.TargetSite.Name
                         });
                         throw;
@@ -2858,7 +2856,7 @@ namespace DDrop.Views
 
                     _logger.LogInfo(new LogEntry
                     {
-                        Username = CurrentSeries.CurrentUser.Email,
+                        Username = User.Email,
                         LogCategory = LogCategory.Measurement,
                         Message = "Cтарый порядок снимков восстановлен."
                     });
@@ -5659,7 +5657,7 @@ namespace DDrop.Views
                     CurrentThermalPhoto.Ellipse = DrawnShapes.Ellipse;
                     CurrentThermalPhoto.EllipseCoordinate = new Point((int)e.GetPosition(ImgCurrent.CanDrawing).X, (int)e.GetPosition(ImgCurrent.CanDrawing).Y);
 
-                    CurrentThermalPhoto.Measurement.Drop.Temperature = CurrentThermalPhoto.FlirImage.ThermalData
+                    CurrentMeasurement.Drop.Temperature = CurrentThermalPhoto.FlirImage.ThermalData
                         .FirstOrDefault(td =>
                             td.X == CurrentThermalPhoto.EllipseCoordinate.X && td.Y == CurrentThermalPhoto.EllipseCoordinate.Y)
                         ?.TemperatureValue;
@@ -5921,7 +5919,6 @@ namespace DDrop.Views
 
                 PlotView plotForAdd = new PlotView()
                 {
-                    CurrentUser = User,
                     CurrentUserId = User.UserId,
                     PlotId = Guid.NewGuid(),
                     Name = inputDialog.Answer,
@@ -6449,17 +6446,16 @@ namespace DDrop.Views
                     await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
                         currentSeries.SeriesId));
 
+                    //TODO: SERIESID
                     if (currentSeries.ThermalPlot == null)
                     {
                         PlotView plotForAdd = new PlotView()
                         {
-                            CurrentUser = User,
                             CurrentUserId = User.UserId,
                             PlotId = Guid.NewGuid(),
                             Name = CurrentSeries.Title,
                             PlotType = PlotTypeView.Temperature,
                             Points = new ObservableCollection<SimplePointView>(),
-                            Series = CurrentSeries
                         };
 
                         await _customPlotsBl.CreatePlot(_mapper.Map<PlotView, Plot>(plotForAdd));

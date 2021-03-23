@@ -8,86 +8,57 @@ using Newtonsoft.Json;
 
 namespace DDrop.Models
 {
-    public class SeriesView : INotifyPropertyChanged
+    public class SeriesView : BindableObject
     {
-        private string _addedDate;
-
-        private bool _canDrawPlot;
-
-        private UserView _currentUser;
-        private Guid _currentUserId;
-
-        private ObservableCollection<MeasurementView> _measurementsSeries;
-
-        private bool _exactCalculationModel;
-
-        private double _intervalBetweenPhotos;
-
-        private bool _isChecked;
-
-        private bool _loaded = true;
-
-        private ReferencePhotoView _referencePhotoForSeries;
-
-        private SubstanceModelView _substance;
-
-        private string _title;
-
         public SeriesView()
         {
             _measurementsSeries = new ObservableCollection<MeasurementView>();
             _measurementsSeries.CollectionChanged += _measurementsSeries_CollectionChanged;
         }
 
+        private Guid _currentUserId;
         public Guid CurrentUserId
         {
             get => _currentUserId;
             set
             {
                 _currentUserId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CurrentUserId"));
-            }
-        }
-
-        public UserView CurrentUser
-        {
-            get => _currentUser;
-            set
-            {
-                _currentUser = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CurrentUser"));
+                RaisePropertyChanged("CurrentUserId");
             }
         }
 
         public Guid SeriesId { get; set; }
 
+        private string _title;
         public string Title
         {
             get => _title;
             set
             {
                 _title = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Title"));
+                RaisePropertyChanged("Title");
             }
         }
 
+        private ObservableCollection<MeasurementView> _measurementsSeries;
         public ObservableCollection<MeasurementView> MeasurementsSeries
         {
             get => _measurementsSeries;
             set
             {
                 _measurementsSeries = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("MeasurementsSeries"));
+                RaisePropertyChanged("MeasurementsSeries");
             }
         }
 
+        private ReferencePhotoView _referencePhotoForSeries;
         public ReferencePhotoView ReferencePhotoForSeries
         {
             get => _referencePhotoForSeries;
             set
             {
                 _referencePhotoForSeries = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ReferencePhotoForSeries"));
+                RaisePropertyChanged("ReferencePhotoForSeries");
             }
         }
 
@@ -109,54 +80,59 @@ namespace DDrop.Models
                         SubstanceId = SeriesId
                     };
 
-                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Substance)));
+                    RaisePropertyChanged(nameof(Substance));
                 }
 
-                OnPropertyChanged(new PropertyChangedEventArgs("Sub"));
+                RaisePropertyChanged("Sub");
             }
         }
 
+        private SubstanceModelView _substance;
         public SubstanceModelView Substance
         {
             get => _substance;
             set
             {
                 _substance = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Substance"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsSubstanceExists)));
+                RaisePropertyChanged("Substance");
+                RaisePropertyChanged(nameof(IsSubstanceExists));
             }
         }
 
+        private bool _exactCalculationModel;
         public bool ExactCalculationModel
         {
             get => _exactCalculationModel;
             set
             {
                 _exactCalculationModel = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ExactCalculationModel"));
+                RaisePropertyChanged("ExactCalculationModel");
             }
         }
 
+        private double _intervalBetweenPhotos;
         public double IntervalBetweenPhotos
         {
             get => _intervalBetweenPhotos;
             set
             {
                 _intervalBetweenPhotos = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IntervalBetweenPhotos"));
+                RaisePropertyChanged("IntervalBetweenPhotos");
             }
         }
 
+        private bool _isChecked;
         public bool IsChecked
         {
             get => _isChecked;
             set
             {
                 _isChecked = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
+                RaisePropertyChanged("IsChecked");
             }
         }
 
+        private bool _canDrawPlot;
         public bool CanDrawPlot
         {
             get
@@ -169,8 +145,8 @@ namespace DDrop.Models
             set
             {
                 _canDrawPlot = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CanDrawPlot"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawAnyPlot)));
+                RaisePropertyChanged("CanDrawPlot");
+                RaisePropertyChanged(nameof(CanDrawAnyPlot));
             }
         }
 
@@ -194,8 +170,8 @@ namespace DDrop.Models
             set
             {
                 _canDrawTemperaturePlot = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CanDrawTemperaturePlot"));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawAnyPlot)));
+                RaisePropertyChanged("CanDrawTemperaturePlot");
+                RaisePropertyChanged(nameof(CanDrawAnyPlot));
             }
         }
 
@@ -214,7 +190,7 @@ namespace DDrop.Models
             set
             {
                 _canDrawAnyPlot = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CanDrawAnyPlot"));
+                RaisePropertyChanged("CanDrawAnyPlot");
             }
         }
 
@@ -225,7 +201,7 @@ namespace DDrop.Models
             set
             {
                 _isSubstanceEdited = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsSubstanceEdited"));
+                RaisePropertyChanged("IsSubstanceEdited");
             }
         }
 
@@ -244,27 +220,29 @@ namespace DDrop.Models
             set
             {
                 _isSubstanceExists = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsSubstanceExists"));
+                RaisePropertyChanged("IsSubstanceExists");
             }
         }
 
+        private bool _loaded = true;
         public bool Loaded
         {
             get => _loaded;
             set
             {
                 _loaded = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Loaded"));
+                RaisePropertyChanged("Loaded");
             }
         }
 
+        private string _addedDate;
         public string AddedDate
         {
             get => _addedDate;
             set
             {
                 _addedDate = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("AddedDate"));
+                RaisePropertyChanged("AddedDate");
             }
         }
 
@@ -275,7 +253,7 @@ namespace DDrop.Models
             set
             {
                 _commentId = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("CommentId"));
+                RaisePropertyChanged("CommentId");
             }
         }
 
@@ -286,7 +264,7 @@ namespace DDrop.Models
             set
             {
                 _comment = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Comment"));
+                RaisePropertyChanged("Comment");
             }
         }
 
@@ -297,7 +275,7 @@ namespace DDrop.Models
             set
             {
                 _settings = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Settings"));
+                RaisePropertyChanged("Settings");
             }
         }
 
@@ -308,7 +286,7 @@ namespace DDrop.Models
             set
             {
                 _regionOfInterest = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("RegionOfInterest"));
+                RaisePropertyChanged("RegionOfInterest");
             }
         }
 
@@ -320,35 +298,26 @@ namespace DDrop.Models
             set
             {
                 _thermalPlot = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ThermalPlot"));
+                RaisePropertyChanged("ThermalPlot");
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private void _measurementsSeries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
+            RaisePropertyChanged(nameof(CanDrawPlot));
             foreach (var photo in _measurementsSeries) photo.MeasurementOrderInSeries = _measurementsSeries.IndexOf(photo);
-            CurrentUser.OnPropertyChanged(new PropertyChangedEventArgs(nameof(UserView.IsAnySelectedSeriesCanDrawPlot)));
         }
 
         public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Loaded))
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
+                RaisePropertyChanged(nameof(CanDrawPlot));
 
             if (e.PropertyName == nameof(IntervalBetweenPhotos))
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
+                RaisePropertyChanged(nameof(CanDrawPlot));
 
             if (e.PropertyName == nameof(Settings.GeneralSeriesSettings.UseCreationDateTime))
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(CanDrawPlot)));
-            
-            if (e.PropertyName == nameof(IsChecked))
-                CurrentUser.OnPropertyChanged(
-                    new PropertyChangedEventArgs(nameof(UserView.IsAnySelectedSeriesCanDrawPlot)));
-
-            PropertyChanged?.Invoke(this, e);
+                RaisePropertyChanged(nameof(CanDrawPlot));
         }
     }
 }
