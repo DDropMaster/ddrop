@@ -47,8 +47,9 @@ namespace DDrop.Db
                 .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbSeries>()
-                .HasRequired(s => s.ReferencePhotoForSeries)
-                .WithRequiredPrincipal(ad => ad.Series);
+                .HasMany(s => s.ReferencePhotoForSeries)
+                .WithRequired(g => g.Series)
+                .HasForeignKey(s => s.CurrentSeriesId);
 
             modelBuilder.Entity<DbSeries>()
                 .HasRequired(s => s.Substance)

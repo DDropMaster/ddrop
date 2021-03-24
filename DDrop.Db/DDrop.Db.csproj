@@ -273,6 +273,14 @@
     <Compile Include="Migrations\202103091647432_PlotDimensionlessSettings.designer.cs">
       <DependentUpon>202103091647432_PlotDimensionlessSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103232242453_MultipleReferencePhotos.cs" />
+    <Compile Include="Migrations\202103232242453_MultipleReferencePhotos.designer.cs">
+      <DependentUpon>202103232242453_MultipleReferencePhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103232244178_MultipleReferencePhotosRequired.cs" />
+    <Compile Include="Migrations\202103232244178_MultipleReferencePhotosRequired.designer.cs">
+      <DependentUpon>202103232244178_MultipleReferencePhotosRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -439,6 +447,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103091647432_PlotDimensionlessSettings.resx">
       <DependentUpon>202103091647432_PlotDimensionlessSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103232242453_MultipleReferencePhotos.resx">
+      <DependentUpon>202103232242453_MultipleReferencePhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103232244178_MultipleReferencePhotosRequired.resx">
+      <DependentUpon>202103232244178_MultipleReferencePhotosRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

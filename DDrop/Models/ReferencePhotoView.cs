@@ -1,9 +1,21 @@
-﻿using System.Windows.Shapes;
+﻿using System;
+using System.Windows.Shapes;
 
 namespace DDrop.Models
 {
     public class ReferencePhotoView : BasePhotoView
     {
+        private Guid _currentSeriesId;
+        public Guid CurrentSeriesId
+        {
+            get => _currentSeriesId;
+            set
+            {
+                _currentSeriesId = value;
+                RaisePropertyChanged("CurrentSeriesId");
+            }
+        }
+
         private SimpleLineView _simpleLine;
         public SimpleLineView SimpleLine
         {

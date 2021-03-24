@@ -387,7 +387,7 @@ namespace DDrop.DAL
                         if (seriesToAdd.CommentId != null)
                             seriesToAdd.Comment = GetCommentById(seriesToAdd.CommentId.Value);
 
-                        seriesToAdd.ReferencePhotoForSeries = GetReferencePhotoById(seriesToAdd.SeriesId, seriesToAdd);
+                        seriesToAdd.ReferencePhotoForSeries = GetReferencePhotoById(seriesToAdd);
                         seriesToAdd.MeasurementsSeries = GetMeasurements(seriesToAdd.SeriesId, seriesToAdd).OrderBy(x => x.MeasurementOrderInSeries).ToList();
                         seriesToAdd.Substance = GetSubstanceById(seriesToAdd.SeriesId, seriesToAdd);
                         seriesToAdd.ThermalPlot = GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
@@ -478,12 +478,12 @@ namespace DDrop.DAL
             }
         }
 
-        private DbReferencePhoto GetReferencePhotoById(Guid referencePhotoId, DbSeries series)
+        private List<DbReferencePhoto> GetReferencePhotoById(DbSeries series)
         {
             using (var context = new DDropContext())
             {
-                var referencePhotoForSeries = context.ReferencePhotos
-                    .Where(x => x.Series.SeriesId == referencePhotoId)
+                var referencePhotosForSeries = context.ReferencePhotos
+                    .Where(x => x.CurrentSeriesId == series.SeriesId)
                     .Select(x => new
                     {
                         x.Name,
@@ -493,24 +493,29 @@ namespace DDrop.DAL
                         x.Series,
                         x.AddedDate,
                         x.CreationDateTime,
-                        x.PhotoType
-                    }).FirstOrDefault();
+                        x.PhotoType,
+                        SeriesId = x.CurrentSeriesId
+                    }).ToList();
 
-                if (referencePhotoForSeries == null)
+                var resultingReferencePhotos = new List<DbReferencePhoto>();
+
+                foreach (var dbReferencePhoto in referencePhotosForSeries)
                 {
-                    return null;
+                    resultingReferencePhotos.Add(new DbReferencePhoto
+                    {
+                        Name = dbReferencePhoto.Name,
+                        PixelsInMillimeter = dbReferencePhoto.PixelsInMillimeter,
+                        PhotoId = dbReferencePhoto.PhotoId,
+                        ReferenceLine = dbReferencePhoto.ReferenceLine,
+                        Series = series,
+                        AddedDate = dbReferencePhoto.AddedDate,
+                        CreationDateTime = dbReferencePhoto.CreationDateTime,
+                        CurrentSeriesId = dbReferencePhoto.SeriesId,
+                        PhotoType = dbReferencePhoto.PhotoType
+                    });
                 }
 
-                return new DbReferencePhoto
-                {
-                    Name = referencePhotoForSeries.Name,
-                    PixelsInMillimeter = referencePhotoForSeries.PixelsInMillimeter,
-                    PhotoId = referencePhotoForSeries.PhotoId,
-                    ReferenceLine = referencePhotoForSeries.ReferenceLine,
-                    Series = series,
-                    AddedDate = referencePhotoForSeries.AddedDate,
-                    CreationDateTime = referencePhotoForSeries.CreationDateTime
-                };
+                return resultingReferencePhotos;
             }
         }
 
@@ -739,7 +744,7 @@ namespace DDrop.DAL
                             x.IntervalBetweenPhotos,
                         }).FirstOrDefaultAsync();
 
-                    var referencePhotoForSeries = context.ReferencePhotos.Where(x => x.Series.SeriesId == seriesId)
+                    var referencePhotoForSeries = context.ReferencePhotos.Where(x => x.CurrentSeriesId == seriesId)
                         .Select(x => new
                         {
                             x.Name,
@@ -748,8 +753,8 @@ namespace DDrop.DAL
                             x.CreationDateTime,
                             x.AddedDate,
                             x.PhotoType,
-                            x.Content
-                        }).FirstOrDefault();
+                            x.Content,
+                        }).ToList();
 
                     var measurementForSeries = context.Measurements.Where(x => x.CurrentSeriesId == seriesId)
                         .Select(x => new
@@ -888,22 +893,22 @@ namespace DDrop.DAL
                         dbMeasurementForAdd.Add(measurementForAdd);
                     }
 
-                    DbReferencePhoto referencePhotoForAdd = null;
+                    List<DbReferencePhoto> referencePhotoForAdd = new List<DbReferencePhoto>();
 
-                    if (referencePhotoForSeries != null)
+                    foreach (var photoForSeries in referencePhotoForSeries)
                     {
-                        referencePhotoForAdd = new DbReferencePhoto
+                        referencePhotoForAdd.Add(new DbReferencePhoto
                         {
-                            Name = referencePhotoForSeries.Name,
-                            PixelsInMillimeter = referencePhotoForSeries.PixelsInMillimeter,
-                            ReferenceLine = referencePhotoForSeries.ReferenceLine,
-                            AddedDate = referencePhotoForSeries.AddedDate,
-                            Content = referencePhotoForSeries.Content,
-                            CreationDateTime = referencePhotoForSeries.CreationDateTime,
-                            PhotoType = referencePhotoForSeries.PhotoType
-                        };
+                            Name = photoForSeries.Name,
+                            PixelsInMillimeter = photoForSeries.PixelsInMillimeter,
+                            ReferenceLine = photoForSeries.ReferenceLine,
+                            AddedDate = photoForSeries.AddedDate,
+                            Content = photoForSeries.Content,
+                            CreationDateTime = photoForSeries.CreationDateTime,
+                            PhotoType = photoForSeries.PhotoType
+                        });
                     }
-
+                    
                     return new DbSeries
                     {
                         Title = series?.Title,

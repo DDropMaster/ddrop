@@ -203,6 +203,9 @@ namespace DDrop.Views
         private DropPhotoView _copiedPhoto;
         private ThermalPhotoView _copiedThermalPhoto;
 
+        public static readonly DependencyProperty CurrentReferencePhotoProperty =
+            DependencyProperty.Register("CurrentReferencePhoto", typeof(ReferencePhotoView), typeof(MainWindow));
+
         public static readonly DependencyProperty SeriesCollectionToPlotProperty =
             DependencyProperty.Register("SeriesCollectionToPlot", typeof(SeriesCollection), typeof(MainWindow));
 
@@ -300,6 +303,16 @@ namespace DDrop.Views
         #endregion
 
         #region Properties
+
+        public ReferencePhotoView CurrentReferencePhoto
+        {
+            get => (ReferencePhotoView) GetValue(CurrentReferencePhotoProperty);
+            set
+            {
+                SetValue(CurrentReferencePhotoProperty, value);
+                OnPropertyChanged(new PropertyChangedEventArgs("CurrentReferencePhoto"));
+            }
+        }
 
         public SeriesCollection SeriesCollectionToPlot
         {
@@ -648,8 +661,6 @@ namespace DDrop.Views
                 RecheckAllSelectedPlots();
         }
 
-
-
         private void AllSelectedTemperaturePlotsChanged()
         {
             if (AvailableTemperaturePlots != null)
@@ -790,7 +801,7 @@ namespace DDrop.Views
             }
         }
 
-        private async void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != e.OriginalSource) return;
 
@@ -831,59 +842,21 @@ namespace DDrop.Views
                 ProgressBar.IsIndeterminate = true;
                 SeriesManagerIsLoading(false);
 
-                var old = new SeriesView
-                {
-                    CurrentUserId = User.UserId
-                };
-
                 if (e.RemovedItems.Count > 0)
                 {
-                    old = e.RemovedItems[0] as SeriesView;
+                    var old = e.RemovedItems[0] as SeriesView;
 
-                    if (old.ReferencePhotoForSeries?.Content != null)
+                    foreach (var oldReferencePhotoForSeries in old.ReferencePhotoForSeries)
                     {
-                        old.ReferencePhotoForSeries.Content = null;
+                        if (oldReferencePhotoForSeries?.Content != null)
+                        {
+                            oldReferencePhotoForSeries.Content = null;
+                        }
                     }
                 }
 
                 CurrentSeries = User.UserSeries[SeriesDataGrid.SelectedIndex];
-
-                if (CurrentSeries.ReferencePhotoForSeries != null)
-                    try
-                    {
-                        var referencePhotoId = CurrentSeries.ReferencePhotoForSeries.PhotoId;
-                        CurrentSeries.ReferencePhotoForSeries.Content = await _referenceBl.GetReferencePhotoContent(referencePhotoId);
-                    }
-                    catch (TimeoutException)
-                    {
-                        _notifier.ShowError(
-                            "Не удалось загрузить референсный снимок. Не удалось установить подключение. Проверьте интернет соединение.");
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.LogError(new LogEntry
-                        {
-                            Exception = exception.ToString(),
-                            LogCategory = LogCategory.Common,
-                            InnerException = exception.InnerException?.Message,
-                            Message = exception.Message,
-                            StackTrace = exception.StackTrace,
-                            Username = User.Email,
-                            Details = exception.HelpLink
-                        });
-                        throw;
-                    }
-
-                SeriesDrawerSwap(old);
-                Photos.ItemsSource = null;
-                CurrentDropPhotos = null;
-                CurrentThermalPhotos = null;
-                SeriesPreviewDataGrid.ItemsSource = CurrentSeries.MeasurementsSeries;
-                ReferenceImage = null;
-                ParticularSeriesIndex = SeriesDataGrid.SelectedIndex;
-
-                if (CurrentSeries?.ReferencePhotoForSeries?.Content != null)
-                    ReferenceImage = ImageInterpreter.LoadImage(CurrentSeries.ReferencePhotoForSeries.Content);
+                SeriesDrawerSwap();
 
                 SeriesManagerLoadingComplete(false);
                 
@@ -896,15 +869,16 @@ namespace DDrop.Views
             }
         }
 
-        private void SeriesDrawerSwap(SeriesView old)
+        private void SeriesDrawerSwap()
         {
-            if (old.ReferencePhotoForSeries?.Line != null)
-                MainWindowPixelDrawer.CanDrawing.Children.Remove(old.ReferencePhotoForSeries.Line);
-
-            if (CurrentSeries.ReferencePhotoForSeries?.Line != null)
+            for (int i = ImgCurrent.CanDrawing.Children.Count; i-- > 1;)
             {
-                MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
-                MainWindowPixelDrawer.CanDrawing.Children.Add(CurrentSeries.ReferencePhotoForSeries.Line);
+                ImgCurrent.CanDrawing.Children.RemoveAt(i);
+            }
+
+            if (CurrentReferencePhoto?.Line != null)
+            {
+                MainWindowPixelDrawer.CanDrawing.Children.Add(CurrentReferencePhoto.Line);
             }
         }
 
@@ -1369,9 +1343,12 @@ namespace DDrop.Views
                                     await _seriesBL.CreateFullSeries(dbSerieForAdd);
     
                                     deserializedSerie = _mapper.Map<DbSeries, Series>(dbSerieForAdd);
-                                    
-                                    if (deserializedSerie.ReferencePhotoForSeries?.Content != null)
-                                        deserializedSerie.ReferencePhotoForSeries.Content = null;
+
+                                    foreach (var referencePhoto in deserializedSerie.ReferencePhotoForSeries)
+                                    {
+                                        if (referencePhoto?.Content != null)
+                                            referencePhoto.Content = null;
+                                    }
                                 }
 
                                 foreach (var measurement in measurements)
@@ -1393,7 +1370,7 @@ namespace DDrop.Views
                                 }
                             }
 
-                            deserializedSerie.MeasurementsSeries = _mapper.Map<List<DbMeasurement>, ObservableCollection<Measurement>>(dbMeasurementForAdd.OrderBy(x => x.MeasurementOrderInSeries).ToList());
+                            deserializedSerie.MeasurementsSeries = _mapper.Map<List<DbMeasurement>, List<Measurement>>(dbMeasurementForAdd.OrderBy(x => x.MeasurementOrderInSeries).ToList());
 
                             User.UserSeries.Add(_mapper.Map<Series, SeriesView>(deserializedSerie));
 
@@ -2135,7 +2112,10 @@ namespace DDrop.Views
 
         private async void EditInputPhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(PixelsInMillimeterTextBox.Text) && PixelsInMillimeterTextBox.Text != "0")
+            var pixelsInMillimeter =
+                CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == CurrentDropPhoto.PhotoType)?.PixelsInMillimeter;
+
+            if (pixelsInMillimeter != null && pixelsInMillimeter != 0)
             {
                 await PhotoEditModeOn(CurrentDropPhoto.PhotoType);
 
@@ -2203,7 +2183,6 @@ namespace DDrop.Views
 
                 PixelsInMillimeterZTextBox.Visibility = Visibility.Hidden;
                 PixelsInMillimeterHorizontalTextBox.Visibility = Visibility.Visible;
-                PixelsInMillimeterTextBox.Visibility = Visibility.Visible;
                 TemperatureTextBox.Visibility = Visibility.Hidden;
                 TemperatureLabel.Visibility = Visibility.Hidden;
                 PixelsInMillimeterLabel.Visibility = Visibility.Visible;
@@ -2221,7 +2200,7 @@ namespace DDrop.Views
 
                 PixelsInMillimeterHorizontalTextBox.Visibility = Visibility.Hidden;
                 PixelsInMillimeterZTextBox.Visibility = Visibility.Visible;
-                PixelsInMillimeterTextBox.Visibility = Visibility.Visible;
+                
                 TemperatureTextBox.Visibility = Visibility.Hidden;
                 TemperatureLabel.Visibility = Visibility.Hidden;
                 PixelsInMillimeterLabel.Visibility = Visibility.Visible;
@@ -2245,7 +2224,7 @@ namespace DDrop.Views
 
                 PixelsInMillimeterHorizontalTextBox.Visibility = Visibility.Hidden;
                 PixelsInMillimeterZTextBox.Visibility = Visibility.Hidden;
-                PixelsInMillimeterTextBox.Visibility = Visibility.Visible;
+                
                 TemperatureTextBox.Visibility = Visibility.Visible;
                 TemperatureLabel.Visibility = Visibility.Visible;
                 PixelsInMillimeterLabel.Visibility = Visibility.Hidden;
@@ -2952,7 +2931,7 @@ namespace DDrop.Views
 
                     if (CurrentSeries.ReferencePhotoForSeries == null)
                     {
-                        CurrentSeries.ReferencePhotoForSeries = new ReferencePhotoView();
+                        CurrentReferencePhoto = new ReferencePhotoView();
 
                         newReferencePhoto = new ReferencePhotoView()
                         {
@@ -2972,9 +2951,9 @@ namespace DDrop.Views
                             Line = new Line()
                         };
 
-                        if (CurrentSeries.ReferencePhotoForSeries.SimpleLine != null)
+                        if (CurrentReferencePhoto.SimpleLine != null)
                         {
-                            newReferencePhoto.SimpleLine = CurrentSeries.ReferencePhotoForSeries.SimpleLine;
+                            newReferencePhoto.SimpleLine = CurrentReferencePhoto.SimpleLine;
                             newReferencePhoto.SimpleLine.X1 = 0;
                             newReferencePhoto.SimpleLine.X2 = 0;
                             newReferencePhoto.SimpleLine.Y1 = 0;
@@ -2988,17 +2967,16 @@ namespace DDrop.Views
 
                         await Task.Run(() => _referenceBl.UpdateReferencePhoto(referencePhotoForAdd));
 
-                        if (CurrentSeries.ReferencePhotoForSeries.Line != null)
+                        if (CurrentReferencePhoto.Line != null)
                         {
-                            MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries
-                                .Line);
+                            MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentReferencePhoto.Line);
 
-                            CurrentSeries.ReferencePhotoForSeries.Line = null;
-                            CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter = 0;
+                            CurrentReferencePhoto.Line = null;
+                            CurrentReferencePhoto.PixelsInMillimeter = 0;
                         }
 
-                        CurrentSeries.ReferencePhotoForSeries = newReferencePhoto;
-                        ReferenceImage = ImageInterpreter.LoadImage(CurrentSeries.ReferencePhotoForSeries.Content);
+                        CurrentReferencePhoto = newReferencePhoto;
+                        ReferenceImage = ImageInterpreter.LoadImage(CurrentReferencePhoto.Content);
 
                         MainWindowPixelDrawer.IsEnabled = false;
                         ChangeReferenceLine.Visibility = Visibility.Visible;
@@ -3008,15 +2986,15 @@ namespace DDrop.Views
                         {
                             Username = User.Email,
                             LogCategory = LogCategory.ReferencePhoto,
-                            Message = $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} добавлен."
+                            Message = $"Референсный снимок {CurrentReferencePhoto.Name} добавлен."
                         });
                         _notifier.ShowSuccess(
-                            $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} добавлен.");
+                            $"Референсный снимок {CurrentReferencePhoto.Name} добавлен.");
                     }
                     catch (TimeoutException)
                     {
                         _notifier.ShowError(
-                            $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} не добавлен. Не удалось установить подключение. Проверьте интернет соединение.");
+                            $"Референсный снимок {CurrentReferencePhoto.Name} не добавлен. Не удалось установить подключение. Проверьте интернет соединение.");
                     }
                     catch (Exception exception)
                     {
@@ -3046,7 +3024,7 @@ namespace DDrop.Views
 
         private async void DeleteReferencePhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentSeries.ReferencePhotoForSeries?.Content != null)
+            if (CurrentReferencePhoto?.Content != null)
             {
                 var messageBoxResult = MessageBox.Show("Удалить референсный снимок?",
                     "Подтверждение удаления", MessageBoxButton.YesNo);
@@ -3062,30 +3040,30 @@ namespace DDrop.Views
 
                     try
                     {
-                        var referencePhotoId = CurrentSeries.ReferencePhotoForSeries.PhotoId;
+                        var referencePhotoId = CurrentReferencePhoto.PhotoId;
                         await _referenceBl.DeleteReferencePhoto(referencePhotoId);
                         
-                        MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
+                        MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentReferencePhoto.Line);
 
                         _notifier.ShowSuccess(
-                            $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} удален.");
+                            $"Референсный снимок {CurrentReferencePhoto.Name} удален.");
                         _logger.LogInfo(new LogEntry
                         {
                             Username = User.Email,
                             LogCategory = LogCategory.ReferencePhoto,
-                            Message = $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} удален."
+                            Message = $"Референсный снимок {CurrentReferencePhoto.Name} удален."
                         });
 
-                        CurrentSeries.ReferencePhotoForSeries.Name = null;
-                        CurrentSeries.ReferencePhotoForSeries.Line = null;
-                        CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter = 0;
-                        CurrentSeries.ReferencePhotoForSeries.Content = null;
+                        CurrentReferencePhoto.Name = null;
+                        CurrentReferencePhoto.Line = null;
+                        CurrentReferencePhoto.PixelsInMillimeter = 0;
+                        CurrentReferencePhoto.Content = null;
                         ReferenceImage = null;
                     }
                     catch (TimeoutException)
                     {
                         _notifier.ShowError(
-                            $"Референсный снимок {CurrentSeries.ReferencePhotoForSeries.Name} не удален. Не удалось установить подключение. Проверьте интернет соединение.");
+                            $"Референсный снимок {CurrentReferencePhoto.Name} не удален. Не удалось установить подключение. Проверьте интернет соединение.");
                     }
                     catch (Exception exception)
                     {
@@ -3115,7 +3093,7 @@ namespace DDrop.Views
 
         private async void SaveReferenceLine_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentSeries.ReferencePhotoForSeries.SimpleLine != null && IsReferencePhotoLineChanged())
+            if (CurrentReferencePhoto.SimpleLine != null && IsReferencePhotoLineChanged())
             {
                 SingleSeriesLoading();
                 _appStateBL.ShowAdorner(ReferenceImageLoading);
@@ -3124,7 +3102,7 @@ namespace DDrop.Views
                 {
                     ProgressBar.IsIndeterminate = true;
 
-                    var referencePhoto = _mapper.Map<ReferencePhotoView, ReferencePhoto>(CurrentSeries.ReferencePhotoForSeries);
+                    var referencePhoto = _mapper.Map<ReferencePhotoView, ReferencePhoto>(CurrentReferencePhoto);
 
                     await Task.Run(() => _referenceBl.UpdateReferencePhoto(referencePhoto));
 
@@ -3175,40 +3153,33 @@ namespace DDrop.Views
 
         private async Task ReCalculateDropParameters(bool checkForChecked = false)
         {
-            if (CurrentSeries.ReferencePhotoForSeries?.PixelsInMillimeter > 0)
+            var checkedCount = 0;
+
+            if (checkForChecked)
+                checkedCount = CurrentSeries.MeasurementsSeries.Count(x => x.IsChecked);
+
+            var messageBoxResult =
+                MessageBox.Show("Пересчитать параметры капель?", "Подтверждение", MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
             {
-                var checkedCount = 0;
+                ProgressBar.IsIndeterminate = false;
 
-                if (checkForChecked)
-                    checkedCount = CurrentSeries.MeasurementsSeries.Count(x => x.IsChecked);
+                var pbuHandle1 = pbu.New(ProgressBar, 0, CurrentSeries.MeasurementsSeries.Count, 0);
 
-                var messageBoxResult =
-                    MessageBox.Show("Пересчитать параметры капель?", "Подтверждение", MessageBoxButton.YesNo);
-                if (messageBoxResult == MessageBoxResult.Yes)
+                foreach (var measurement in CurrentSeries.MeasurementsSeries)
                 {
-                    ProgressBar.IsIndeterminate = false;
+                    if (checkForChecked && checkedCount > 0 && !measurement.IsChecked)
+                        continue;
 
-                    var pbuHandle1 = pbu.New(ProgressBar, 0, CurrentSeries.MeasurementsSeries.Count, 0);
+                    if (measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed || 
+                        measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed)
+                        await ReCalculateDropParameters(measurement);
 
-                    foreach (var measurement in CurrentSeries.MeasurementsSeries)
-                    {
-                        if (checkForChecked && checkedCount > 0 && !measurement.IsChecked)
-                            continue;
-
-                        if (measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed || 
-                            measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed)
-                            await ReCalculateDropParameters(measurement);
-
-                        pbu.CurValue[pbuHandle1] += 1;
-                    }
-
-                    pbu.ResetValue(pbuHandle1);
-                    pbu.Remove(pbuHandle1);
+                    pbu.CurValue[pbuHandle1] += 1;
                 }
-            }
-            else
-            {
-                _notifier.ShowInformation("Выберите референсное расстояние на референсном снимке.");
+
+                pbu.ResetValue(pbuHandle1);
+                pbu.Remove(pbuHandle1);
             }
         }
 
@@ -3220,7 +3191,6 @@ namespace DDrop.Views
                 {
                     DropId = measurement.Drop.DropId,
                     RadiusInMeters = measurement.Drop.RadiusInMeters,
-                    Series = measurement.Drop.Series,
                     VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
                     XDiameterInMeters = measurement.Drop.XDiameterInMeters,
                     YDiameterInMeters = measurement.Drop.YDiameterInMeters,
@@ -3232,7 +3202,7 @@ namespace DDrop.Views
                     var frontProcessed = measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed;
                     var sideProcessed = measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed;
 
-                    var drop = await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), PixelsInMillimeterTextBox.Text, frontProcessed, sideProcessed);
+                    var drop = await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>> (CurrentSeries.ReferencePhotoForSeries), frontProcessed, sideProcessed);
 
                     measurement.Drop = _mapper.Map<Drop, DropView>(drop);
 
@@ -3272,17 +3242,17 @@ namespace DDrop.Views
 
         private void ChangeReferenceLine_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentSeries.ReferencePhotoForSeries?.Content != null)
+            if (CurrentReferencePhoto?.Content != null)
             {
-                if (CurrentSeries.ReferencePhotoForSeries.SimpleLine != null)
+                if (CurrentReferencePhoto.SimpleLine != null)
                 {
-                    _storedReferencePhotoPixelsInMillimeter = CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter;
+                    _storedReferencePhotoPixelsInMillimeter = CurrentReferencePhoto.PixelsInMillimeter;
                     _storedReferenceLine = new Line
                     {
-                        X1 = CurrentSeries.ReferencePhotoForSeries.SimpleLine.X1,
-                        X2 = CurrentSeries.ReferencePhotoForSeries.SimpleLine.X2,
-                        Y1 = CurrentSeries.ReferencePhotoForSeries.SimpleLine.Y1,
-                        Y2 = CurrentSeries.ReferencePhotoForSeries.SimpleLine.Y2,
+                        X1 = CurrentReferencePhoto.SimpleLine.X1,
+                        X2 = CurrentReferencePhoto.SimpleLine.X2,
+                        Y1 = CurrentReferencePhoto.SimpleLine.Y1,
+                        Y2 = CurrentReferencePhoto.SimpleLine.Y2,
                         Stroke = System.Windows.Media.Brushes.DeepPink,
                         StrokeThickness = 2
                     };
@@ -3309,8 +3279,8 @@ namespace DDrop.Views
             SeriesManager.IsEnabled = false;
             ReferenceTab.IsEnabled = false;
             MainMenuBar.IsEnabled = false;
-            DeleteButton.IsEnabled = false;
-            ChooseReferenceButton.IsEnabled = false;
+            DeleteButton.Visibility = Visibility.Hidden;
+            ChooseReferenceButton.Visibility = Visibility.Hidden;
 
             DrawningMode = PixelDrawerMode.Line;
             _twoLineMode = false;
@@ -3337,30 +3307,30 @@ namespace DDrop.Views
         {
             if (_storedReferenceLine != null)
             {
-                MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
+                MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentReferencePhoto.Line);
 
-                CurrentSeries.ReferencePhotoForSeries.Line.X1 = _storedReferenceLine.X1;
-                CurrentSeries.ReferencePhotoForSeries.Line.X2 = _storedReferenceLine.X2;
-                CurrentSeries.ReferencePhotoForSeries.Line.Y1 = _storedReferenceLine.Y1;
-                CurrentSeries.ReferencePhotoForSeries.Line.Y2 = _storedReferenceLine.Y2;
-                CurrentSeries.ReferencePhotoForSeries.Line.Stroke = _storedReferenceLine.Stroke;
-                CurrentSeries.ReferencePhotoForSeries.Line.StrokeThickness = _storedReferenceLine.StrokeThickness;
+                CurrentReferencePhoto.Line.X1 = _storedReferenceLine.X1;
+                CurrentReferencePhoto.Line.X2 = _storedReferenceLine.X2;
+                CurrentReferencePhoto.Line.Y1 = _storedReferenceLine.Y1;
+                CurrentReferencePhoto.Line.Y2 = _storedReferenceLine.Y2;
+                CurrentReferencePhoto.Line.Stroke = _storedReferenceLine.Stroke;
+                CurrentReferencePhoto.Line.StrokeThickness = _storedReferenceLine.StrokeThickness;
 
-                CurrentSeries.ReferencePhotoForSeries.SimpleLine.X1 = _storedReferenceLine.X1;
-                CurrentSeries.ReferencePhotoForSeries.SimpleLine.X2 = _storedReferenceLine.X2;
-                CurrentSeries.ReferencePhotoForSeries.SimpleLine.Y1 = _storedReferenceLine.Y1;
-                CurrentSeries.ReferencePhotoForSeries.SimpleLine.Y2 = _storedReferenceLine.Y2;
+                CurrentReferencePhoto.SimpleLine.X1 = _storedReferenceLine.X1;
+                CurrentReferencePhoto.SimpleLine.X2 = _storedReferenceLine.X2;
+                CurrentReferencePhoto.SimpleLine.Y1 = _storedReferenceLine.Y1;
+                CurrentReferencePhoto.SimpleLine.Y2 = _storedReferenceLine.Y2;
 
-                CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter = _storedReferencePhotoPixelsInMillimeter;
+                CurrentReferencePhoto.PixelsInMillimeter = _storedReferencePhotoPixelsInMillimeter;
 
-                MainWindowPixelDrawer.CanDrawing.Children.Add(CurrentSeries.ReferencePhotoForSeries.Line);
+                MainWindowPixelDrawer.CanDrawing.Children.Add(CurrentReferencePhoto.Line);
             }
             else
             {
-                CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter = 0;
-                MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
-                CurrentSeries.ReferencePhotoForSeries.Line = null;
-                CurrentSeries.ReferencePhotoForSeries.SimpleLine = null;
+                CurrentReferencePhoto.PixelsInMillimeter = 0;
+                MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentReferencePhoto.Line);
+                CurrentReferencePhoto.Line = null;
+                CurrentReferencePhoto.SimpleLine = null;
             }
 
             ReferenceEditModeOff();
@@ -3368,22 +3338,22 @@ namespace DDrop.Views
 
         private bool IsReferencePhotoLineChanged()
         {
-            if (_storedReferenceLine == null && CurrentSeries.ReferencePhotoForSeries.Line != null) return true;
+            if (_storedReferenceLine == null && CurrentReferencePhoto.Line != null) return true;
 
-            if (CurrentSeries.ReferencePhotoForSeries.Line != null && _storedReferenceLine != null)
-                if (Math.Abs(CurrentSeries.ReferencePhotoForSeries.Line.X1 - _storedReferenceLine.X1) > 0.001)
+            if (CurrentReferencePhoto.Line != null && _storedReferenceLine != null)
+                if (Math.Abs(CurrentReferencePhoto.Line.X1 - _storedReferenceLine.X1) > 0.001)
                     return true;
 
-            if (CurrentSeries.ReferencePhotoForSeries.Line != null && _storedReferenceLine != null)
-                if (Math.Abs(CurrentSeries.ReferencePhotoForSeries.Line.X2 - _storedReferenceLine.X2) > 0.001)
+            if (CurrentReferencePhoto.Line != null && _storedReferenceLine != null)
+                if (Math.Abs(CurrentReferencePhoto.Line.X2 - _storedReferenceLine.X2) > 0.001)
                     return true;
 
-            if (CurrentSeries.ReferencePhotoForSeries.Line != null && _storedReferenceLine != null)
-                if (Math.Abs(CurrentSeries.ReferencePhotoForSeries.Line.Y1 - _storedReferenceLine.Y1) > 0.001)
+            if (CurrentReferencePhoto.Line != null && _storedReferenceLine != null)
+                if (Math.Abs(CurrentReferencePhoto.Line.Y1 - _storedReferenceLine.Y1) > 0.001)
                     return true;
 
-            if (CurrentSeries.ReferencePhotoForSeries.Line != null && _storedReferenceLine != null)
-                if (Math.Abs(CurrentSeries.ReferencePhotoForSeries.Line.Y2 - _storedReferenceLine.Y2) > 0.001)
+            if (CurrentReferencePhoto.Line != null && _storedReferenceLine != null)
+                if (Math.Abs(CurrentReferencePhoto.Line.Y2 - _storedReferenceLine.Y2) > 0.001)
                     return true;
 
             return false;
@@ -3397,49 +3367,42 @@ namespace DDrop.Views
 
         private async void StartAutoCalculate_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(PixelsInMillimeterTextBox.Text) && PixelsInMillimeterTextBox.Text != "0")
+            if (CurrentSeries.MeasurementsSeries.Count > 0)
             {
-                if (CurrentSeries.MeasurementsSeries.Count > 0)
-                {
-                    InitilizeTemplates();
-                    EndPythonTemplateAdding();
-                    EndCSharpTemplateAdding();
+                InitilizeTemplates();
+                EndPythonTemplateAdding();
+                EndCSharpTemplateAdding();
 
-                    DrawningMode = PixelDrawerMode.Rectangle;
-                    ImgCurrent.DrawningIsEnabled = true;
-                    _autoCalculationModeOn = true;
-                    _photoEditModeOn = true;
-                    SeriesEditMenu.Visibility = Visibility.Hidden;
-                    EditRegularPhotoColumn.Visibility = Visibility.Hidden;
-                    DeleteMeasurementColumn.Visibility = Visibility.Hidden;
-                    DeleteRegularPhotoColumn.Visibility = Visibility.Hidden;
-                    EditThermalPhotoColumn.Visibility = Visibility.Hidden;
-                    DeleteThermalPhotoColumn.Visibility = Visibility.Hidden;
-                    AutoCalculationGridSplitter.IsEnabled = true;
-                    
-                    if (CurrentDropPhoto != null)
-                        ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
+                DrawningMode = PixelDrawerMode.Rectangle;
+                ImgCurrent.DrawningIsEnabled = true;
+                _autoCalculationModeOn = true;
+                _photoEditModeOn = true;
+                SeriesEditMenu.Visibility = Visibility.Hidden;
+                EditRegularPhotoColumn.Visibility = Visibility.Hidden;
+                DeleteMeasurementColumn.Visibility = Visibility.Hidden;
+                DeleteRegularPhotoColumn.Visibility = Visibility.Hidden;
+                EditThermalPhotoColumn.Visibility = Visibility.Hidden;
+                DeleteThermalPhotoColumn.Visibility = Visibility.Hidden;
+                AutoCalculationGridSplitter.IsEnabled = true;
+                
+                if (CurrentDropPhoto != null)
+                    ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
 
-                    AutoCalculationMenu.Visibility = Visibility.Visible;
+                AutoCalculationMenu.Visibility = Visibility.Visible;
 
-                    SingleSeriesLoading(false);
-                    _overrideLoadingBehaviour = true;
+                SingleSeriesLoading(false);
+                _overrideLoadingBehaviour = true;
 
-                    _storedMeasurements = new ObservableCollection<MeasurementView>();
+                _storedMeasurements = new ObservableCollection<MeasurementView>();
 
-                    foreach (var measurement in CurrentSeries.MeasurementsSeries) StoreMeasurement(measurement, _storedMeasurements);
+                foreach (var measurement in CurrentSeries.MeasurementsSeries) StoreMeasurement(measurement, _storedMeasurements);
 
-                    await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, true, 300, 0,
-                        AutoCalculationColumn.MinWidth, 0, 200);
-                }
-                else
-                {
-                    _notifier.ShowInformation("Нет снимков для автоматического расчета.");
-                }
+                await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, true, 300, 0,
+                    AutoCalculationColumn.MinWidth, 0, 200);
             }
             else
             {
-                _notifier.ShowInformation("Выберите референсное расстояние на референсном снимке.");
+                _notifier.ShowInformation("Нет снимков для автоматического расчета.");
             }
         }
 
@@ -3664,7 +3627,7 @@ namespace DDrop.Views
                     CurrentSeries.MeasurementsSeries[i] = _mapper.Map<Measurement, MeasurementView>(
                         _calculationBL.ReCalculateAllParametersFromLines(
                             _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
-                            PixelsInMillimeterTextBox.Text));
+                            _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries)));
 
                     CurrentSeries.MeasurementsSeries[i].RequireSaving = true;
                 }
@@ -4247,7 +4210,7 @@ namespace DDrop.Views
                 }
             }
 
-            _calculationBL.ReCalculateAllParametersFromLines(_mapper.Map<MeasurementView, Measurement>(measurement), PixelsInMillimeterTextBox.Text);
+            _calculationBL.ReCalculateAllParametersFromLines(_mapper.Map<MeasurementView, Measurement>(measurement), _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries));
 
             if (measurement.MeasurementId == CurrentMeasurement?.MeasurementId)
                 ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
@@ -4539,8 +4502,12 @@ namespace DDrop.Views
             {
                 MainTabControl.SelectedIndex = 0;
 
-                if (CurrentSeries?.ReferencePhotoForSeries?.Line != null)
-                    MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
+                foreach (var referencePhotoView in CurrentSeries.ReferencePhotoForSeries)
+                {
+                    if (referencePhotoView?.Line != null)
+                        MainWindowPixelDrawer.CanDrawing.Children.Remove(referencePhotoView.Line);
+                }
+
 
                 if (User.UserSeries != null)
                 {
@@ -4675,9 +4642,9 @@ namespace DDrop.Views
 
             CreationTimeCheckBox.IsEnabled = false;
             MainMenuBar.IsEnabled = false;
-            ChangeReferenceLine.IsEnabled = false;
-            DeleteButton.IsEnabled = false;
-            ChooseReferenceButton.IsEnabled = false;
+            ChangeReferenceLine.Visibility = Visibility.Hidden; 
+            DeleteButton.Visibility = Visibility.Hidden;
+            ChooseReferenceButton.Visibility = Visibility.Hidden;
         }
 
         private async void SingleSeriesLoadingComplete(bool disablePhotos = true)
@@ -4713,9 +4680,9 @@ namespace DDrop.Views
 
             CreationTimeCheckBox.IsEnabled = true;
             MainMenuBar.IsEnabled = true;
-            ChangeReferenceLine.IsEnabled = true;
-            DeleteButton.IsEnabled = true;
-            ChooseReferenceButton.IsEnabled = true;
+            ChangeReferenceLine.Visibility = Visibility.Visible;
+            DeleteButton.Visibility = Visibility.Visible;
+            ChooseReferenceButton.Visibility = Visibility.Visible;
         }
 
         private void SeriesWindowLoading(bool indeterminateLoadingBar = true)
@@ -5753,9 +5720,9 @@ namespace DDrop.Views
                 {
                     DrawnShapes.Line.Stroke = System.Windows.Media.Brushes.DeepPink;
 
-                    MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentSeries.ReferencePhotoForSeries.Line);
+                    MainWindowPixelDrawer.CanDrawing.Children.Remove(CurrentReferencePhoto.Line);
 
-                    CurrentSeries.ReferencePhotoForSeries.Line = DrawnShapes.Line;
+                    CurrentReferencePhoto.Line = DrawnShapes.Line;
                     var simpleReferenceLineForAdd = new SimpleLineView()
                     {
                         X1 = DrawnShapes.Line.X1,
@@ -5764,9 +5731,9 @@ namespace DDrop.Views
                         Y2 = DrawnShapes.Line.Y2
                     };
 
-                    CurrentSeries.ReferencePhotoForSeries.SimpleLine = simpleReferenceLineForAdd;
+                    CurrentReferencePhoto.SimpleLine = simpleReferenceLineForAdd;
 
-                    CurrentSeries.ReferencePhotoForSeries.PixelsInMillimeter =
+                    CurrentReferencePhoto.PixelsInMillimeter =
                         LineLengthHelper.GetPointsOnLine(point11, point22).Count;
                 }
             }
@@ -6455,6 +6422,7 @@ namespace DDrop.Views
                             PlotId = Guid.NewGuid(),
                             Name = CurrentSeries.Title,
                             PlotType = PlotTypeView.Temperature,
+                            SeriesId = CurrentSeries.SeriesId,
                             Points = new ObservableCollection<SimplePointView>(),
                         };
 
@@ -6547,12 +6515,40 @@ namespace DDrop.Views
             }
         }
 
-        private void EditReferencePhotoButton_OnClick(object sender, RoutedEventArgs e)
+        private async void ReferencePhotoDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-        }
+            if (ReferencePhotoDataGrid.SelectedIndex == -1) return;
 
-        private void DeleteReferencePhotoButton_OnClick(object sender, RoutedEventArgs e)
-        {
+            try
+            {
+                CurrentReferencePhoto = CurrentSeries.ReferencePhotoForSeries[ReferencePhotoDataGrid.SelectedIndex];
+
+                CurrentReferencePhoto.Content = await _referenceBl.GetReferencePhotoContent(CurrentReferencePhoto.PhotoId);
+            }
+            catch (TimeoutException)
+            {
+                _notifier.ShowError(
+                    "Не удалось загрузить референсный снимок. Не удалось установить подключение. Проверьте интернет соединение.");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(new LogEntry
+                {
+                    Exception = exception.ToString(),
+                    LogCategory = LogCategory.Common,
+                    InnerException = exception.InnerException?.Message,
+                    Message = exception.Message,
+                    StackTrace = exception.StackTrace,
+                    Username = User.Email,
+                    Details = exception.HelpLink
+                });
+                throw;
+            }
+
+            SeriesDrawerSwap();
+
+            if (CurrentReferencePhoto?.Content != null)
+                ReferenceImage = ImageInterpreter.LoadImage(CurrentReferencePhoto.Content);
         }
     }
 }

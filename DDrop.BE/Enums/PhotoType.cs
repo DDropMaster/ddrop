@@ -7,6 +7,5 @@ namespace DDrop.BE.Enums
         [Description("Фото спереди")] FrontDropPhoto,
         [Description("Фото сбоку")] SideDropPhoto,
         [Description("Термическое")] ThermalPhoto,
-        ReferencePhoto,
     }
 }

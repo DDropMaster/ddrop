@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using DDrop.Enums;
 using DDrop.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
@@ -69,13 +70,14 @@ namespace DDrop.Utility.ExcelOperations
                             worksheet.Cells["A1"].Value = "Название серии:";
                             worksheet.Cells["A2"].Value = "Очет от:";
                             worksheet.Cells["A3"].Value = "Интервал между снимками, c:";
-                            worksheet.Cells["A4"].Value = "Пикселей в миллиметре, px:";
+                            worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Спереди), px:";
+                            worksheet.Cells["A5"].Value = "Пикселей в миллиметре (Сбоку), px:";
 
                             worksheet.Cells["D1"].Value = currentSeries.Title;
                             worksheet.Cells["D2"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
                             worksheet.Cells["D3"].Value = currentSeries.IntervalBetweenPhotos;
-                            worksheet.Cells["D4"].Value =
-                                currentSeries.ReferencePhotoForSeries?.PixelsInMillimeter ?? 0;
+                            worksheet.Cells["D4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
+                            worksheet.Cells["D5"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
 
                             var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
 

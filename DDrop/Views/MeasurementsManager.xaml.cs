@@ -617,8 +617,6 @@ namespace DDrop.Views
                     var drop = new DropView()
                     {
                         DropId = ResultingMeasurements[i].MeasurementId,
-                        Series = _currentSeries,
-                        Measurement = ResultingMeasurements[i]
                     };
 
                     ResultingMeasurements[i].Drop = drop;

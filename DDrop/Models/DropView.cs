@@ -1,13 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 
 namespace DDrop.Models
 {
     public class DropView : BindableObject
     {
         private double? _radiusInMeters;
-        private SeriesView _series;
-
         private double _volumeInCubicalMeters;
         private double _xDiameterInMeters;
 
@@ -16,16 +13,6 @@ namespace DDrop.Models
         private double _zDiameterInMeters;
 
         private double? _temperature;
-
-        public SeriesView Series
-        {
-            get => _series;
-            set
-            {
-                _series = value;
-                RaisePropertyChanged("Series");
-            }
-        }
 
         public Guid DropId { get; set; }
 
@@ -75,8 +62,6 @@ namespace DDrop.Models
             set
             {
                 _radiusInMeters = value;
-                _series?.OnPropertyChanged(new PropertyChangedEventArgs(nameof(Series.CanDrawPlot)));
-                _measurement?.OnPropertyChanged(new PropertyChangedEventArgs(nameof(Measurement.Processed)));
                 RaisePropertyChanged("RadiusInMeters");
             }
         }
@@ -88,19 +73,6 @@ namespace DDrop.Models
             {
                 _temperature = value;
                 RaisePropertyChanged("Temperature");
-            }
-        }
-
-
-        private MeasurementView _measurement;
-
-        public MeasurementView Measurement
-        {
-            get => _measurement;
-            set
-            {
-                _measurement = value;
-                RaisePropertyChanged("Measurement");
             }
         }
     }

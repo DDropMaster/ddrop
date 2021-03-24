@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using DDrop.Enums;
 
 namespace DDrop.Models
@@ -59,6 +58,17 @@ namespace DDrop.Models
             {
                 _currentUserId = value;
                 RaisePropertyChanged("CurrentUserId");
+            }
+        }
+
+        private Guid _seriesId;
+        public Guid SeriesId
+        {
+            get => _seriesId;
+            set
+            {
+                _seriesId = value;
+                RaisePropertyChanged("SeriesId");
             }
         }
 

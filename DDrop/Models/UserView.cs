@@ -149,8 +149,7 @@ namespace DDrop.Models
                 RaisePropertyChanged("Plots");
             }
         }
-
-
+        
         private void _userSeries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(IsAnySelectedSeriesCanDrawPlot));

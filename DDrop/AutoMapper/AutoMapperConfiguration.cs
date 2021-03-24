@@ -31,11 +31,7 @@ namespace DDrop.AutoMapper
                         x.SubstanceId, opt => opt.Ignore());
 
                 cfg.CreateMap<DropView, Drop>();
-                cfg.CreateMap<Drop, DropView>()
-                    .ForMember(x =>
-                        x.Measurement, opt => opt.Ignore())
-                    .ForMember(x =>
-                        x.Series, opt => opt.Ignore());
+                cfg.CreateMap<Drop, DropView>();
                 cfg.CreateMap<Drop, DbDrop>()
                     .ForMember(x => x.Measurement, opt => opt.Ignore());
                 cfg.CreateMap<DbDrop, Drop>();
@@ -86,9 +82,7 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<DbMeasurement, Measurement>();
 
 
-                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>()
-                    .ForMember(x =>
-                        x.Series, opt => opt.Ignore());
+                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>();
                 cfg.CreateMap<ReferencePhoto, ReferencePhotoView>()
                     .ForMember(x =>
                         x.Line, opt => opt.MapFrom<ReferencePhotoResolver>());
@@ -97,10 +91,7 @@ namespace DDrop.AutoMapper
                         x.Series, opt => opt.Ignore())
                     .ForMember(dest =>
                         dest.ReferenceLine, opt =>
-                        opt.MapFrom(src => JsonSerializeProvider.SerializeToString(src.SimpleLine)))
-                    .ForMember(dest =>
-                        dest.Series, opt =>
-                        opt.MapFrom(src => src.Series));
+                        opt.MapFrom(src => JsonSerializeProvider.SerializeToString(src.SimpleLine)));
                 cfg.CreateMap<DbReferencePhoto, ReferencePhoto>()
                     .ForMember(dest =>
                         dest.SimpleLine, opt =>
@@ -236,6 +227,12 @@ namespace DDrop.AutoMapper
                         opt.Ignore());
                 cfg.CreateMap<PlotView, Plot>();
                 cfg.CreateMap<Plot, DbPlot>()
+                    .ForMember(x =>
+                        x.Series, opt =>
+                        opt.MapFrom(src =>
+                            src.SeriesId != Guid.Empty
+                                ? new Series() { SeriesId = src.SeriesId }
+                                : null))
                     .ForMember(x => x.CurrentUser, opt =>
                         opt.Ignore())
                     .ForMember(x => x.Series, opt =>
@@ -249,6 +246,12 @@ namespace DDrop.AutoMapper
                         opt.MapFrom(src => src.Settings != null ?
                             JsonSerializeProvider.SerializeToString(src.Settings) : null));
                 cfg.CreateMap<DbPlot, Plot>()
+                    .ForMember(x =>
+                        x.SeriesId, opt =>
+                        opt.MapFrom(src =>
+                            src.Series != null
+                                ? src.Series.SeriesId
+                                : Guid.Empty))
                     .ForMember(x =>
                         x.Points, opt =>
                         opt.MapFrom(src =>

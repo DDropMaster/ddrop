@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
+using DDrop.BE.Enums;
+using DDrop.BE.Models;
 using DDrop.BL.Drop;
 using DDrop.Utility.Calculation;
 
@@ -15,38 +19,42 @@ namespace DDrop.BL.Calculation
             _dropBl = dropBl;
         }
 
-        public async Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, string pixelsInMillimeter, bool frontProcessed, bool sideProcessed)
+        public async Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, List<ReferencePhoto> referencePhotos, bool frontProcessed, bool sideProcessed)
         {
-            var pixelsInMillimeterForCalculation = Convert.ToInt32(pixelsInMillimeter);
+            var frontReferencePixelsInMillimeter = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto).PixelsInMillimeter;
+
+            var sideReferencePixelsInMillimeter = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto).PixelsInMillimeter;
 
             if (measurement.FrontDropPhoto != null && frontProcessed && measurement.SideDropPhoto != null && sideProcessed)
             {
-                var yDiameterInPixels = (measurement.FrontDropPhoto.YDiameterInPixels +
-                                         measurement.SideDropPhoto.YDiameterInPixels) / 2;
+                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter +
+                                         measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter) / 2;
 
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
-                    measurement.FrontDropPhoto.XDiameterInPixels,
-                    yDiameterInPixels,
-                    measurement.SideDropPhoto.ZDiameterInPixels, 
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
+                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
+                    yDiameterInMillimeters,
+                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter, 
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
             else if ((measurement.FrontDropPhoto == null || !frontProcessed) && measurement.SideDropPhoto != null && sideProcessed)
             {
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels,
-                    measurement.SideDropPhoto.ZDiameterInPixels,
+                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter,
+                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter,
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
             else if (measurement.FrontDropPhoto != null && frontProcessed && (measurement.SideDropPhoto == null || !sideProcessed))
             {
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
-                    measurement.FrontDropPhoto.XDiameterInPixels,
-                    measurement.FrontDropPhoto.YDiameterInPixels,
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
+                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
+                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter,
                     0,
                     measurement.Drop);
 
@@ -56,9 +64,13 @@ namespace DDrop.BL.Calculation
             return measurement.Drop;
         }
 
-        public BE.Models.Measurement ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, string pixelsInMillimeterTextBox)
+        public BE.Models.Measurement ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, List<ReferencePhoto> referencePhotos)
         {
-            var pixelsInMillimeterForCalculation = Convert.ToInt32(pixelsInMillimeterTextBox);
+            var frontReferencePixelsInMillimeter = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto).PixelsInMillimeter;
+
+            var sideReferencePixelsInMillimeter = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto).PixelsInMillimeter;
 
             if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId != null)
             {
@@ -118,13 +130,13 @@ namespace DDrop.BL.Calculation
                 {
                     measurement.SideDropPhoto.YDiameterInPixels = 0;
                 }
-                
-                var yDiameterInPixels = (measurement.FrontDropPhoto.YDiameterInPixels +
-                                         measurement.SideDropPhoto.YDiameterInPixels) / 2;
 
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
+                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter +
+                                              measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter) / 2;
+
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     measurement.FrontDropPhoto.XDiameterInPixels,
-                    yDiameterInPixels,
+                    yDiameterInMillimeters,
                     measurement.SideDropPhoto.ZDiameterInPixels,
                     measurement.Drop);
             }
@@ -158,10 +170,10 @@ namespace DDrop.BL.Calculation
                     measurement.SideDropPhoto.YDiameterInPixels = 0;
                 }
 
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels,
-                    measurement.SideDropPhoto.ZDiameterInPixels,
+                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter,
+                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter,
                     measurement.Drop);
             }
             else if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId == null)
@@ -194,9 +206,9 @@ namespace DDrop.BL.Calculation
                     measurement.FrontDropPhoto.YDiameterInPixels = 0;
                 }
 
-                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(pixelsInMillimeterForCalculation,
-                    measurement.FrontDropPhoto.XDiameterInPixels,
-                    measurement.FrontDropPhoto.YDiameterInPixels,
+                DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
+                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
+                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter,
                     0,
                     measurement.Drop);
             }

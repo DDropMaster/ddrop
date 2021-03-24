@@ -48,11 +48,21 @@ namespace DDrop.Models
             {
                 _measurementsSeries = value;
                 RaisePropertyChanged("MeasurementsSeries");
+
+                foreach (var measurementsSeries in _measurementsSeries)
+                {
+                    measurementsSeries.PropertyChanged += MeasurementPropertyChanged;
+                }
             }
         }
 
-        private ReferencePhotoView _referencePhotoForSeries;
-        public ReferencePhotoView ReferencePhotoForSeries
+        void MeasurementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            RaisePropertyChanged("Drop");
+        }
+
+        private ObservableCollection<ReferencePhotoView> _referencePhotoForSeries;
+        public ObservableCollection<ReferencePhotoView> ReferencePhotoForSeries
         {
             get => _referencePhotoForSeries;
             set
@@ -306,18 +316,6 @@ namespace DDrop.Models
         {
             RaisePropertyChanged(nameof(CanDrawPlot));
             foreach (var photo in _measurementsSeries) photo.MeasurementOrderInSeries = _measurementsSeries.IndexOf(photo);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Loaded))
-                RaisePropertyChanged(nameof(CanDrawPlot));
-
-            if (e.PropertyName == nameof(IntervalBetweenPhotos))
-                RaisePropertyChanged(nameof(CanDrawPlot));
-
-            if (e.PropertyName == nameof(Settings.GeneralSeriesSettings.UseCreationDateTime))
-                RaisePropertyChanged(nameof(CanDrawPlot));
         }
     }
 }

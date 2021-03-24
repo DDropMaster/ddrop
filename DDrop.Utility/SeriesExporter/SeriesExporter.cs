@@ -18,7 +18,11 @@ namespace DDrop.Utility.SeriesExporter
             
             if (series.ReferencePhotoForSeries != null)
             {
-                series.ReferencePhotoForSeries.PhotoId = series.SeriesId;
+                foreach (var referencePhoto in series.ReferencePhotoForSeries)
+                {
+                    referencePhoto.PhotoId = Guid.NewGuid();
+                    referencePhoto.CurrentSeriesId = series.SeriesId;
+                }
             }
 
             return series;

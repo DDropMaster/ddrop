@@ -11,10 +11,11 @@ namespace DDrop.Db.DbEntities
         public string Name { get; set; }
         public byte[] Content { get; set; }
         public int PixelsInMillimeter { get; set; }
-        public virtual DbSeries Series { get; set; }
         public string ReferenceLine { get; set; }
         public string AddedDate { get; set; }
         public string CreationDateTime { get; set; }
         public string PhotoType { get; set; }
+        public Guid CurrentSeriesId { get; set; }
+        public DbSeries Series { get; set; }
     }
 }

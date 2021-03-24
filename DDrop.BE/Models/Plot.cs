@@ -14,6 +14,8 @@ namespace DDrop.BE.Models
 
         public Guid CurrentUserId { get; set; }
 
+        public Guid SeriesId { get; set; }
+
         public PlotType PlotType { get; set; }
 
         public PlotSettings Settings { get; set; }

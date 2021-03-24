@@ -12,7 +12,7 @@ namespace DDrop.Db.DbEntities
 
         public string Title { get; set; }
         public List<DbMeasurement> MeasurementsSeries { get; set; }
-        public virtual DbReferencePhoto ReferencePhotoForSeries { get; set; }
+        public List<DbReferencePhoto> ReferencePhotoForSeries { get; set; }
         public virtual DbSubstances Substance { get; set; }
         public double IntervalBetweenPhotos { get; set; }
         public string AddedDate { get; set; }

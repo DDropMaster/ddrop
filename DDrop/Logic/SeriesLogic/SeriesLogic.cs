@@ -27,8 +27,11 @@ namespace DDrop.Logic.SeriesLogic
 
             if (series == currentSeries)
             {
-                if (currentSeries.ReferencePhotoForSeries?.Line != null)
-                    canvas.Children.Remove(currentSeries.ReferencePhotoForSeries?.Line);
+                foreach (var currentSerieReferencePhotoForSeries in series.ReferencePhotoForSeries)
+                {
+                    if (currentSerieReferencePhotoForSeries?.Line != null)
+                        canvas.Children.Remove(currentSerieReferencePhotoForSeries?.Line);
+                }
 
                 currentSeries.Title = null;
             }

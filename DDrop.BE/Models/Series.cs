@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace DDrop.BE.Models
 {
@@ -11,9 +11,9 @@ namespace DDrop.BE.Models
 
         public string Title { get; set; }
 
-        public ObservableCollection<Measurement> MeasurementsSeries { get; set; }
+        public List<Measurement> MeasurementsSeries { get; set; }
 
-        public ReferencePhoto ReferencePhotoForSeries { get; set; }
+        public List<ReferencePhoto> ReferencePhotoForSeries { get; set; }
         
         public SubstanceModel Substance { get; set; }
 
@@ -27,7 +27,7 @@ namespace DDrop.BE.Models
 
         public SeriesSettings Settings { get; set; }
 
-        public ObservableCollection<TypedRectangle> RegionOfInterest { get; set; }
+        public List<TypedRectangle> RegionOfInterest { get; set; }
         public Plot ThermalPlot { get; set; }
     }
 }

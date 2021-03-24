@@ -5,21 +5,7 @@ namespace DDrop.Models
 {
     public class MeasurementView : BindableObject
     {
-        private string _addedDate;
-
-        private string _creationDateTime;
-
-        private SeriesView _currentSeries;
         private Guid _currentSeriesId;
-
-        private bool _isChecked;
-
-        private string _name;
-
-        private int _measurementOrderInSeries;
-
-        private bool _requireSaving;
-
         public Guid CurrentSeriesId
         {
             get => _currentSeriesId;
@@ -32,6 +18,7 @@ namespace DDrop.Models
 
         public Guid MeasurementId { get; set; }
 
+        private string _name;
         public string Name
         {
             get => _name;
@@ -59,6 +46,7 @@ namespace DDrop.Models
             RaisePropertyChanged("Drop");
         }
 
+        private string _addedDate;
         public string AddedDate
         {
             get => _addedDate;
@@ -69,6 +57,7 @@ namespace DDrop.Models
             }
         }
 
+        private bool _isChecked;
         public bool IsChecked
         {
             get => _isChecked;
@@ -79,6 +68,7 @@ namespace DDrop.Models
             }
         }
 
+        private string _creationDateTime;
         public string CreationDateTime
         {
             get => _creationDateTime;
@@ -89,6 +79,7 @@ namespace DDrop.Models
             }
         }
 
+        private bool _requireSaving;
         public bool RequireSaving
         {
             get => _requireSaving;
@@ -99,6 +90,7 @@ namespace DDrop.Models
             }
         }
 
+        private int _measurementOrderInSeries;
         public int MeasurementOrderInSeries
         {
             get => _measurementOrderInSeries;
@@ -258,13 +250,6 @@ namespace DDrop.Models
                 _comment = value;
                 RaisePropertyChanged("Comment");
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            PropertyChanged?.Invoke(this, e);
         }
     }
 }
