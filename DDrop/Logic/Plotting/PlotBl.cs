@@ -62,7 +62,12 @@ namespace DDrop.Logic.Plotting
                     {
                         for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                         {
-                            var time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
+                            double time = 0.0;
+
+                            if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
+                            {
+                                time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
+                            }
 
                             var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
                             if (dropRadiusInMeters != null)

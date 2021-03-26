@@ -5558,7 +5558,7 @@ namespace DDrop.Views
 
             if (DrawnShapes.Rectangle == null && DrawnShapes.Line == null && DrawnShapes.Ellipse == null) return;
 
-            if (e.ChangedButton == MouseButton.Left) return;
+            if (e.ChangedButton != MouseButton.Right) return;
 
             switch (DrawningMode)
             {

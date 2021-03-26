@@ -4,7 +4,7 @@ namespace DDrop.BL.Calculation.DropletSizeCalculator
 {
     public static class DropletSizeCalculator
     {
-        public static void PerformCalculation(int xDiameterInMeters, int yDiameterInMeters, int zDiameterInMeters, BE.Models.Drop drop)
+        public static void PerformCalculation(double xDiameterInMeters, double yDiameterInMeters, double zDiameterInMeters, BE.Models.Drop drop)
         {
             if (xDiameterInMeters == 0 && zDiameterInMeters == 0)
             {

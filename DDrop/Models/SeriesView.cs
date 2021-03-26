@@ -58,7 +58,7 @@ namespace DDrop.Models
 
         void MeasurementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            RaisePropertyChanged("Drop");
+            RaisePropertyChanged("MeasurementsSeries");
         }
 
         private ObservableCollection<ReferencePhotoView> _referencePhotoForSeries;

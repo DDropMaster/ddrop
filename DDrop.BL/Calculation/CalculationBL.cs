@@ -21,40 +21,55 @@ namespace DDrop.BL.Calculation
 
         public async Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, List<ReferencePhoto> referencePhotos, bool frontProcessed, bool sideProcessed)
         {
-            var frontReferencePixelsInMillimeter = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto).PixelsInMillimeter;
+            var frontReference = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
 
-            var sideReferencePixelsInMillimeter = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto).PixelsInMillimeter;
+            var sideReference = referencePhotos
+                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
 
             if (measurement.FrontDropPhoto != null && frontProcessed && measurement.SideDropPhoto != null && sideProcessed)
             {
-                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter +
-                                         measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter) / 2;
+                if (frontReference?.PixelsInMillimeter == 0 || sideReference?.PixelsInMillimeter == 0)
+                {
+                    throw new InvalidOperationException("Укажите референсное расстояние");
+                }
+
+                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter +
+                                         measurement.SideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter) / 2;
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
+                    measurement.FrontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
                     yDiameterInMillimeters,
-                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter, 
+                    measurement.SideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter, 
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
             else if ((measurement.FrontDropPhoto == null || !frontProcessed) && measurement.SideDropPhoto != null && sideProcessed)
             {
+                if (sideReference?.PixelsInMillimeter == 0)
+                {
+                    throw new InvalidOperationException("Укажите референсное расстояние");
+                }
+
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter,
-                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter,
+                    measurement.SideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter,
+                    measurement.SideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter,
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
             else if (measurement.FrontDropPhoto != null && frontProcessed && (measurement.SideDropPhoto == null || !sideProcessed))
             {
+                if (frontReference?.PixelsInMillimeter == 0)
+                {
+                    throw new InvalidOperationException("Укажите референсное расстояние");
+                }
+
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
-                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter,
+                    measurement.FrontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
+                    measurement.FrontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter,
                     0,
                     measurement.Drop);
 
