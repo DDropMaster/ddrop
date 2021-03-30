@@ -62,7 +62,7 @@
       <HintPath>..\packages\Emgu.CV.4.2.0.3662\lib\netstandard2.0\Emgu.CV.World.NetStandard.dll</HintPath>
     </Reference>
     <Reference Include="Flir.Atlas.Image">
-      <HintPath>..\..\..\..\..\..\..\Downloads\Soft\FLIRImageProcessor-master\FLIRImageProcessor-master\src\lib\FLIR\x64\Flir.Atlas.Image.dll</HintPath>
+      <HintPath>..\DDrop\Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Image.dll</HintPath>
     </Reference>
     <Reference Include="Flir.Atlas.Live">
       <HintPath>..\..\..\..\..\..\..\Downloads\Soft\FLIRImageProcessor-master\FLIRImageProcessor-master\src\lib\FLIR\x64\Flir.Atlas.Live.dll</HintPath>

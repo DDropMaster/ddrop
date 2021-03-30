@@ -607,6 +607,7 @@
     <Folder Include="Resources\LocalDatabase\" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
     <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Image.dll" />
     <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Live.dll" />
     <Content Include="Resources\ExternalLibs\FLIR\x86\Flir.Atlas.Image.dll" />
@@ -615,6 +616,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\ExternalLibs\RFM\RFM_WPFProgressBarUpdate.pdb">
+=======
+    <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Image.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Live.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ExternalLibs\FLIR\x86\Flir.Atlas.Image.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ExternalLibs\FLIR\x86\Flir.Atlas.Live.dll">
+>>>>>>> Stashed changes
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
