@@ -48,5 +48,16 @@ namespace DDrop.Models
                 RaisePropertyChanged("PixelsInMillimeter");
             }
         }
+
+        private bool _editable;
+        public bool Editable
+        {
+            get
+            {
+                if (PhotoId == Guid.Empty) return false;
+
+                return true;
+            }
+        }
     }
 }

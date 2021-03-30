@@ -1376,6 +1376,9 @@
                                     SelectionChanged="ReferencePhotoDataGrid_OnSelectionChanged" 
                                     ItemsSource="{Binding CurrentSeries.ReferencePhotoForSeries, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                                     AutoGenerateColumns="false"
+                                    CanUserSortColumns="False"
+                                    CanUserReorderColumns="False"
+                                    CanUserAddRows="False"
                                 >
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Width="30" x:Name="ChooseReferenceButton"
@@ -1395,6 +1398,11 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTextColumn Header="Название" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                         <DataGridTextColumn Header="Пикселей в миллиметре" Binding="{Binding PixelsInMillimeter, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <DataGridTextColumn IsReadOnly="True" Header="Тип">
+                                            <DataGridTextColumn.Binding>
+                                                <Binding Converter="{StaticResource EnumDescription}" Path="PhotoType"/>
+                                            </DataGridTextColumn.Binding>
+                                        </DataGridTextColumn>
                                         <DataGridTemplateColumn Width="30" x:Name="ChangeReferenceLine"
                                                                 IsReadOnly="True" CanUserResize="False">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1404,6 +1412,7 @@
                                                         HorizontalAlignment="Left" VerticalAlignment="Top"
                                                         Width="27" Background="{x:Null}"
                                                         BorderBrush="{x:Null}" Height="25"
+                                                        IsEnabled="{Binding Editable}"
                                                         Click="ChangeReferenceLine_Click">
                                                         <ContentControl Content="{StaticResource EditIcon}"
                                                                         Height="20" />
@@ -1419,6 +1428,7 @@
                                                             HorizontalAlignment="Left" VerticalAlignment="Top"
                                                             Width="27" Background="{x:Null}"
                                                             BorderBrush="{x:Null}" Height="25"
+                                                            IsEnabled="{Binding Editable}"
                                                             Click="DeleteReferencePhotoButton_Click">
                                                         <ContentControl Content="{StaticResource DeleteIcon}" Height="20" />
                                                     </Button>
