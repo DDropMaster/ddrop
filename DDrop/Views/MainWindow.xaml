@@ -1379,6 +1379,8 @@
                                     CanUserSortColumns="False"
                                     CanUserReorderColumns="False"
                                     CanUserAddRows="False"
+                                    SelectionMode="Single"
+                                    IsReadOnly="False"
                                 >
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Width="30" x:Name="ChooseReferenceButton"
@@ -1397,7 +1399,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
                                         <DataGridTextColumn Header="Название" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <DataGridTextColumn Header="Пикселей в миллиметре" Binding="{Binding PixelsInMillimeter, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <DataGridTextColumn IsReadOnly="True" Header="Пикселей в миллиметре" Binding="{Binding PixelsInMillimeter, UpdateSourceTrigger=PropertyChanged}"/>
                                         <DataGridTextColumn IsReadOnly="True" Header="Тип">
                                             <DataGridTextColumn.Binding>
                                                 <Binding Converter="{StaticResource EnumDescription}" Path="PhotoType"/>

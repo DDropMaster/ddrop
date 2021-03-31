@@ -282,6 +282,9 @@ namespace DDrop.Views
         public static readonly DependencyProperty CurrentPhotoTypeProperty =
             DependencyProperty.Register("CurrentPhotoType", typeof(PhotoTypeView), typeof(MainWindow));
 
+        public static readonly DependencyProperty CurrentReferencePhotoTypeProperty =
+            DependencyProperty.Register("CurrentReferencePhotoType", typeof(PhotoTypeView), typeof(MainWindow));
+
         public static readonly DependencyProperty DrawnShapesProperty =
             DependencyProperty.Register("DrawnShapes", typeof(DrawnShapes), typeof(MainWindow));
 
@@ -348,6 +351,12 @@ namespace DDrop.Views
         {
             get => (DrawnShapes)GetValue(DrawnShapesProperty);
             set => SetValue(DrawnShapesProperty, value);
+        }
+
+        public PhotoTypeView CurrentReferencePhotoType
+        {
+            get => (PhotoTypeView) GetValue(CurrentReferencePhotoTypeProperty);
+            set => SetValue(CurrentReferencePhotoTypeProperty, value);
         }
 
         public PhotoTypeView CurrentPhotoType
@@ -886,9 +895,9 @@ namespace DDrop.Views
 
         private void SeriesDrawerSwap()
         {
-            for (int i = ImgCurrent.CanDrawing.Children.Count; i-- > 1;)
+            for (int i = MainWindowPixelDrawer.CanDrawing.Children.Count; i-- > 1;)
             {
-                ImgCurrent.CanDrawing.Children.RemoveAt(i);
+                MainWindowPixelDrawer.CanDrawing.Children.RemoveAt(i);
             }
 
             if (CurrentReferencePhoto?.Line != null)
@@ -2942,38 +2951,34 @@ namespace DDrop.Views
 
                 if (ImageValidator.ValidateImage(referencePhotoContentForAdd))
                 {
-                    ReferencePhotoView newReferencePhoto;
-
                     if (CurrentSeries.ReferencePhotoForSeries == null)
                     {
-                        CurrentReferencePhoto = new ReferencePhotoView();
-
-                        newReferencePhoto = new ReferencePhotoView()
-                        {
-                            Content = referencePhotoContentForAdd,
-                            Name = openFileDialog.SafeFileNames[0],
-                            PhotoId = CurrentSeries.SeriesId,
-                            Line = new Line()
-                        };
+                        CurrentSeries.ReferencePhotoForSeries = new ObservableCollection<ReferencePhotoView>();
                     }
-                    else
-                    {
-                        newReferencePhoto = new ReferencePhotoView()
-                        {
-                            Content = referencePhotoContentForAdd,
-                            Name = openFileDialog.SafeFileNames[0],
-                            PhotoId = CurrentSeries.SeriesId,
-                            Line = new Line()
-                        };
+                    
+                    var photoForChange =
+                        CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x =>
+                            x.PhotoType == CurrentReferencePhotoType);
 
-                        if (CurrentReferencePhoto.SimpleLine != null)
-                        {
-                            newReferencePhoto.SimpleLine = CurrentReferencePhoto.SimpleLine;
-                            newReferencePhoto.SimpleLine.X1 = 0;
-                            newReferencePhoto.SimpleLine.X2 = 0;
-                            newReferencePhoto.SimpleLine.Y1 = 0;
-                            newReferencePhoto.SimpleLine.Y2 = 0;
-                        }
+                    ReferencePhotoView newReferencePhoto = new ReferencePhotoView()
+                    {
+                        Content = referencePhotoContentForAdd,
+                        Name = openFileDialog.SafeFileNames[0],
+                        PhotoId = photoForChange != null && photoForChange.PhotoId != Guid.Empty ? photoForChange.PhotoId : Guid.NewGuid(),
+                        Line = new Line(),
+                        PhotoType = CurrentReferencePhotoType,
+                        AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                        CreationDateTime = File.GetCreationTime(openFileDialog.FileNames[0]).ToString(CultureInfo.InvariantCulture),
+                        CurrentSeriesId = CurrentSeries.SeriesId,
+                    };
+
+                    if (CurrentReferencePhoto.SimpleLine != null)
+                    {
+                        newReferencePhoto.SimpleLine = CurrentReferencePhoto.SimpleLine;
+                        newReferencePhoto.SimpleLine.X1 = 0;
+                        newReferencePhoto.SimpleLine.X2 = 0;
+                        newReferencePhoto.SimpleLine.Y1 = 0;
+                        newReferencePhoto.SimpleLine.Y2 = 0;
                     }
 
                     try
@@ -2991,6 +2996,13 @@ namespace DDrop.Views
                         }
 
                         CurrentReferencePhoto = newReferencePhoto;
+
+                        if (photoForChange != null)
+                        {
+                            CurrentSeries.ReferencePhotoForSeries[
+                                CurrentSeries.ReferencePhotoForSeries.IndexOf(photoForChange)] = newReferencePhoto;
+                        }
+
                         ReferenceImage = ImageInterpreter.LoadImage(CurrentReferencePhoto.Content);
 
                         MainWindowPixelDrawer.IsEnabled = false;
@@ -6541,6 +6553,8 @@ namespace DDrop.Views
                 CurrentReferencePhoto = CurrentSeries.ReferencePhotoForSeries[ReferencePhotoDataGrid.SelectedIndex];
 
                 CurrentReferencePhoto.Content = await _referenceBl.GetReferencePhotoContent(CurrentReferencePhoto.PhotoId);
+
+                CurrentReferencePhotoType = CurrentReferencePhoto.PhotoType;
             }
             catch (TimeoutException)
             {
@@ -6565,7 +6579,13 @@ namespace DDrop.Views
             SeriesDrawerSwap();
 
             if (CurrentReferencePhoto?.Content != null)
+            {
                 ReferenceImage = ImageInterpreter.LoadImage(CurrentReferencePhoto.Content);
+            }
+            else
+            {
+                ReferenceImage = null;
+            }
 
             _appStateBL.HideAdorner(ReferenceImageLoading);
         }

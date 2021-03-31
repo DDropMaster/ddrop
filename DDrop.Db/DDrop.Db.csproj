@@ -281,6 +281,10 @@
     <Compile Include="Migrations\202103232244178_MultipleReferencePhotosRequired.designer.cs">
       <DependentUpon>202103232244178_MultipleReferencePhotosRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103302000546_DropForeignKeyReferencePhoto.cs" />
+    <Compile Include="Migrations\202103302000546_DropForeignKeyReferencePhoto.designer.cs">
+      <DependentUpon>202103302000546_DropForeignKeyReferencePhoto.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -453,6 +457,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103232244178_MultipleReferencePhotosRequired.resx">
       <DependentUpon>202103232244178_MultipleReferencePhotosRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103302000546_DropForeignKeyReferencePhoto.resx">
+      <DependentUpon>202103302000546_DropForeignKeyReferencePhoto.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
