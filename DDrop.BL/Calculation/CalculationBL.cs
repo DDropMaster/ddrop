@@ -22,10 +22,10 @@ namespace DDrop.BL.Calculation
         public async Task<BE.Models.Drop> CalculateDropParameters(BE.Models.Measurement measurement, List<ReferencePhoto> referencePhotos, bool frontProcessed, bool sideProcessed)
         {
             var frontReference = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
+                .FirstOrDefault(x => x?.PhotoType == PhotoType.FrontDropPhoto);
 
             var sideReference = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
+                .FirstOrDefault(x => x?.PhotoType == PhotoType.SideDropPhoto);
 
             if (measurement.FrontDropPhoto != null && frontProcessed && measurement.SideDropPhoto != null && sideProcessed)
             {

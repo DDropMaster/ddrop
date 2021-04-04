@@ -229,6 +229,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoMapper\AutoMapperExtensions.cs" />
     <Compile Include="Models\DimensionlessSettingsView.cs" />
     <Compile Include="Models\GeneralSeriesSettingsView.cs" />
     <Compile Include="Models\PlotSettingsView.cs" />
@@ -614,7 +615,7 @@
     <Content Include="Resources\ExternalLibs\RFM\RFM_WPFProgressBarUpdate.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\ExternalLibs\RFM\RFM_WPFProgressBarUpdate.pdb"/>
+    <Content Include="Resources\ExternalLibs\RFM\RFM_WPFProgressBarUpdate.pdb" />
     <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Image.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -261,6 +261,9 @@ namespace DDrop.Views
         public static readonly DependencyProperty CurrentDropPhotosProperty =
             DependencyProperty.Register("CurrentDropPhotos", typeof(ObservableCollection<DropPhotoView>), typeof(MainWindow));
 
+        public static readonly DependencyProperty CurrentReferencePhotosProperty =
+            DependencyProperty.Register("CurrentReferencePhotos", typeof(ObservableCollection<ReferencePhotoView>), typeof(MainWindow));
+
         public static readonly DependencyProperty CurrentDropPhotoProperty =
             DependencyProperty.Register("CurrentDropPhoto", typeof(DropPhotoView), typeof(MainWindow));
 
@@ -435,6 +438,12 @@ namespace DDrop.Views
         {
             get => (ThermalPhotoView)GetValue(CurrentThermalPhotoProperty);
             set => SetValue(CurrentThermalPhotoProperty, value);
+        }
+
+        public ObservableCollection<ReferencePhotoView> CurrentReferencePhotos
+        {
+            get => (ObservableCollection<ReferencePhotoView>)GetValue(CurrentReferencePhotosProperty);
+            set => SetValue(CurrentReferencePhotosProperty, value);
         }
 
         public ObservableCollection<DropPhotoView> CurrentDropPhotos
@@ -866,19 +875,18 @@ namespace DDrop.Views
 
                 CurrentSeries = User.UserSeries[SeriesDataGrid.SelectedIndex];
 
-                if (CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x =>
-                    x.PhotoType == PhotoTypeView.FrontDropPhoto) == null)
+                if (CurrentSeries.ReferencePhotoForSeries == null)
                 {
-                    CurrentSeries.ReferencePhotoForSeries.Add(new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
+                    CurrentSeries.ReferencePhotoForSeries = new ObservableCollection<ReferencePhotoView>();
                 }
 
-                if (CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x =>
-                    x.PhotoType == PhotoTypeView.SideDropPhoto) == null)
+                CurrentReferencePhotos = new ObservableCollection<ReferencePhotoView>
                 {
-                    CurrentSeries.ReferencePhotoForSeries.Add(new ReferencePhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
-                }
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto },
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.SideDropPhoto }
+                };
 
-                CurrentSeries.ReferencePhotoForSeries = new ObservableCollection<ReferencePhotoView>(CurrentSeries.ReferencePhotoForSeries.OrderBy(x => x.PhotoType));
+                CurrentSeries.ReferencePhotoForSeries = CurrentReferencePhotos;
 
                 SeriesDrawerSwap();
 
@@ -2999,9 +3007,10 @@ namespace DDrop.Views
 
                         if (photoForChange != null)
                         {
-                            CurrentSeries.ReferencePhotoForSeries[
-                                CurrentSeries.ReferencePhotoForSeries.IndexOf(photoForChange)] = newReferencePhoto;
+                            CurrentSeries.ReferencePhotoForSeries[CurrentSeries.ReferencePhotoForSeries.IndexOf(photoForChange)] = newReferencePhoto;
                         }
+
+                        CurrentReferencePhotos = CurrentSeries.ReferencePhotoForSeries;
 
                         ReferenceImage = ImageInterpreter.LoadImage(CurrentReferencePhoto.Content);
 
@@ -3086,6 +3095,7 @@ namespace DDrop.Views
                         CurrentReferencePhoto.PixelsInMillimeter = 0;
                         CurrentReferencePhoto.Content = null;
                         ReferenceImage = null;
+                        CurrentSeries.ReferencePhotoForSeries[CurrentSeries.ReferencePhotoForSeries.IndexOf(CurrentReferencePhoto)] = new ReferencePhotoView() { PhotoType = CurrentReferencePhotoType, PhotoId = Guid.Empty };
                     }
                     catch (TimeoutException)
                     {
@@ -3293,7 +3303,7 @@ namespace DDrop.Views
             }
         }
 
-        private void ReferenceEditModeOn()
+        private async void ReferenceEditModeOn()
         {
             MainWindowPixelDrawer.IsEnabled = true;
             MainWindowPixelDrawer.DrawningIsEnabled = true;
@@ -3311,6 +3321,23 @@ namespace DDrop.Views
 
             DrawningMode = PixelDrawerMode.Line;
             _twoLineMode = false;
+
+            VisualHelper.SetEnableRowsMove(ReferencePhotoDataGrid, true);
+            if (Application.Current.MainWindow != null)
+            {
+                if (PhotosPreviewRow.ActualHeight > ReferenceGrid.ActualHeight * 0.6)
+                {
+                    VisualHelper.SetEnableRowsMove(ReferencePhotoDataGrid, false);
+                    await AnimationHelper.AnimateGridRowExpandCollapse(ReferencePreviewRow, false, ReferencePreviewRow.ActualHeight,
+                        ReferencePhotoDataGrid.ActualHeight - 140, 0, 0, 200);
+                }
+                else
+                {
+                    await AnimationHelper.AnimateGridRowExpandCollapse(ReferencePreviewRow, true,
+                        ReferencePhotoDataGrid.ActualHeight - 140,
+                        ReferencePhotoDataGrid.ActualHeight, 0, 0, 200);
+                }
+            }
         }
 
         public void ReferenceEditModeOff()
@@ -6550,7 +6577,7 @@ namespace DDrop.Views
             {
                 _appStateBL.ShowAdorner(ReferenceImageLoading);
 
-                CurrentReferencePhoto = CurrentSeries.ReferencePhotoForSeries[ReferencePhotoDataGrid.SelectedIndex];
+                CurrentReferencePhoto = CurrentReferencePhotos[ReferencePhotoDataGrid.SelectedIndex];
 
                 CurrentReferencePhoto.Content = await _referenceBl.GetReferencePhotoContent(CurrentReferencePhoto.PhotoId);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using AutoMapper;
 using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
@@ -82,7 +83,8 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<DbMeasurement, Measurement>();
 
 
-                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>();
+                cfg.CreateMap<ReferencePhotoView, ReferencePhoto>()
+                    .PreCondition(x => x.PhotoId != Guid.Empty);
                 cfg.CreateMap<ReferencePhoto, ReferencePhotoView>()
                     .ForMember(x =>
                         x.Line, opt => opt.MapFrom<ReferencePhotoResolver>());
