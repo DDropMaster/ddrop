@@ -3311,6 +3311,10 @@ namespace DDrop.Views
             SaveReferenceLine.Visibility = Visibility.Visible;
             CancelReferencePhotoEditing.Visibility = Visibility.Visible;
 
+            CurrentReferencePhotos = new ObservableCollection<ReferencePhotoView>()
+            {
+                CurrentReferencePhotos.FirstOrDefault(x => x == CurrentReferencePhoto)
+            };
 
             PhotosTab.IsEnabled = false;
             SeriesManager.IsEnabled = false;
@@ -3347,6 +3351,9 @@ namespace DDrop.Views
             ChangeReferenceLine.Visibility = Visibility.Visible;
             SaveReferenceLine.Visibility = Visibility.Hidden;
             CancelReferencePhotoEditing.Visibility = Visibility.Hidden;
+
+            CurrentReferencePhotos = CurrentSeries.ReferencePhotoForSeries;
+
             SingleSeriesLoadingComplete();
         }
 

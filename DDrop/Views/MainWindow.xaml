@@ -1408,6 +1408,7 @@
                                         SelectionMode="Single"
                                         IsReadOnly="False"
                                         Grid.Row="0"
+                                        RowHeight="28"
                                     >
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Width="30" x:Name="ChooseReferenceButton"
