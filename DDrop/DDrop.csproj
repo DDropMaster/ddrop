@@ -604,9 +604,7 @@
     <None Include="Resources\ExternalLibs\FLIR\x86\libgcc_s_dw2-1.dll" />
     <None Include="Resources\ExternalLibs\FLIR\x86\swscale-3.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\LocalDatabase\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Image.dll" />
     <Content Include="Resources\ExternalLibs\FLIR\x64\Flir.Atlas.Live.dll" />
@@ -628,6 +626,9 @@
     <Content Include="Resources\ExternalLibs\FLIR\x86\Flir.Atlas.Live.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\LocalDatabase\CreateDirectoryPlease.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
