@@ -82,10 +82,10 @@ namespace DDrop.BL.Calculation
         public BE.Models.Measurement ReCalculateAllParametersFromLines(BE.Models.Measurement measurement, List<ReferencePhoto> referencePhotos)
         {
             var frontReferencePixelsInMillimeter = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto).PixelsInMillimeter;
+                .FirstOrDefault(x => x?.PhotoType == PhotoType.FrontDropPhoto)?.PixelsInMillimeter;
 
             var sideReferencePixelsInMillimeter = referencePhotos
-                .FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto).PixelsInMillimeter;
+                .FirstOrDefault(x => x?.PhotoType == PhotoType.SideDropPhoto)?.PixelsInMillimeter;
 
             if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId != null)
             {
@@ -151,7 +151,7 @@ namespace DDrop.BL.Calculation
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     measurement.FrontDropPhoto.XDiameterInPixels,
-                    yDiameterInMillimeters,
+                    yDiameterInMillimeters.Value,
                     measurement.SideDropPhoto.ZDiameterInPixels,
                     measurement.Drop);
             }
@@ -187,8 +187,8 @@ namespace DDrop.BL.Calculation
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter,
-                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter,
+                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter.Value,
+                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter.Value,
                     measurement.Drop);
             }
             else if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId == null)
@@ -222,8 +222,8 @@ namespace DDrop.BL.Calculation
                 }
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter,
-                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter,
+                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter.Value,
+                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter.Value,
                     0,
                     measurement.Drop);
             }
