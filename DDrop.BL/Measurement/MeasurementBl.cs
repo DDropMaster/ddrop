@@ -45,5 +45,13 @@ namespace DDrop.BL.Measurement
         {
             await _dDropRepository.UpdateMeasurementsOrderInSeries(_mapper.Map<ObservableCollection<BE.Models.Measurement>, List<DbMeasurement>>(measurementsSeries));
         }
+
+        public async Task<List<BE.Models.Measurement>> GetMeasurements(BE.Models.Series series)
+        {
+            var dbSeries = _mapper.Map<BE.Models.Series, DbSeries>(series);
+
+            return _mapper.Map<List<DbMeasurement>, List<BE.Models.Measurement>>(
+                await _dDropRepository.GetMeasurements(dbSeries));
+        }
     }
 }

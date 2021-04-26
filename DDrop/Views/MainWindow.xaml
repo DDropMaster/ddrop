@@ -107,8 +107,6 @@
                                         </DataGridCheckBoxColumn.HeaderTemplate>
                                     </DataGridCheckBoxColumn>
                                     <DataGridTextColumn IsReadOnly="False" Header="Серия" Binding="{Binding Title}" />
-                                    <DataGridTextColumn IsReadOnly="True" Header="Количество измерений"
-                                                        Binding="{Binding MeasurementsSeries.Count}" />
                                     <DataGridTextColumn IsReadOnly="True" Header="Интервал между снимками"
                                                         Binding="{Binding IntervalBetweenPhotos}" />
                                     <DataGridTextColumn IsReadOnly="True" Header="Время добавления"
@@ -337,9 +335,9 @@
                                             </Button>
                                             <TextBox IsEnabled="False" x:Name="IntervalBetweenPhotos"
                                                      Text="{Binding ElementName=AppMainWindow, Path=CurrentSeries.IntervalBetweenPhotos}"
-                                                     Height="20" Margin="0,10,42,0" TextWrapping="Wrap"
+                                                     Height="20" Margin="0,0,42,0" TextWrapping="Wrap"
                                                      VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" />
-                                            <Label Content="Интервал между снимками (c):" Margin="0,6,162,0"
+                                            <Label Content="Интервал между снимками (c):" Margin="0,-4,162,0"
                                                    VerticalAlignment="Top" Height="27" Background="{x:Null}"
                                                    HorizontalAlignment="Right" Width="180" />
                                             <CheckBox Name="CreationTimeCheckBox"
@@ -355,7 +353,7 @@
                                                       Content="Использовать температурный график" Margin="0,2,347,19"
                                                       HorizontalAlignment="Right" Width="245" />
                                             <Button Grid.Row="0" Grid.Column="0" Name="EditIntervalBetweenPhotos"
-                                                    HorizontalAlignment="Right" Margin="0,6,10,0"
+                                                    HorizontalAlignment="Right" Margin="0,-4,10,0"
                                                     VerticalAlignment="Top" Width="27" Background="{x:Null}"
                                                     BorderBrush="{x:Null}" Height="26"
                                                     Click="EditIntervalBetweenPhotos_Click"
@@ -372,6 +370,12 @@
                                                 <ContentControl Content="{StaticResource SaveIcon}" Height="21"
                                                                 Width="23" />
                                             </Button>
+                                            <Label Content="Количество измерений:" Margin="0,15,162,-2"
+                                                VerticalAlignment="Top" Height="27" Background="{x:Null}"
+                                                HorizontalAlignment="Right" Width="180" HorizontalContentAlignment="Right" />
+                                            <Label Content="{Binding MeasurementsSeries.Count}" Margin="0,15,10,-2"
+                                                   VerticalAlignment="Top" Height="27" Background="{x:Null}"
+                                                   HorizontalAlignment="Right" Width="152" />
                                         </Grid>
                                         <Grid x:Name="AutoCalculationMenu" Visibility="Hidden">
                                             <Button Grid.Row="0" Grid.Column="0" Name="AutoCalculate"

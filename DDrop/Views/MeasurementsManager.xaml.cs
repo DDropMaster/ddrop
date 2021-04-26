@@ -41,12 +41,20 @@ namespace DDrop.Views
 
         public static readonly DependencyProperty ResultingMeasurementsProperty = 
             DependencyProperty.Register("ResultingMeasurements", typeof(ObservableCollection<MeasurementView>), typeof(MeasurementsManager));
-
         public ObservableCollection<MeasurementView> ResultingMeasurements
         {
             get => (ObservableCollection<MeasurementView>)GetValue(ResultingMeasurementsProperty);
             set => SetValue(ResultingMeasurementsProperty, value);
         }
+
+        public static readonly DependencyProperty SaveButtonIsEnabledProperty = 
+            DependencyProperty.Register("SaveButtonIsEnabled", typeof(bool), typeof(MeasurementsManager));
+        public bool SaveButtonIsEnabled
+        {
+            get => (bool)GetValue(SaveButtonIsEnabledProperty);
+            set => SetValue(SaveButtonIsEnabledProperty, value);
+        }
+
 
         private UploadingPhoto _currentFrontUploadingPhoto;
         private UploadingPhoto _currentSideUploadingPhoto;
@@ -294,6 +302,7 @@ namespace DDrop.Views
             FrontDropPhotos = new ObservableCollection<UploadingPhoto>();
             SideDropPhotos = new ObservableCollection<UploadingPhoto>();
             ThermalPhotos = new ObservableCollection<UploadingPhoto>();
+            SaveButtonIsEnabled = true;
             
             InitializeComponent();
         }
@@ -556,6 +565,7 @@ namespace DDrop.Views
         {
             if (FrontDropPhotos.Count > 0 || SideDropPhotos.Count > 0 || ThermalPhotos.Count > 0)
             {
+                SaveButtonIsEnabled = false;
                 LoadingFront();
                 LoadingSide();
                 LoadingThermal();
@@ -586,6 +596,8 @@ namespace DDrop.Views
                 }
                 
                 ResultingMeasurements = new ObservableCollection<MeasurementView>();
+
+                var pbuHandle1 = pbu.New(ProgressBar, 0, longestCollectionCount, 0);
 
                 for (int i = 0; i < longestCollectionCount; i++)
                 {
@@ -710,11 +722,16 @@ namespace DDrop.Views
                         });
                         throw;
                     }
+
+                    pbu.CurValue[pbuHandle1] += 1;
                 }
 
                 LoadingFrontComplete();
                 LoadingSideComplete();
                 LoadingThermalComplete();
+                SaveButtonIsEnabled = true;
+                pbu.ResetValue(pbuHandle1);
+                pbu.Remove(pbuHandle1);
 
                 Close();
             }

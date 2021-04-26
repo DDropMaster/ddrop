@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using DDrop.BE.Models;
@@ -18,6 +19,8 @@ namespace DDrop.BL.ReferenceBL
             _mapper = mapper;
         }
 
+
+
         public async Task<byte[]> GetReferencePhotoContent(Guid referencePhotoId)
         {
             return await Task.Run(() => _dDropRepository.GetReferencePhotoContent(referencePhotoId));
@@ -33,6 +36,13 @@ namespace DDrop.BL.ReferenceBL
         public async Task DeleteReferencePhoto(Guid referencePhotoId)
         {
             await Task.Run(() => _dDropRepository.DeleteReferencePhoto(referencePhotoId));
+        }
+
+        public async Task<List<ReferencePhoto>> GetReferencePhotoById(BE.Models.Series series)
+        {
+            var dbSeries = _mapper.Map<BE.Models.Series, DbSeries>(series);
+
+            return _mapper.Map<List<DbReferencePhoto>, List<ReferencePhoto>>(await Task.Run(() => _dDropRepository.GetReferencePhotoById(dbSeries)));
         }
     }
 }

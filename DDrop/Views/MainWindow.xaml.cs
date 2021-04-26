@@ -819,7 +819,7 @@ namespace DDrop.Views
             }
         }
 
-        private void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != e.OriginalSource) return;
 
@@ -874,6 +874,15 @@ namespace DDrop.Views
                 }
 
                 CurrentSeries = User.UserSeries[SeriesDataGrid.SelectedIndex];
+
+                //var currentSeries = CurrentSeries;
+
+                //CurrentSeries.ReferencePhotoForSeries = _mapper.Map<List<ReferencePhoto>, ObservableCollection<ReferencePhotoView>>(
+                //    await Task.Run(() => _referenceBl.GetReferencePhotoById(_mapper.Map<SeriesView, Series>(currentSeries))));
+                
+                //CurrentSeries.MeasurementsSeries =
+                //    _mapper.Map<List<Measurement>, ObservableCollection<MeasurementView>>(
+                //        await Task.Run(() => _measurementBl.GetMeasurements(_mapper.Map<SeriesView, Series>(currentSeries))));
 
                 if (CurrentSeries.ReferencePhotoForSeries == null)
                 {

@@ -15,7 +15,7 @@ namespace DDrop.DAL
         Task UpdateUserAsync(DbUser user);
         Task UpdatePlotName(string text, Guid plotId);
         Task<DbUser> GetUserByLogin(string email);
-        List<DbSeries> GetSeriesByUserId(Guid dbUserId);
+        Task<List<DbSeries>> GetSeriesByUserId(Guid dbUserId);
         Task<DbSeries> GetDbSeriesForExportById(Guid seriesId);
         Task CreateSeries(DbSeries series);
         Task UpdateRegionOfInterest(Guid seriesId, string regionOfInterest);
@@ -23,6 +23,8 @@ namespace DDrop.DAL
         Task UpdateSeriesName(string seriesName, Guid seriesId);
         Task DeleteSingleSeries(DbSeries series);
         Task CreateFullSeries(DbSeries series);
+        Task<List<DbReferencePhoto>> GetReferencePhotoById(DbSeries series);
+        Task<List<DbMeasurement>> GetMeasurements(DbSeries series);
         Task UpdateSeriesIntervalBetweenPhotos(int interval, Guid seriesId);
         Task CreateMeasurement(DbMeasurement measurement, Guid seriesId);
         Task UpdateDrop(DbDrop drop);

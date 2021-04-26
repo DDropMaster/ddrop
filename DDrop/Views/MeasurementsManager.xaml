@@ -325,7 +325,7 @@
                 </Canvas>
             </zoomborder:ZoomBorder>
         </loadingSpinner:AdornedControl>
-        <Button Grid.Column="0" Grid.Row="3" x:Name="ChooseReferenceButton" Click="SaveUploadedPhotosAsync"
+        <Button IsEnabled="{Binding ElementName=AppMeasurementManagerWindow, Path=SaveButtonIsEnabled}" Grid.Column="0" Grid.Row="3" x:Name="ChooseReferenceButton" Click="SaveUploadedPhotosAsync"
                 Content="Cохранить" HorizontalAlignment="Left" Margin="10,0,0,10" Width="109" Height="20" VerticalAlignment="Bottom" />
         <ProgressBar Grid.Column="4" Grid.Row="3" x:Name="ProgressBar" Margin="0,10,10,10" HorizontalAlignment="Right" Width="100" />
     </Grid>

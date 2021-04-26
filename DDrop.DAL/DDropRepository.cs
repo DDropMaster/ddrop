@@ -348,13 +348,13 @@ namespace DDrop.DAL
             }
         }
 
-        public List<DbSeries> GetSeriesByUserId(Guid dbUserId)
+        public async Task<List<DbSeries>> GetSeriesByUserId(Guid dbUserId)
         {
             using (var context = new DDropContext())
             {
                 try
                 {
-                    var loadedSeries = context.Series.Where(x => x.CurrentUserId == dbUserId)
+                    var loadedSeries = await context.Series.Where(x => x.CurrentUserId == dbUserId)
                         .Select(x => new
                         {
                             x.Title,
@@ -365,7 +365,7 @@ namespace DDrop.DAL
                             x.CommentId,
                             x.RegionOfInterest,
                             x.Settings
-                        }).ToList();
+                        }).ToListAsync();
 
                     var dbSeries = new List<DbSeries>();
 
@@ -384,12 +384,12 @@ namespace DDrop.DAL
                         };
 
                         if (seriesToAdd.CommentId != null)
-                            seriesToAdd.Comment = GetCommentById(seriesToAdd.CommentId.Value);
+                            seriesToAdd.Comment = await GetCommentById(seriesToAdd.CommentId.Value);
 
-                        seriesToAdd.ReferencePhotoForSeries = GetReferencePhotoById(seriesToAdd);
-                        seriesToAdd.MeasurementsSeries = GetMeasurements(seriesToAdd.SeriesId, seriesToAdd).OrderBy(x => x.MeasurementOrderInSeries).ToList();
-                        seriesToAdd.Substance = GetSubstanceById(seriesToAdd.SeriesId, seriesToAdd);
-                        seriesToAdd.ThermalPlot = GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
+                        seriesToAdd.ReferencePhotoForSeries = await GetReferencePhotoById(seriesToAdd);
+                        seriesToAdd.MeasurementsSeries = await GetMeasurements(seriesToAdd);
+                        seriesToAdd.Substance = await GetSubstanceById(seriesToAdd.SeriesId, seriesToAdd);
+                        seriesToAdd.ThermalPlot = await GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
 
                         dbSeries.Add(seriesToAdd);
                     }
@@ -403,11 +403,11 @@ namespace DDrop.DAL
             }
         }
 
-        private List<DbMeasurement> GetMeasurements(Guid measurementId, DbSeries series)
+        public async Task<List<DbMeasurement>> GetMeasurements(DbSeries series)
         {
             using (var context = new DDropContext())
             {
-                var measurementForSeries = context.Measurements.Where(x => x.CurrentSeriesId == measurementId)
+                var measurementForSeries = await context.Measurements.Where(x => x.CurrentSeriesId == series.SeriesId)
                     .Select(x => new
                     {
                         x.Name,
@@ -422,7 +422,9 @@ namespace DDrop.DAL
                         x.SideDropPhotoId,
                         x.Drop,
                         x.CommentId
-                    }).ToList();
+                    })
+                    .OrderBy(x => x.MeasurementOrderInSeries)
+                    .ToListAsync();
 
                 var dbMeasurementsForAdd = new List<DbMeasurement>();
 
@@ -434,11 +436,11 @@ namespace DDrop.DAL
                         CurrentSeries = series,
                         FrontDropPhotoId = measurement.FrontDropPhotoId,
                         FrontDropPhoto = measurement.FrontDropPhotoId.HasValue
-                            ? GetDbDropPhotoById(measurement.FrontDropPhotoId.Value)
+                            ? await GetDbDropPhotoById(measurement.FrontDropPhotoId.Value)
                             : null,
                         SideDropPhotoId = measurement.SideDropPhotoId,
                         SideDropPhoto = measurement.SideDropPhotoId.HasValue
-                            ? GetDbDropPhotoById(measurement.SideDropPhotoId.Value)
+                            ? await GetDbDropPhotoById(measurement.SideDropPhotoId.Value)
                             : null,
                         CurrentSeriesId = measurement.CurrentSeriesId,
                         MeasurementId = measurement.MeasurementId,
@@ -449,11 +451,11 @@ namespace DDrop.DAL
                         CommentId = measurement.CommentId
                     };
 
-                    measurementToAdd.ThermalPhoto = GetDbThermalPhoto(measurementToAdd);
+                    measurementToAdd.ThermalPhoto = await GetDbThermalPhoto(measurementToAdd);
                     if (measurementToAdd.CommentId != null)
-                        measurementToAdd.Comment = GetCommentById(measurementToAdd.CommentId.Value);
+                        measurementToAdd.Comment = await GetCommentById(measurementToAdd.CommentId.Value);
 
-                    var dropToAdd = context.Drops.FirstOrDefault(x => x.DropId == measurement.Drop.DropId);
+                    var dropToAdd = await context.Drops.FirstOrDefaultAsync(x => x.DropId == measurement.Drop.DropId);
 
                     if (dropToAdd != null)
                     {
@@ -477,11 +479,11 @@ namespace DDrop.DAL
             }
         }
 
-        private List<DbReferencePhoto> GetReferencePhotoById(DbSeries series)
+        public async Task<List<DbReferencePhoto>> GetReferencePhotoById(DbSeries series)
         {
             using (var context = new DDropContext())
             {
-                var referencePhotosForSeries = context.ReferencePhotos
+                var referencePhotosForSeries = await context.ReferencePhotos
                     .Where(x => x.CurrentSeriesId == series.SeriesId)
                     .Select(x => new
                     {
@@ -494,7 +496,7 @@ namespace DDrop.DAL
                         x.CreationDateTime,
                         x.PhotoType,
                         SeriesId = x.CurrentSeriesId
-                    }).ToList();
+                    }).ToListAsync();
 
                 var resultingReferencePhotos = new List<DbReferencePhoto>();
 
@@ -518,11 +520,11 @@ namespace DDrop.DAL
             }
         }
 
-        private DbPlot GetSeriesPlot(Guid seriesId, DbSeries series)
+        private async Task<DbPlot> GetSeriesPlot(Guid seriesId, DbSeries series)
         {
             using (var context = new DDropContext())
             {
-                var seriesPlot = context.Plots
+                var seriesPlot = await context.Plots
                     .Where(x => x.Series.SeriesId == seriesId)
                     .Select(x => new
                     {
@@ -533,7 +535,7 @@ namespace DDrop.DAL
                         x.PlotId,
                         x.PlotType,
                         x.Settings,
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
 
                 if (seriesPlot == null)
                 {
@@ -554,11 +556,11 @@ namespace DDrop.DAL
             }
         }
 
-        private DbSubstances GetSubstanceById(Guid substanceId, DbSeries series)
+        private async Task<DbSubstances> GetSubstanceById(Guid substanceId, DbSeries series)
         {
             using (var context = new DDropContext())
             {
-                var substanceForSeries = context.Substances
+                var substanceForSeries = await context.Substances
                     .Where(x => x.Series.SeriesId == substanceId)
                     .Select(x => new
                     {
@@ -566,7 +568,7 @@ namespace DDrop.DAL
                         x.Series,
                         x.SubstanceId,
                         x.CommonName
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
 
                 if (substanceForSeries == null)
                 {
@@ -583,18 +585,18 @@ namespace DDrop.DAL
             }
         }
 
-        private DbComment GetCommentById(Guid commentId)
+        private async Task<DbComment> GetCommentById(Guid commentId)
         {
             using (var context = new DDropContext())
             {
-                var comment = context.Comments
+                var comment = await context.Comments
                     .Where(x => x.CommentId == commentId)
                     .Select(x => new
                     {
                         x.CommentId,
                         x.Content,
                         x.Type
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
 
                 if (comment == null)
                 {
@@ -610,11 +612,11 @@ namespace DDrop.DAL
             }
         }
 
-        private DbDropPhoto GetDbDropPhotoById(Guid photoId)
+        private async Task<DbDropPhoto> GetDbDropPhotoById(Guid photoId)
         {
             using (var context = new DDropContext())
             {
-                var dropPhoto = context.DropPhotos
+                var dropPhoto = await context.DropPhotos
                     .Where(x => x.PhotoId == photoId)
                     .Select(x => new
                     {
@@ -631,7 +633,7 @@ namespace DDrop.DAL
                         x.ZDiameterInPixels,
                         x.CommentId,
                         x.ContourId
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
 
                 if (dropPhoto == null)
                 {
@@ -656,19 +658,19 @@ namespace DDrop.DAL
 
                 if (dbDropPhoto.CommentId != null)
                 {
-                    dbDropPhoto.Comment = GetCommentById(dbDropPhoto.CommentId.Value);
+                    dbDropPhoto.Comment = await GetCommentById(dbDropPhoto.CommentId.Value);
                 }
 
                 if (dbDropPhoto.ContourId != null)
                 {
-                    dbDropPhoto.Contour = GetContourById(dbDropPhoto.ContourId.Value);
+                    dbDropPhoto.Contour = await GetContourById(dbDropPhoto.ContourId.Value);
                 }
 
                 return dbDropPhoto;
             }
         }
 
-        private DbThermalPhoto GetDbThermalPhoto(DbMeasurement measurement)
+        private async Task<DbThermalPhoto> GetDbThermalPhoto(DbMeasurement measurement)
         {
             using (var context = new DDropContext())
             {
@@ -703,17 +705,17 @@ namespace DDrop.DAL
                 };
 
                 if (dbThermalPhoto.CommentId != null)
-                    dbThermalPhoto.Comment = GetCommentById(dbThermalPhoto.CommentId.Value);
+                    dbThermalPhoto.Comment = await GetCommentById(dbThermalPhoto.CommentId.Value);
 
                 return dbThermalPhoto;
             }
         }
 
-        private DbContour GetContourById(Guid contourId)
+        private async Task<DbContour> GetContourById(Guid contourId)
         {
             using (var context = new DDropContext())
             {
-                var contour = context.Contours.FirstOrDefault(x => x.ContourId == contourId);
+                var contour = await context.Contours.FirstOrDefaultAsync(x => x.ContourId == contourId);
 
                 if (contour == null)
                 {
