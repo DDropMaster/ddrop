@@ -4572,12 +4572,14 @@ namespace DDrop.Views
             {
                 MainTabControl.SelectedIndex = 0;
 
-                foreach (var referencePhotoView in CurrentSeries.ReferencePhotoForSeries)
+                if (CurrentSeries != null)
                 {
-                    if (referencePhotoView?.Line != null)
-                        MainWindowPixelDrawer.CanDrawing.Children.Remove(referencePhotoView.Line);
+                    foreach (var referencePhotoView in CurrentSeries.ReferencePhotoForSeries)
+                    {
+                        if (referencePhotoView?.Line != null)
+                            MainWindowPixelDrawer.CanDrawing.Children.Remove(referencePhotoView.Line);
+                    }
                 }
-
 
                 if (User.UserSeries != null)
                 {
