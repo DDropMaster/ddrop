@@ -1,10 +1,11 @@
 ﻿using DDrop.BE.Enums.Logger;
+using System;
 
 namespace DDrop.BE.Models
 {
     public class LogEntry
     {
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Username { get; set; }
         public LogLevel LogLevel { get; set; }
         public LogCategory LogCategory { get; set; }

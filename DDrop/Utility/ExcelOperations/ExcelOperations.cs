@@ -84,7 +84,7 @@ namespace DDrop.Utility.ExcelOperations
                             if (currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime)
                             {
                                 var orderedMeasurements = currentSeries.MeasurementsSeries
-                                    .OrderBy(x => DateTime.Parse(x.CreationDateTime, CultureInfo.InvariantCulture))
+                                    .OrderBy(x => x.CreationDateTime)
                                     .ToList();
 
                                 for (var i = 0; i < currentSeries.MeasurementsSeries.Count; i++)
@@ -95,10 +95,7 @@ namespace DDrop.Utility.ExcelOperations
                                     {
                                         singleSeriesToExcelOutput.Add(new SeriesToExcel
                                         {
-                                            Time = (DateTime.Parse(orderedMeasurements[i].CreationDateTime,
-                                                        CultureInfo.InvariantCulture) -
-                                                    DateTime.Parse(orderedMeasurements[0].CreationDateTime,
-                                                        CultureInfo.InvariantCulture)).TotalSeconds,
+                                            Time = (orderedMeasurements[i].CreationDateTime - orderedMeasurements[0].CreationDateTime).TotalSeconds,
                                             Name = measurement.Name,
                                             RadiusInMeters = measurement.Drop.RadiusInMeters.Value,
                                             VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,

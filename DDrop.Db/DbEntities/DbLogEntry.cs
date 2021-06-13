@@ -7,7 +7,7 @@ namespace DDrop.Db.DbEntities
     {
         [Key] public Guid Id { get; set; }
 
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Username { get; set; }
         public string LogLevel { get; set; }
         public string LogCategory { get; set; }

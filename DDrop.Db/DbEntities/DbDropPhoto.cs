@@ -21,8 +21,8 @@ namespace DDrop.Db.DbEntities
 
         [ForeignKey("ContourId")]
         public virtual DbContour Contour { get; set; }
-        public string AddedDate { get; set; }
-        public string CreationDateTime { get; set; }
+        public DateTime AddedDate { get; set; }
+        public DateTime CreationDateTime { get; set; }
         public string PhotoType { get; set; }
 
         public string HorizontalLine { get; set; }
@@ -31,5 +31,7 @@ namespace DDrop.Db.DbEntities
         public Guid? CommentId { get; set; }
         [ForeignKey("CommentId")]
         public virtual DbComment Comment { get; set; }
+
+        public bool Processed { get; set; }
     }
 }

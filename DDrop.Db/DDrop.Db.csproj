@@ -285,6 +285,18 @@
     <Compile Include="Migrations\202103302000546_DropForeignKeyReferencePhoto.designer.cs">
       <DependentUpon>202103302000546_DropForeignKeyReferencePhoto.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202106131202588_DbStoredStatus.cs" />
+    <Compile Include="Migrations\202106131202588_DbStoredStatus.designer.cs">
+      <DependentUpon>202106131202588_DbStoredStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106131431167_TrueDatesInDb.cs" />
+    <Compile Include="Migrations\202106131431167_TrueDatesInDb.designer.cs">
+      <DependentUpon>202106131431167_TrueDatesInDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106131512012_Processed.cs" />
+    <Compile Include="Migrations\202106131512012_Processed.designer.cs">
+      <DependentUpon>202106131512012_Processed.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -460,6 +472,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103302000546_DropForeignKeyReferencePhoto.resx">
       <DependentUpon>202103302000546_DropForeignKeyReferencePhoto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106131202588_DbStoredStatus.resx">
+      <DependentUpon>202106131202588_DbStoredStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106131431167_TrueDatesInDb.resx">
+      <DependentUpon>202106131431167_TrueDatesInDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106131512012_Processed.resx">
+      <DependentUpon>202106131512012_Processed.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

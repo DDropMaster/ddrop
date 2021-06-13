@@ -15,7 +15,7 @@ namespace DDrop.Db.DbEntities
         public List<DbReferencePhoto> ReferencePhotoForSeries { get; set; }
         public virtual DbSubstances Substance { get; set; }
         public double IntervalBetweenPhotos { get; set; }
-        public string AddedDate { get; set; }
+        public DateTime AddedDate { get; set; }
         public Guid CurrentUserId { get; set; }
         public DbUser CurrentUser { get; set; }
 
@@ -26,5 +26,7 @@ namespace DDrop.Db.DbEntities
         [ForeignKey("CommentId")]
         public virtual DbComment Comment { get; set; }
         public DbPlot ThermalPlot { get; set; }
+
+        public bool Processed { get; set; }
     }
 }

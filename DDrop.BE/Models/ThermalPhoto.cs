@@ -17,5 +17,7 @@ namespace DDrop.BE.Models
         public Guid? ContourId { get; set; }
 
         public Contour Contour { get; set; }
+
+        public bool Processed { get; set; }
     }
 }

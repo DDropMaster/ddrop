@@ -66,7 +66,7 @@ namespace DDrop.Logic.Plotting
 
                             if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
                             {
-                                time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
+                                time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
                             }
 
                             var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
@@ -122,7 +122,7 @@ namespace DDrop.Logic.Plotting
                             for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                             {
                                 averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                                var time = (DateTime.Parse(series.MeasurementsSeries[j].CreationDateTime, CultureInfo.InvariantCulture) - DateTime.Parse(series.MeasurementsSeries[0].CreationDateTime, CultureInfo.InvariantCulture)).TotalSeconds;
+                                var time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
 
                                 var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
                                 if (dropTemperature != null)

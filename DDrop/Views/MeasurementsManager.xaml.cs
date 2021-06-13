@@ -620,9 +620,9 @@ namespace DDrop.Views
                     {
                         MeasurementId = Guid.NewGuid(),
                         Name = (_currentSeries.MeasurementsSeries.Count + i).ToString(),
-                        AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                        AddedDate = DateTime.Now,
                         CurrentSeriesId = _currentSeries.SeriesId,
-                        CreationDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                        CreationDateTime = DateTime.Now,
                         MeasurementOrderInSeries = _currentSeries.MeasurementsSeries.Count + i,
                     });
 
@@ -642,9 +642,8 @@ namespace DDrop.Views
                             PhotoId = frontPhotoId,
                             Name = FrontDropPhotos[i].Name,
                             Content = File.ReadAllBytes(FrontDropPhotos[i].FilePath),
-                            AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                            CreationDateTime = File.GetCreationTime(FrontDropPhotos[i].FilePath)
-                                .ToString(CultureInfo.InvariantCulture),
+                            AddedDate = DateTime.Now,
+                            CreationDateTime = File.GetCreationTime(FrontDropPhotos[i].FilePath),                           
                             PhotoType = PhotoTypeView.FrontDropPhoto
                         };
                     }
@@ -659,9 +658,8 @@ namespace DDrop.Views
                             PhotoId = sidePhotoId,
                             Name = SideDropPhotos[i].Name,
                             Content = File.ReadAllBytes(SideDropPhotos[i].FilePath),
-                            AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                            CreationDateTime = File.GetCreationTime(SideDropPhotos[i].FilePath)
-                                .ToString(CultureInfo.InvariantCulture),
+                            AddedDate = DateTime.Now,
+                            CreationDateTime = File.GetCreationTime(SideDropPhotos[i].FilePath),
                             PhotoType = PhotoTypeView.SideDropPhoto
                         };
                     }
@@ -673,9 +671,8 @@ namespace DDrop.Views
                             PhotoId = ResultingMeasurements[i].MeasurementId,
                             Name = ThermalPhotos[i].Name,
                             Content = File.ReadAllBytes(ThermalPhotos[i].FilePath),
-                            AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                            CreationDateTime = File.GetCreationTime(ThermalPhotos[i].FilePath)
-                                .ToString(CultureInfo.InvariantCulture),
+                            AddedDate = DateTime.Now,
+                            CreationDateTime = File.GetCreationTime(ThermalPhotos[i].FilePath),
                             PhotoType = PhotoTypeView.ThermalPhoto
                         };
                     }

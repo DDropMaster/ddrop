@@ -11,7 +11,7 @@ namespace DDrop.Utility.SeriesExporter
         public static async Task<DbSeries> ImportLocalSeriesAsync(Stream content, DbUser user)
         {
             var series = await Task.Run(() => JsonSerializeProvider.DeserializeFromStream<DbSeries>(content));
-            series.AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            series.AddedDate = DateTime.Now;
             series.SeriesId = Guid.NewGuid();
             series.CurrentUser = user;
             series.CurrentUserId = user.UserId;
@@ -33,7 +33,7 @@ namespace DDrop.Utility.SeriesExporter
             var measurement = await Task.Run(() => JsonSerializeProvider.DeserializeFromStream<DbMeasurement>(content));
 
             measurement.MeasurementId = Guid.NewGuid();
-            measurement.AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            measurement.AddedDate = DateTime.Now;
 
             if (measurement.FrontDropPhoto != null)
             {

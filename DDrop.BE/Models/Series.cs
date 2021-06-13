@@ -29,5 +29,7 @@ namespace DDrop.BE.Models
 
         public List<TypedRectangle> RegionOfInterest { get; set; }
         public Plot ThermalPlot { get; set; }
+
+        public bool Processed { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
+using AutoMapper.Internal;
 using DDrop.BE.Enums;
 using DDrop.BE.Enums.Logger;
 using DDrop.BE.Models;
@@ -768,7 +770,7 @@ namespace DDrop.Views
                 {
                     SeriesId = Guid.NewGuid(),
                     Title = OneLineSetterValue.Text,
-                    AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                    AddedDate = DateTime.Now,
                     CurrentUserId = User.UserId
                 };
 
@@ -2984,8 +2986,8 @@ namespace DDrop.Views
                         PhotoId = photoForChange != null && photoForChange.PhotoId != Guid.Empty ? photoForChange.PhotoId : Guid.NewGuid(),
                         Line = new Line(),
                         PhotoType = CurrentReferencePhotoType,
-                        AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                        CreationDateTime = File.GetCreationTime(openFileDialog.FileNames[0]).ToString(CultureInfo.InvariantCulture),
+                        AddedDate = DateTime.Now,
+                        CreationDateTime = File.GetCreationTime(openFileDialog.FileNames[0]),
                         CurrentSeriesId = CurrentSeries.SeriesId,
                     };
 
@@ -4926,9 +4928,8 @@ namespace DDrop.Views
                     PhotoId = CurrentPhotoType == PhotoTypeView.ThermalPhoto ? CurrentMeasurement.MeasurementId : Guid.NewGuid(),
                     Name = openFileDialog.SafeFileNames[0],
                     Content = File.ReadAllBytes(openFileDialog.FileNames[0]),
-                    AddedDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                    CreationDateTime = File.GetCreationTime(openFileDialog.FileNames[0])
-                        .ToString(CultureInfo.InvariantCulture),
+                    AddedDate = DateTime.Now,
+                    CreationDateTime = File.GetCreationTime(openFileDialog.FileNames[0]),
                     PhotoType = CurrentPhotoType
                 };
 
@@ -6633,6 +6634,37 @@ namespace DDrop.Views
             }
 
             _appStateBL.HideAdorner(ReferenceImageLoading);
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            if (!uint.TryParse(e.Text, out var result))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void SelectNotProcessed_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (CurrentSeries?.MeasurementsSeries?.Count > 0 && uint.TryParse(SelectNotProcessed.Text, out var result))
+            {
+                CurrentSeries.MeasurementsSeries.ForAll(x => x.IsChecked = false);
+
+                for (int i = 0; i < result; i++)
+                {
+                    if (CurrentSeries.MeasurementsSeries.ElementAtOrDefault(i) == null)
+                    {
+                        break;
+                    }
+
+                    var notProcessed = CurrentSeries.MeasurementsSeries.FirstOrDefault(x => !x.Processed & !x.IsChecked);
+
+                    if (notProcessed != null)
+                    {
+                        notProcessed.IsChecked = true;
+                    }
+                }
+            }
         }
     }
 }

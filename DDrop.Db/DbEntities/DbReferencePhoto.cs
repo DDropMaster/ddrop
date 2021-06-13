@@ -12,8 +12,8 @@ namespace DDrop.Db.DbEntities
         public byte[] Content { get; set; }
         public int PixelsInMillimeter { get; set; }
         public string ReferenceLine { get; set; }
-        public string AddedDate { get; set; }
-        public string CreationDateTime { get; set; }
+        public DateTime AddedDate { get; set; }
+        public DateTime CreationDateTime { get; set; }
         public string PhotoType { get; set; }
         public Guid CurrentSeriesId { get; set; }
         public DbSeries Series { get; set; }

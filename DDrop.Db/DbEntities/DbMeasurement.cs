@@ -11,8 +11,8 @@ namespace DDrop.Db.DbEntities
 
         public string Name { get; set; }
 
-        public string AddedDate { get; set; }
-        public string CreationDateTime { get; set; }
+        public DateTime AddedDate { get; set; }
+        public DateTime CreationDateTime { get; set; }
         public int MeasurementOrderInSeries { get; set; }
         public Guid CurrentSeriesId { get; set; }
         public DbSeries CurrentSeries { get; set; }
@@ -35,6 +35,6 @@ namespace DDrop.Db.DbEntities
 
         public virtual DbThermalPhoto ThermalPhoto { get; set; }
 
-        //public double Offset { get; set; }
+        public bool Processed { get; set; }
     }
 }

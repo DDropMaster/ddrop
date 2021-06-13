@@ -1159,7 +1159,14 @@
                                                     <ContentControl Content="{StaticResource DeleteIcon}"
                                                                     Height="20" />
                                                 </Button>
-                                                <Grid>
+                                                <Label Content="Выбрать (необработанных):" HorizontalAlignment="Left"
+                                                       Margin="10,221,0,0" Height="26" VerticalAlignment="Top"/>
+                                                <TextBox IsEnabled="True" x:Name="SelectNotProcessed"
+                                                         Height="20" Margin="0,225,10,0" TextWrapping="Wrap"
+                                                         VerticalAlignment="Top" HorizontalAlignment="Right" Width="105" 
+                                                         PreviewTextInput="NumberValidationTextBox"
+                                                         TextChanged="SelectNotProcessed_OnTextChanged"/>
+                                                <Grid Margin="0, 250">
                                                     <Label Content="Настройки тепловизора" HorizontalAlignment="Left"
                                                            Margin="10,231,0,0" Height="26" VerticalAlignment="Top"
                                                            FontWeight="Bold" />
