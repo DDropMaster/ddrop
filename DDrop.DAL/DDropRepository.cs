@@ -352,9 +352,14 @@ namespace DDrop.DAL
         {
             using (var context = new DDropContext())
             {
+                context.Database.CommandTimeout = 999999999;
+                context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+
                 try
                 {
-                    var loadedSeries = await context.Series.Where(x => x.CurrentUserId == dbUserId)
+                    var loadedSeries = await context.Series
+                        .AsNoTracking()
+                        .Where(x => x.CurrentUserId == dbUserId)
                         .Select(x => new
                         {
                             x.Title,
@@ -363,9 +368,91 @@ namespace DDrop.DAL
                             x.AddedDate,
                             x.CurrentUserId,
                             x.CommentId,
+                            x.Comment,
                             x.RegionOfInterest,
-                            x.Settings
-                        }).ToListAsync();
+                            x.Settings,
+                            x.Substance,
+                            MeasurementsSeries = x.MeasurementsSeries.OrderBy(ms => ms.MeasurementOrderInSeries).Select(s => new
+                            {
+                                s.Name,
+                                s.CurrentSeriesId,
+                                s.MeasurementId,
+                                s.AddedDate,
+                                s.CreationDateTime,
+                                s.MeasurementOrderInSeries,
+                                s.AmbientTemperature,
+                                s.FrontDropPhotoId,
+                                s.SideDropPhotoId,
+                                Drop = new
+                                {
+                                   s.Drop.DropId,
+                                   s.Drop.XDiameterInMeters,
+                                   s.Drop.YDiameterInMeters,
+                                   s.Drop.ZDiameterInMeters,
+                                   s.Drop.VolumeInCubicalMeters,
+                                   s.Drop.RadiusInMeters,
+                                   s.Drop.Temperature,
+                                },
+                                s.CommentId,
+                                s.Comment,
+                                ThermalPhoto = s.ThermalPhoto != null ? new
+                                {
+                                    s.ThermalPhoto.Name,
+                                    s.ThermalPhoto.PhotoId,
+                                    s.ThermalPhoto.AddedDate,
+                                    s.ThermalPhoto.PhotoType,
+                                    s.ThermalPhoto.CreationDateTime,
+                                    s.ThermalPhoto.EllipseCoordinate,
+                                    s.ThermalPhoto.CommentId,
+                                    s.ThermalPhoto.Comment
+                                } : null,
+                                FrontDropPhoto = s.FrontDropPhotoId.HasValue ? new
+                                {
+                                    s.FrontDropPhoto.Name,
+                                    s.FrontDropPhoto.Contour,
+                                    s.FrontDropPhoto.VerticalLine,
+                                    s.FrontDropPhoto.HorizontalLine,
+                                    s.FrontDropPhoto.PhotoId,
+                                    s.FrontDropPhoto.AddedDate,
+                                    s.FrontDropPhoto.PhotoType,
+                                    s.FrontDropPhoto.CreationDateTime,
+                                    s.FrontDropPhoto.XDiameterInPixels,
+                                    s.FrontDropPhoto.YDiameterInPixels,
+                                    s.FrontDropPhoto.ZDiameterInPixels,
+                                    s.FrontDropPhoto.CommentId,
+                                    s.FrontDropPhoto.ContourId,
+                                    s.FrontDropPhoto.Comment,
+                                } : null,
+                                SideDropPhoto = s.SideDropPhotoId.HasValue ? new
+                                {
+                                    s.SideDropPhoto.Name,
+                                    s.SideDropPhoto.Contour,
+                                    s.SideDropPhoto.VerticalLine,
+                                    s.SideDropPhoto.HorizontalLine,
+                                    s.SideDropPhoto.PhotoId,
+                                    s.SideDropPhoto.AddedDate,
+                                    s.SideDropPhoto.PhotoType,
+                                    s.SideDropPhoto.CreationDateTime,
+                                    s.SideDropPhoto.XDiameterInPixels,
+                                    s.SideDropPhoto.YDiameterInPixels,
+                                    s.SideDropPhoto.ZDiameterInPixels,
+                                    s.SideDropPhoto.CommentId,
+                                    s.SideDropPhoto.ContourId,
+                                    s.SideDropPhoto.Comment
+                                } : null,
+                            }),
+                            ReferencePhotoForSeries = x.ReferencePhotoForSeries.Select(z => new
+                            {
+                                z.Name,
+                                z.PixelsInMillimeter,
+                                z.ReferenceLine,
+                                z.PhotoId,
+                                z.AddedDate,
+                                z.CreationDateTime,
+                                z.PhotoType,
+                                z.CurrentSeriesId,
+                            })
+                        }).ToArrayAsync();
 
                     var dbSeries = new List<DbSeries>();
 
@@ -380,15 +467,88 @@ namespace DDrop.DAL
                             SeriesId = series.SeriesId,
                             CommentId = series.CommentId,
                             RegionOfInterest = series.RegionOfInterest,
-                            Settings = series.Settings
+                            Settings = series.Settings,
+                            Substance = series.Substance,
+                            Comment = series.Comment,
+                            MeasurementsSeries = series.MeasurementsSeries.Select(s => new DbMeasurement
+                            {
+                                Name = s.Name,
+                                CurrentSeriesId = s.CurrentSeriesId,
+                                MeasurementId = s.MeasurementId,
+                                AddedDate = s.AddedDate,
+                                CreationDateTime = s.CreationDateTime,
+                                MeasurementOrderInSeries = s.MeasurementOrderInSeries,
+                                AmbientTemperature = s.AmbientTemperature,
+                                FrontDropPhotoId = s.FrontDropPhotoId,
+                                SideDropPhotoId = s.SideDropPhotoId,
+                                Drop = new DbDrop
+                                { 
+                                    DropId = s.Drop.DropId,
+                                    RadiusInMeters = s.Drop.RadiusInMeters,
+                                    Temperature = s.Drop.Temperature,
+                                    VolumeInCubicalMeters = s.Drop.VolumeInCubicalMeters,
+                                    XDiameterInMeters = s.Drop.XDiameterInMeters,
+                                    YDiameterInMeters = s.Drop.YDiameterInMeters,
+                                    ZDiameterInMeters = s.Drop.ZDiameterInMeters
+                                },
+                                CommentId = s.CommentId,
+                                Comment = s.Comment,
+                                ThermalPhoto = s.ThermalPhoto != null ? new DbThermalPhoto
+                                {
+                                    Name = s.ThermalPhoto.Name,
+                                    PhotoId = s.ThermalPhoto.PhotoId,
+                                    AddedDate = s.ThermalPhoto.AddedDate,
+                                    PhotoType = s.ThermalPhoto.PhotoType,
+                                    CreationDateTime = s.ThermalPhoto.CreationDateTime,
+                                    EllipseCoordinate = s.ThermalPhoto.EllipseCoordinate,
+                                    CommentId = s.ThermalPhoto.CommentId
+                                } : null,
+                                FrontDropPhoto = s.FrontDropPhotoId.HasValue ? new DbDropPhoto
+                                {
+                                    Name = s.FrontDropPhoto.Name,
+                                    Contour = s.FrontDropPhoto.Contour,
+                                    VerticalLine = s.FrontDropPhoto.VerticalLine,
+                                    HorizontalLine = s.FrontDropPhoto.HorizontalLine,
+                                    PhotoId = s.FrontDropPhoto.PhotoId,
+                                    AddedDate = s.FrontDropPhoto.AddedDate,
+                                    PhotoType = s.FrontDropPhoto.PhotoType,
+                                    CreationDateTime = s.FrontDropPhoto.CreationDateTime,
+                                    XDiameterInPixels = s.FrontDropPhoto.XDiameterInPixels,
+                                    YDiameterInPixels = s.FrontDropPhoto.YDiameterInPixels,
+                                    ZDiameterInPixels = s.FrontDropPhoto.ZDiameterInPixels,
+                                    CommentId = s.FrontDropPhoto.CommentId,
+                                    ContourId = s.FrontDropPhoto.ContourId
+                                } : null,
+                                SideDropPhoto = s.SideDropPhotoId.HasValue ? new DbDropPhoto
+                                {
+                                    Name = s.SideDropPhoto.Name,
+                                    Contour = s.SideDropPhoto.Contour,
+                                    VerticalLine = s.SideDropPhoto.VerticalLine,
+                                    HorizontalLine = s.SideDropPhoto.HorizontalLine,
+                                    PhotoId = s.SideDropPhoto.PhotoId,
+                                    AddedDate = s.SideDropPhoto.AddedDate,
+                                    PhotoType = s.SideDropPhoto.PhotoType,
+                                    CreationDateTime = s.SideDropPhoto.CreationDateTime,
+                                    XDiameterInPixels = s.SideDropPhoto.XDiameterInPixels,
+                                    YDiameterInPixels = s.SideDropPhoto.YDiameterInPixels,
+                                    ZDiameterInPixels = s.SideDropPhoto.ZDiameterInPixels,
+                                    CommentId = s.SideDropPhoto.CommentId,
+                                    ContourId = s.SideDropPhoto.ContourId
+                                } : null,
+                            }).ToList(),
+                            ReferencePhotoForSeries = series.ReferencePhotoForSeries.Select(z => new DbReferencePhoto
+                            {
+                                Name = z.Name,
+                                PixelsInMillimeter = z.PixelsInMillimeter,
+                                ReferenceLine = z.ReferenceLine,
+                                PhotoId = z.PhotoId,
+                                AddedDate = z.AddedDate,
+                                CreationDateTime = z.CreationDateTime,
+                                PhotoType = z.PhotoType,
+                                CurrentSeriesId = z.CurrentSeriesId,
+                            }).ToList()
                         };
 
-                        if (seriesToAdd.CommentId != null)
-                            seriesToAdd.Comment = await GetCommentById(seriesToAdd.CommentId.Value);
-
-                        seriesToAdd.ReferencePhotoForSeries = await GetReferencePhotoById(seriesToAdd);
-                        seriesToAdd.MeasurementsSeries = await GetMeasurements(seriesToAdd);
-                        seriesToAdd.Substance = await GetSubstanceById(seriesToAdd.SeriesId, seriesToAdd);
                         seriesToAdd.ThermalPlot = await GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
 
                         dbSeries.Add(seriesToAdd);
@@ -400,6 +560,40 @@ namespace DDrop.DAL
                 {
                     throw new TimeoutException(e.Message, e);
                 }
+            }
+        }
+
+        private async Task<DbPlot> GetSeriesPlot(Guid seriesId, DbSeries series)
+        {
+            using (var context = new DDropContext())
+            {
+                var seriesPlot = await context.Plots
+                    .Where(x => x.Series.SeriesId == seriesId)
+                    .Select(x => new
+                    {
+                        x.Name,
+                        x.Points,
+                        x.CurrentUserId,
+                        x.PlotId,
+                        x.PlotType,
+                        x.Settings,
+                    }).FirstOrDefaultAsync();
+
+                if (seriesPlot == null)
+                {
+                    return null;
+                }
+
+                return new DbPlot
+                {
+                    Name = seriesPlot.Name,
+                    Series = series,
+                    Points = seriesPlot.Points,
+                    CurrentUserId = seriesPlot.CurrentUserId,
+                    PlotType = seriesPlot.PlotType,
+                    PlotId = seriesPlot.PlotId,
+                    Settings = seriesPlot.Settings
+                };
             }
         }
 
@@ -517,71 +711,6 @@ namespace DDrop.DAL
                 }
 
                 return resultingReferencePhotos;
-            }
-        }
-
-        private async Task<DbPlot> GetSeriesPlot(Guid seriesId, DbSeries series)
-        {
-            using (var context = new DDropContext())
-            {
-                var seriesPlot = await context.Plots
-                    .Where(x => x.Series.SeriesId == seriesId)
-                    .Select(x => new
-                    {
-                        x.Name,
-                        x.Points,
-                        x.CurrentUser,
-                        x.CurrentUserId,
-                        x.PlotId,
-                        x.PlotType,
-                        x.Settings,
-                    }).FirstOrDefaultAsync();
-
-                if (seriesPlot == null)
-                {
-                    return null;
-                }
-
-                return new DbPlot
-                {
-                    Name = seriesPlot.Name,
-                    Series = series,
-                    Points = seriesPlot.Points,
-                    CurrentUserId = seriesPlot.CurrentUserId,
-                    CurrentUser = seriesPlot.CurrentUser,
-                    PlotType = seriesPlot.PlotType,
-                    PlotId = seriesPlot.PlotId,
-                    Settings = seriesPlot.Settings
-                };
-            }
-        }
-
-        private async Task<DbSubstances> GetSubstanceById(Guid substanceId, DbSeries series)
-        {
-            using (var context = new DDropContext())
-            {
-                var substanceForSeries = await context.Substances
-                    .Where(x => x.Series.SeriesId == substanceId)
-                    .Select(x => new
-                    {
-                        x.Id,
-                        x.Series,
-                        x.SubstanceId,
-                        x.CommonName
-                    }).FirstOrDefaultAsync();
-
-                if (substanceForSeries == null)
-                {
-                    return null;
-                }
-
-                return new DbSubstances
-                {
-                    Id = substanceForSeries.Id,
-                    SubstanceId = substanceForSeries.SubstanceId,
-                    Series = series,
-                    CommonName = substanceForSeries.CommonName
-                };
             }
         }
 

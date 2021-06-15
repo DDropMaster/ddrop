@@ -34,7 +34,5 @@ namespace DDrop.Db.DbEntities
         public virtual DbComment Comment { get; set; }
 
         public virtual DbThermalPhoto ThermalPhoto { get; set; }
-
-        public bool Processed { get; set; }
     }
 }

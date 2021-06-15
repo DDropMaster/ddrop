@@ -297,6 +297,14 @@
     <Compile Include="Migrations\202106131512012_Processed.designer.cs">
       <DependentUpon>202106131512012_Processed.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202106141004147_ProcessedWasAMistake.cs" />
+    <Compile Include="Migrations\202106141004147_ProcessedWasAMistake.designer.cs">
+      <DependentUpon>202106141004147_ProcessedWasAMistake.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106141953276_PlotsLoadingTooDamnLong.cs" />
+    <Compile Include="Migrations\202106141953276_PlotsLoadingTooDamnLong.designer.cs">
+      <DependentUpon>202106141953276_PlotsLoadingTooDamnLong.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -481,6 +489,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202106131512012_Processed.resx">
       <DependentUpon>202106131512012_Processed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106141004147_ProcessedWasAMistake.resx">
+      <DependentUpon>202106141004147_ProcessedWasAMistake.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106141953276_PlotsLoadingTooDamnLong.resx">
+      <DependentUpon>202106141953276_PlotsLoadingTooDamnLong.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

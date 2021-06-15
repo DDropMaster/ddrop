@@ -142,18 +142,6 @@ namespace DDrop.Models
             }
         }
 
-        private bool _processed;
-        public bool Processed
-        {
-            get => _processed;
-            set
-            {
-                _processed = value;
-                RaisePropertyChanged("Processed");
-            }
-        }
-
-
         private bool _canDrawPlot;
         public bool CanDrawPlot
         {

@@ -147,8 +147,6 @@ namespace DDrop.Models
         {
             get
             {
-
-
                 if (Drop.Temperature != null && AmbientTemperature != 0)
                     return true;
 

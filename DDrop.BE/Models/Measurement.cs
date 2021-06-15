@@ -33,7 +33,5 @@ namespace DDrop.BE.Models
         public Guid? CommentId { get; set; }
 
         public Comment Comment { get; set; }
-
-        public bool Processed { get; set; }
     }
 }
