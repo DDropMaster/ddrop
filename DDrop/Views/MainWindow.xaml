@@ -385,6 +385,13 @@
                                                     ToolTip="Рассчитать.">
                                                 <ContentControl Content="{StaticResource Play}" Height="22" Width="24" />
                                             </Button>
+                                            <Button Grid.Row="0" Grid.Column="0" Name="CheckNextNotCalculated"
+                                                    HorizontalAlignment="Left" Margin="175,6,0,0"
+                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
+                                                    BorderBrush="{x:Null}" Height="27" Click="CheckNextNotCalculated_OnClick"
+                                                    ToolTip="Выбрать необработанные снимки.">
+                                                <ContentControl Content="{StaticResource EditTable}" Height="21" />
+                                            </Button>
                                             <Button Grid.Row="0" Grid.Column="0" Name="SaveCalculationResults"
                                                     HorizontalAlignment="Left" Margin="43,6,0,0"
                                                     VerticalAlignment="Top" Width="28" BorderBrush="{x:Null}"

@@ -53,5 +53,10 @@ namespace DDrop.BL.Measurement
             return _mapper.Map<List<DbMeasurement>, List<BE.Models.Measurement>>(
                 await _dDropRepository.GetMeasurements(dbSeries));
         }
+
+        public async Task<BE.Models.Measurement> GetMeasurement(Guid measurementId)
+        {
+            return _mapper.Map<DbMeasurement, BE.Models.Measurement>(await _dDropRepository.GetMeasurement(measurementId));
+        }
     }
 }

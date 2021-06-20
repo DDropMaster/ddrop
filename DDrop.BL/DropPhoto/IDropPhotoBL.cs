@@ -12,5 +12,6 @@ namespace DDrop.BL.Measurement
         Task DeleteDropPhoto(DropPhoto dropPhoto);
         Task UpdateDropPhotoName(string text, Guid editedPhotoId);
         Task CreateDropPhoto(DropPhoto dropPhoto, BE.Models.Measurement owningMeasurement);
+        Task<Contour> GetDropPhotoContour(Guid contourId);
     }
 }

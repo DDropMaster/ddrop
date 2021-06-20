@@ -27,6 +27,7 @@ namespace DDrop.DAL
         Task<List<DbMeasurement>> GetMeasurements(DbSeries series);
         Task UpdateSeriesIntervalBetweenPhotos(int interval, Guid seriesId);
         Task CreateMeasurement(DbMeasurement measurement, Guid seriesId);
+        Task<DbMeasurement> GetMeasurement(Guid measurementId);
         Task UpdateDrop(DbDrop drop);
         Task UpdateDropTemperature(double temperature, Guid dropId);
         Task DeleteMeasurement(DbMeasurement measurement);
@@ -42,6 +43,7 @@ namespace DDrop.DAL
         Task UpdateReferencePhoto(DbReferencePhoto referencePhoto);
         void UpdateContour(DbContour contour);
         Task DeleteContour(Guid contourId);
+        Task<DbContour> GetDbContour(Guid contourId);
         Task<byte[]> GetReferencePhotoContent(Guid referencePhotoId);
         Task<byte[]> GetThermalPhotoContent(Guid photoId, CancellationToken cancellationToken);
         Task SaveLogEntry(DbLogEntry dbLogEntry);

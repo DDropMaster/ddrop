@@ -409,7 +409,7 @@ namespace DDrop.DAL
                                 FrontDropPhoto = s.FrontDropPhotoId.HasValue ? new
                                 {
                                     s.FrontDropPhoto.Name,
-                                    s.FrontDropPhoto.Contour,
+                                    //s.FrontDropPhoto.Contour,
                                     s.FrontDropPhoto.VerticalLine,
                                     s.FrontDropPhoto.HorizontalLine,
                                     s.FrontDropPhoto.PhotoId,
@@ -426,7 +426,7 @@ namespace DDrop.DAL
                                 SideDropPhoto = s.SideDropPhotoId.HasValue ? new
                                 {
                                     s.SideDropPhoto.Name,
-                                    s.SideDropPhoto.Contour,
+                                    //s.SideDropPhoto.Contour,
                                     s.SideDropPhoto.VerticalLine,
                                     s.SideDropPhoto.HorizontalLine,
                                     s.SideDropPhoto.PhotoId,
@@ -506,7 +506,6 @@ namespace DDrop.DAL
                                 FrontDropPhoto = s.FrontDropPhotoId.HasValue ? new DbDropPhoto
                                 {
                                     Name = s.FrontDropPhoto.Name,
-                                    Contour = s.FrontDropPhoto.Contour,
                                     VerticalLine = s.FrontDropPhoto.VerticalLine,
                                     HorizontalLine = s.FrontDropPhoto.HorizontalLine,
                                     PhotoId = s.FrontDropPhoto.PhotoId,
@@ -517,12 +516,12 @@ namespace DDrop.DAL
                                     YDiameterInPixels = s.FrontDropPhoto.YDiameterInPixels,
                                     ZDiameterInPixels = s.FrontDropPhoto.ZDiameterInPixels,
                                     CommentId = s.FrontDropPhoto.CommentId,
+                                    Comment = s.FrontDropPhoto.Comment,
                                     ContourId = s.FrontDropPhoto.ContourId
                                 } : null,
                                 SideDropPhoto = s.SideDropPhotoId.HasValue ? new DbDropPhoto
                                 {
                                     Name = s.SideDropPhoto.Name,
-                                    Contour = s.SideDropPhoto.Contour,
                                     VerticalLine = s.SideDropPhoto.VerticalLine,
                                     HorizontalLine = s.SideDropPhoto.HorizontalLine,
                                     PhotoId = s.SideDropPhoto.PhotoId,
@@ -533,6 +532,7 @@ namespace DDrop.DAL
                                     YDiameterInPixels = s.SideDropPhoto.YDiameterInPixels,
                                     ZDiameterInPixels = s.SideDropPhoto.ZDiameterInPixels,
                                     CommentId = s.SideDropPhoto.CommentId,
+                                    Comment = s.SideDropPhoto.Comment,
                                     ContourId = s.SideDropPhoto.ContourId
                                 } : null,
                             }).ToList(),
@@ -672,6 +672,14 @@ namespace DDrop.DAL
                 return dbMeasurementsForAdd;
             }
         }
+
+        public async Task<DbMeasurement> GetMeasurement(Guid measurementId)
+        {
+            using (var context = new DDropContext())
+            {
+                return await context.Measurements.FirstOrDefaultAsync(x => x.MeasurementId == measurementId);
+            }
+        }    
 
         public async Task<List<DbReferencePhoto>> GetReferencePhotoById(DbSeries series)
         {
@@ -1463,11 +1471,6 @@ namespace DDrop.DAL
                         await DeleteComment(measurement.Comment);
                     }
 
-                    //if (measurement.Drop != null)
-                    //{
-                    //    await DeleteDrop(measurement.Drop);
-                    //}
-
                     context.Measurements.Attach(measurement);
 
                     context.Measurements.Remove(measurement);
@@ -1772,8 +1775,22 @@ namespace DDrop.DAL
             }
         }
 
-        #endregion
+        public async Task<DbContour> GetDbContour(Guid contourId)
+        {
+            using (var context = new DDropContext())
+            {
+                try
+                {
+                    return await context.Contours.FirstOrDefaultAsync(x => x.ContourId == contourId);
+                }
+                catch (SqlException e)
+                {
+                    throw new TimeoutException(e.Message, e);
+                }
+            }
+        }
 
+        #endregion
 
     }
 }

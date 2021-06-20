@@ -51,6 +51,11 @@ namespace DDrop.BL.Measurement
             return await _dDropRepository.GetPhotoContent(photoId, cancellationToken);
         }
 
+        public async Task<Contour> GetDropPhotoContour(Guid contourId)
+        {
+            return _mapper.Map<DbContour, Contour>(await _dDropRepository.GetDbContour(contourId));
+        }
+
         public async Task UpdateDropPhoto(DropPhoto dropPhoto, bool updateContent = false)
         {
             var dbPhoto = _mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto);
