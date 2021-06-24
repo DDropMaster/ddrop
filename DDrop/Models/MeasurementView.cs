@@ -78,18 +78,7 @@ namespace DDrop.Models
                 RaisePropertyChanged("CreationDateTime");
             }
         }
-
-        private bool _requireSaving;
-        public bool RequireSaving
-        {
-            get => _requireSaving;
-            set
-            {
-                _requireSaving = value;
-                RaisePropertyChanged("RequireSaving");
-            }
-        }
-
+        
         private int _measurementOrderInSeries;
         public int MeasurementOrderInSeries
         {
@@ -108,30 +97,34 @@ namespace DDrop.Models
             {
                 if (_drop.RadiusInMeters > 0)
                 {
-                    if (_frontDropPhoto == null && _sideDropPhoto == null)
+                    var frontDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
+
+                    var sideDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
+
+                    if (frontDropPhoto == null && sideDropPhoto == null)
                         return false;
 
-                    if (_frontDropPhoto == null && _sideDropPhoto != null && _sideDropPhoto.Processed)
+                    if (frontDropPhoto == null && sideDropPhoto != null && sideDropPhoto.Processed)
                         return true;
 
-                    if (_sideDropPhoto == null && _frontDropPhoto != null && _frontDropPhoto.Processed)
+                    if (sideDropPhoto == null && frontDropPhoto != null && frontDropPhoto.Processed)
                         return true;
 
-                    if (_sideDropPhoto == null && _frontDropPhoto != null && !_frontDropPhoto.Processed)
+                    if (sideDropPhoto == null && frontDropPhoto != null && !frontDropPhoto.Processed)
                         return false;
 
-                    if (_frontDropPhoto == null && _sideDropPhoto != null && !_sideDropPhoto.Processed)
+                    if (frontDropPhoto == null && sideDropPhoto != null && !sideDropPhoto.Processed)
                         return false;
 
-                    bool twoPhotos = _frontDropPhoto.PhotoId != Guid.Empty && _sideDropPhoto.PhotoId != Guid.Empty;
+                    bool twoPhotos = frontDropPhoto.PhotoId != Guid.Empty && sideDropPhoto.PhotoId != Guid.Empty;
 
-                    if (twoPhotos && _frontDropPhoto.Processed && _sideDropPhoto.Processed)
+                    if (twoPhotos && frontDropPhoto.Processed && sideDropPhoto.Processed)
                         return true;
 
-                    if (twoPhotos && !_frontDropPhoto.Processed || !_sideDropPhoto.Processed)
+                    if (twoPhotos && !frontDropPhoto.Processed || !sideDropPhoto.Processed)
                         return false;
 
-                    if (!twoPhotos && _frontDropPhoto.Processed || _sideDropPhoto.Processed)
+                    if (!twoPhotos && frontDropPhoto.Processed || sideDropPhoto.Processed)
                         return true;
                 }
 
@@ -171,49 +164,15 @@ namespace DDrop.Models
             }
         }
 
-        private Guid? _frontDropPhotoId;
-        public Guid? FrontDropPhotoId
+        private ObservableCollection<DropPhotoView> _dropPhotos;
+        public ObservableCollection<DropPhotoView> DropPhotos
         {
-            get => _frontDropPhotoId;
+            get => _dropPhotos;
             set
             {
-                _frontDropPhotoId = value;
-                RaisePropertyChanged("FrontDropPhotoId");
-            }
-        }
-
-        private DropPhotoView _frontDropPhoto;
-        public DropPhotoView FrontDropPhoto
-        {
-            get => _frontDropPhoto;
-            set
-            {
-                _frontDropPhoto = value;
-                RaisePropertyChanged("FrontDropPhoto");
+                _dropPhotos = value;
+                RaisePropertyChanged("DropPhotos");
                 RaisePropertyChanged(nameof(Processed));
-            }
-        }
-
-        private Guid? _sideDropPhotoId;
-        public Guid? SideDropPhotoId
-        {
-            get => _sideDropPhotoId;
-            set
-            {
-                _sideDropPhotoId = value;
-                RaisePropertyChanged("SideDropPhotoId");
-                RaisePropertyChanged(nameof(Processed));
-            }
-        }
-
-        private DropPhotoView _sideDropPhoto;
-        public DropPhotoView SideDropPhoto
-        {
-            get => _sideDropPhoto;
-            set
-            {
-                _sideDropPhoto = value;
-                RaisePropertyChanged("SideDropPhoto");
             }
         }
 

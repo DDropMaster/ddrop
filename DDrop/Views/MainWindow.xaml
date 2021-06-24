@@ -392,15 +392,6 @@
                                                     ToolTip="Выбрать необработанные снимки.">
                                                 <ContentControl Content="{StaticResource EditTable}" Height="21" />
                                             </Button>
-                                            <Button Grid.Row="0" Grid.Column="0" Name="SaveCalculationResults"
-                                                    HorizontalAlignment="Left" Margin="43,6,0,0"
-                                                    VerticalAlignment="Top" Width="28" BorderBrush="{x:Null}"
-                                                    Background="{x:Null}" Height="26"
-                                                    Click="SaveCalculationResults_OnClick"
-                                                    ToolTip="Сохранить результаты расчета.">
-                                                <ContentControl Content="{StaticResource SaveIcon}" Height="22"
-                                                                Width="24" />
-                                            </Button>
                                             <Button Grid.Row="0" Grid.Column="0" Name="DiscardCalculationResults"
                                                     HorizontalAlignment="Left" Margin="75,6,0,0"
                                                     VerticalAlignment="Top" Width="27" Background="{x:Null}"
@@ -409,13 +400,6 @@
                                                     ToolTip="Закончить расчет">
                                                 <ContentControl Content="{StaticResource Cancel}" Height="22"
                                                                 Width="23" />
-                                            </Button>
-                                            <Button Grid.Row="0" Grid.Column="0" Name="UndoCalculate"
-                                                    HorizontalAlignment="Left" Margin="107,6,0,0"
-                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
-                                                    BorderBrush="{x:Null}" Height="27" Click="UndoCalculate_OnClick"
-                                                    ToolTip="Отменить результаты расчета.">
-                                                <ContentControl Content="{StaticResource UndoIcon}" Height="21" />
                                             </Button>
                                         </Grid>
                                         <Grid x:Name="SavePhotoOrderMenu" Visibility="Hidden">
@@ -581,20 +565,6 @@
                                                     </DataGridCheckBoxColumn>
                                                     <DataGridTextColumn IsReadOnly="False" Header="Измерение"
                                                                     Binding="{Binding Name}" />
-                                                    <DataGridTextColumn IsReadOnly="True"
-                                                                    Header="X диаметр, px"
-                                                                    Binding="{Binding FrontDropPhoto.XDiameterInPixels}" />
-                                                    <DataGridTextColumn IsReadOnly="True" Header="Y диаметр, px">
-                                                        <DataGridTextColumn.Binding>
-                                                            <MultiBinding Converter="{StaticResource AddConverter}">
-                                                                <Binding Path="FrontDropPhoto.YDiameterInPixels"/>
-                                                                <Binding Path="SideDropPhoto.YDiameterInPixels"/>
-                                                            </MultiBinding>
-                                                        </DataGridTextColumn.Binding>
-                                                    </DataGridTextColumn>
-                                                    <DataGridTextColumn IsReadOnly="True"
-                                                                    Header="Z диаметр, px"
-                                                                    Binding="{Binding SideDropPhoto.ZDiameterInPixels}" />
                                                     <DataGridTextColumn 
                                                         IsReadOnly="True" Header="X диаметр, м"
                                                         Binding="{Binding Drop.XDiameterInMeters}" />
@@ -713,7 +683,7 @@
                                                 CellEditEnding="PhotosDetails_OnCellEditEnding"
                                                 CanUserSortColumns="False"
                                                 CanUserAddRows="false" AutoGenerateColumns="false"
-                                                ItemsSource="{Binding CurrentDropPhotos, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True}"
+                                                ItemsSource="{Binding CurrentMeasurement.DropPhotos, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True}"
                                                 SelectionChanged="PhotosDetails_OnSelectionChanged" RenderTransformOrigin="0.5,0.5">
                                                 <DataGrid.RowStyle>
                                                     <Style TargetType="DataGridRow">

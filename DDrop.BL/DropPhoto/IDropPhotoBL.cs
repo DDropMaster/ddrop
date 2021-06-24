@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DDrop.BE.Models;
@@ -13,5 +14,6 @@ namespace DDrop.BL.Measurement
         Task UpdateDropPhotoName(string text, Guid editedPhotoId);
         Task CreateDropPhoto(DropPhoto dropPhoto, BE.Models.Measurement owningMeasurement);
         Task<Contour> GetDropPhotoContour(Guid contourId);
+        Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId);
     }
 }

@@ -69,6 +69,12 @@ namespace DDrop.Db
                 .WithMany()
                 .HasForeignKey(s => s.SideDropPhotoId);
 
+            modelBuilder.Entity<DbMeasurement>()
+                .HasMany(s => s.DropPhotos)
+                .WithRequired(g => g.Measurement)
+                .HasForeignKey(s => s.MeasurementId)
+                .WillCascadeOnDelete();
+
             modelBuilder.Entity<DbDropPhoto>()
                 .HasOptional(c => c.Contour)
                 .WithMany()

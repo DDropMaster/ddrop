@@ -183,5 +183,16 @@ namespace DDrop.Models
                 RaisePropertyChanged("Comment");
             }
         }
+
+        private Guid _measurementId;
+        public Guid MeasurementId
+        {
+            get => _measurementId;
+            set
+            {
+                _measurementId = value;
+                RaisePropertyChanged("MeasurementId");
+            }
+        }
     }
 }

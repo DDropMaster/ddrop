@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DDrop.BE.Models
 {
@@ -20,18 +21,12 @@ namespace DDrop.BE.Models
 
         public double? AmbientTemperature { get; set; }
 
-        public Guid? FrontDropPhotoId { get; set; }
-
-        public DropPhoto FrontDropPhoto { get; set; }
-
-        public Guid? SideDropPhotoId { get; set; }
-
-        public DropPhoto SideDropPhoto { get; set; }
-
         public ThermalPhoto ThermalPhoto { get; set; }
 
         public Guid? CommentId { get; set; }
 
         public Comment Comment { get; set; }
+
+        public List<DropPhoto> DropPhotos { get; set; }
     }
 }

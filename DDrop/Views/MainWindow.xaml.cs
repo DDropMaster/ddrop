@@ -189,7 +189,7 @@ namespace DDrop.Views
 
         private AutoCalculationTemplate _currentPhotoAutoCalculationTemplate;
 
-        private MeasurementView _currentSeriesPreviewPhoto = new MeasurementView();
+        private MeasurementView _currentSeriesPreviewMeasurement = new MeasurementView();
 
         private int _initialXDiameterInPixels;
         private int _initialYDiameterInPixels;
@@ -258,9 +258,6 @@ namespace DDrop.Views
 
         public static readonly DependencyProperty CurrentThermalPhotoProperty =
             DependencyProperty.Register("CurrentThermalPhoto", typeof(ThermalPhotoView), typeof(MainWindow));
-
-        public static readonly DependencyProperty CurrentDropPhotosProperty =
-            DependencyProperty.Register("CurrentDropPhotos", typeof(ObservableCollection<DropPhotoView>), typeof(MainWindow));
 
         public static readonly DependencyProperty CurrentReferencePhotosProperty =
             DependencyProperty.Register("CurrentReferencePhotos", typeof(ObservableCollection<ReferencePhotoView>), typeof(MainWindow));
@@ -445,12 +442,6 @@ namespace DDrop.Views
         {
             get => (ObservableCollection<ReferencePhotoView>)GetValue(CurrentReferencePhotosProperty);
             set => SetValue(CurrentReferencePhotosProperty, value);
-        }
-
-        public ObservableCollection<DropPhotoView> CurrentDropPhotos
-        {
-            get => (ObservableCollection<DropPhotoView>)GetValue(CurrentDropPhotosProperty);
-            set => SetValue(CurrentDropPhotosProperty, value);
         }
 
         public DropPhotoView CurrentDropPhoto
@@ -922,12 +913,12 @@ namespace DDrop.Views
             var selectedMeasurement = (MeasurementView) SeriesPreviewDataGrid.SelectedItem;
             if (selectedMeasurement != null)
             {
-                _currentSeriesPreviewPhoto = selectedMeasurement;
+                _currentSeriesPreviewMeasurement = selectedMeasurement;
                 CurrentPreviewMeasurement = selectedMeasurement;
 
                 try
                 {
-                    LoadSeriesPreviewPhoto(_currentSeriesPreviewPhoto);
+                    LoadSeriesPreviewPhoto(_currentSeriesPreviewMeasurement);
                 }
                 catch (OperationCanceledException)
                 {
@@ -935,7 +926,7 @@ namespace DDrop.Views
                 catch (TimeoutException)
                 {
                     _notifier.ShowError(
-                        $"Не удалось загрузить снимок {_currentSeriesPreviewPhoto.Name}. Не удалось установить подключение. Проверьте интернет соединение.");
+                        $"Не удалось загрузить снимок {_currentSeriesPreviewMeasurement.Name}. Не удалось установить подключение. Проверьте интернет соединение.");
                 }
                 catch (Exception exception)
                 {
@@ -1243,40 +1234,23 @@ namespace DDrop.Views
 
                             foreach (var measurement in fullDbSeries.MeasurementsSeries)
                             {
-                                if (measurement.FrontDropPhoto != null)
+                                foreach (var dropPhoto in measurement.DropPhotos)
                                 {
-                                    measurement.FrontDropPhoto.Content = await _dropPhotoBl.GetDropPhotoContent(measurement.FrontDropPhoto.PhotoId, CancellationToken.None, Settings.Default.UseCache);
-                                    
-                                    if (measurement.FrontDropPhoto.ContourId.HasValue)
-                                    {
-                                        measurement.FrontDropPhoto.Contour = _mapper.Map<Contour, DbContour>(await _dropPhotoBl.GetDropPhotoContour(measurement.FrontDropPhoto.ContourId.Value));
-                                    }
-                                }
+                                    dropPhoto.Content = await _dropPhotoBl.GetDropPhotoContent(dropPhoto.PhotoId, CancellationToken.None, Settings.Default.UseCache);
 
-                                if (measurement.SideDropPhoto != null)
-                                {
-                                    measurement.SideDropPhoto.Content = await _dropPhotoBl.GetDropPhotoContent(measurement.SideDropPhoto.PhotoId, CancellationToken.None, Settings.Default.UseCache);
-
-                                    if (measurement.SideDropPhoto.ContourId.HasValue)
+                                    if (dropPhoto.ContourId.HasValue)
                                     {
-                                        measurement.SideDropPhoto.Contour = _mapper.Map<Contour, DbContour>(await _dropPhotoBl.GetDropPhotoContour(measurement.SideDropPhoto.ContourId.Value));
+                                        dropPhoto.Contour = _mapper.Map<Contour, DbContour>(await _dropPhotoBl.GetDropPhotoContour(dropPhoto.ContourId.Value));
                                     }
                                 }
 
                                 await Task.Run(() => SeriesExporter.ExportMeasurementAsync($"{saveFileDialog.SelectedPath}\\{measurement.Name}.dmes", measurement));
 
-                                if (measurement.FrontDropPhoto != null)
+                                foreach (var dropPhoto in measurement.DropPhotos)
                                 {
-                                    measurement.FrontDropPhoto.Content = null;
-                                    measurement.FrontDropPhoto.Contour = null;
-                                    measurement.FrontDropPhoto.PhotoId = Guid.Empty;
-                                }
-
-                                if (measurement.SideDropPhoto != null)
-                                {
-                                    measurement.SideDropPhoto.Content = null;
-                                    measurement.SideDropPhoto.Contour = null;
-                                    measurement.SideDropPhoto.PhotoId = Guid.Empty;
+                                    dropPhoto.Content = null;
+                                    dropPhoto.Contour = null;
+                                    dropPhoto.PhotoId = Guid.Empty;
                                 }
 
                                 fileNames.Add($"{saveFileDialog.SelectedPath}\\{measurement.Name}.dmes");
@@ -1404,11 +1378,11 @@ namespace DDrop.Views
 
                                         await _measurementBl.CreateMeasurement(_mapper.Map<DbMeasurement, Measurement>(deserializedMeasurement), dbSerieForAdd.SeriesId);
 
-                                        if (deserializedMeasurement.FrontDropPhoto != null)
-                                            deserializedMeasurement.FrontDropPhoto.Content = null;
-
-                                        if (deserializedMeasurement.SideDropPhoto != null)
-                                            deserializedMeasurement.SideDropPhoto.Content = null;
+                                        foreach (var dropPhoto in deserializedMeasurement)
+                                        {
+                                            dropPhoto.Content = null;
+                                            dropPhoto.Contour = null;
+                                        }
 
                                         dbMeasurementForAdd.Add(deserializedMeasurement);
                                     }
@@ -1567,23 +1541,22 @@ namespace DDrop.Views
 
             _tokenSource = new CancellationTokenSource();
 
-            if (_currentSeriesPreviewPhoto.FrontDropPhoto != null &&
-                _currentSeriesPreviewPhoto.FrontDropPhoto.PhotoId != Guid.Empty)
-            {
-                _currentSeriesPreviewPhoto.FrontDropPhoto.Content = await Task.Run(() =>
-                    _dropPhotoBl.GetDropPhotoContent(_currentSeriesPreviewPhoto.FrontDropPhoto.PhotoId,
-                        _tokenSource.Token, Settings.Default.UseCache));
+            var previewPhoto = _currentSeriesPreviewMeasurement.DropPhotos?.FirstOrDefault(x => x.PhotoId != Guid.Empty)
 
-                if (measurement.FrontDropPhoto.ContourId.HasValue)
+            if (previewPhoto != null)
+            {
+                previewPhoto.Content = await Task.Run(() => _dropPhotoBl.GetDropPhotoContent(previewPhoto.PhotoId, _tokenSource.Token, Settings.Default.UseCache));
+
+                if (previewPhoto.ContourId.HasValue)
                 {
-                    measurement.FrontDropPhoto.Contour = _mapper.Map<Contour, ContourView>(await _dropPhotoBl.GetDropPhotoContour(measurement.FrontDropPhoto.ContourId.Value));
+                    previewPhoto.Contour = _mapper.Map<Contour, ContourView>(await _dropPhotoBl.GetDropPhotoContour(previewPhoto.ContourId.Value));
                 }
 
-                ImgPreview.Source = ImageInterpreter.LoadImage(_currentSeriesPreviewPhoto.FrontDropPhoto.Content);
+                ImgPreview.Source = ImageInterpreter.LoadImage(previewPhoto.Content);
 
-                _geometryBL.PrepareLines(measurement.FrontDropPhoto, out _horizontalLineSeriesPreview, out _verticalLineSeriesPreview,
+                _geometryBL.PrepareLines(previewPhoto, out _horizontalLineSeriesPreview, out _verticalLineSeriesPreview,
                     Settings.Default.ShowLinesOnPreview);
-                _geometryBL.PrepareContour(measurement.FrontDropPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
+                _geometryBL.PrepareContour(previewPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
 
                 if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
                     x.PhotoType == PhotoTypeView.FrontDropPhoto)?.RegionOfInterest != null && Settings.Default.ShowRegionOfInterest)
@@ -1607,50 +1580,13 @@ namespace DDrop.Views
                     PreviewCanvas.Children.Add(_typedRectangleSeriesPreview.RegionOfInterest);
                 }
             }
-            else if (_currentSeriesPreviewPhoto.SideDropPhoto != null && _currentSeriesPreviewPhoto.SideDropPhoto.PhotoId != Guid.Empty)
+            else if (_currentSeriesPreviewMeasurement.ThermalPhoto != null && _currentSeriesPreviewMeasurement.ThermalPhoto.PhotoId != Guid.Empty)
             {
-                _currentSeriesPreviewPhoto.SideDropPhoto.Content = await Task.Run(() =>
-                    _dropPhotoBl.GetDropPhotoContent(_currentSeriesPreviewPhoto.SideDropPhoto.PhotoId,
+                _currentSeriesPreviewMeasurement.ThermalPhoto.Content = await Task.Run(() =>
+                    _thermalPhotoBl.GetThermalPhotoContent(_currentSeriesPreviewMeasurement.ThermalPhoto.PhotoId,
                         _tokenSource.Token, Settings.Default.UseCache));
 
-                if (measurement.SideDropPhoto.ContourId.HasValue)
-                {
-                    measurement.SideDropPhoto.Contour = _mapper.Map<Contour, ContourView>(await _dropPhotoBl.GetDropPhotoContour(measurement.SideDropPhoto.ContourId.Value));
-                }
-
-                ImgPreview.Source = ImageInterpreter.LoadImage(_currentSeriesPreviewPhoto.SideDropPhoto.Content);
-
-                _geometryBL.PrepareLines(measurement.SideDropPhoto, out _horizontalLineSeriesPreview, out _verticalLineSeriesPreview,
-                    Settings.Default.ShowLinesOnPreview);
-                _geometryBL.PrepareContour(measurement.SideDropPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
-
-                if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
-                    x.PhotoType == PhotoTypeView.FrontDropPhoto)?.RegionOfInterest != null && Settings.Default.ShowRegionOfInterest)
-                {
-                    _typedRectangleSeriesPreview.RegionOfInterest = CurrentSeries.RegionOfInterest
-                        .FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto).RegionOfInterest;
-                }
-
-                PreviewCanvas.Children.Clear();
-                if (ImgPreview != null)
-                    PreviewCanvas.Children.Add(ImgPreview);
-                if (_horizontalLineSeriesPreview != null)
-                    PreviewCanvas.Children.Add(_horizontalLineSeriesPreview);
-                if (_verticalLineSeriesPreview != null)
-                    PreviewCanvas.Children.Add(_verticalLineSeriesPreview);
-                if (_contourSeriesPreview != null)
-                    foreach (var line in _contourSeriesPreview)
-                        PreviewCanvas.Children.Add(line);
-                if (_typedRectangleSeriesPreview != null)
-                    PreviewCanvas.Children.Add(_typedRectangleSeriesPreview.RegionOfInterest);
-            }
-            else if (_currentSeriesPreviewPhoto.ThermalPhoto != null && _currentSeriesPreviewPhoto.ThermalPhoto.PhotoId != Guid.Empty)
-            {
-                _currentSeriesPreviewPhoto.ThermalPhoto.Content = await Task.Run(() =>
-                    _thermalPhotoBl.GetThermalPhotoContent(_currentSeriesPreviewPhoto.ThermalPhoto.PhotoId,
-                        _tokenSource.Token, Settings.Default.UseCache));
-
-                ImgPreview.Source = ImageInterpreter.LoadImage(_currentSeriesPreviewPhoto.ThermalPhoto.Content);
+                ImgPreview.Source = ImageInterpreter.LoadImage(_currentSeriesPreviewMeasurement.ThermalPhoto.Content);
 
                 PreviewCanvas.Children.Clear();
                 if (ImgPreview != null)
@@ -1830,12 +1766,19 @@ namespace DDrop.Views
             var photosSelectedItem = (MeasurementView) Photos.SelectedItem;
             if (photosSelectedItem != null)
             {
-                CurrentDropPhotos = new ObservableCollection<DropPhotoView>();
                 CurrentThermalPhotos = new ObservableCollection<ThermalPhotoView>();
-                ImgCurrent.CanDrawing.Children.Remove(CurrentMeasurement?.FrontDropPhoto?.HorizontalLine);
-                ImgCurrent.CanDrawing.Children.Remove(CurrentMeasurement?.FrontDropPhoto?.VerticalLine);
-                ImgCurrent.CanDrawing.Children.Remove(CurrentMeasurement?.SideDropPhoto?.HorizontalLine);
-                ImgCurrent.CanDrawing.Children.Remove(CurrentMeasurement?.SideDropPhoto?.VerticalLine);
+
+                foreach (var dropPhoto in CurrentMeasurement.DropPhotos)
+                {
+                    ImgCurrent.CanDrawing.Children.Remove(dropPhoto?.HorizontalLine);
+                    ImgCurrent.CanDrawing.Children.Remove(dropPhoto?.VerticalLine);
+
+                    if (dropPhoto?.Contour != null)
+                    {
+                        foreach (var line in dropPhoto.Contour.Lines)
+                            ImgCurrent.CanDrawing.Children.Remove(line);
+                    }
+                }
 
                 if (CurrentSeries?.RegionOfInterest != null)
                 {
@@ -1845,18 +1788,10 @@ namespace DDrop.Views
                     }
                 }
 
-                if (CurrentMeasurement?.FrontDropPhoto?.Contour != null)
-                    foreach (var line in CurrentMeasurement.FrontDropPhoto.Contour.Lines)
-                        ImgCurrent.CanDrawing.Children.Remove(line);
-
-                if (CurrentMeasurement?.SideDropPhoto?.Contour != null)
-                    foreach (var line in CurrentMeasurement.SideDropPhoto.Contour.Lines)
-                        ImgCurrent.CanDrawing.Children.Remove(line);
-
                 CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
 
-                CurrentDropPhotos.Add(CurrentMeasurement.FrontDropPhoto ?? new DropPhotoView { PhotoType = PhotoTypeView.FrontDropPhoto });
-                CurrentDropPhotos.Add(CurrentMeasurement.SideDropPhoto ?? new DropPhotoView { PhotoType = PhotoTypeView.SideDropPhoto });
+                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new DropPhotoView { PhotoType = PhotoTypeView.FrontDropPhoto });
+                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new DropPhotoView { PhotoType = PhotoTypeView.SideDropPhoto });
                 CurrentThermalPhotos.Add(CurrentMeasurement.ThermalPhoto ?? new ThermalPhotoView {PhotoType = PhotoTypeView.ThermalPhoto});
 
                 ImageForEdit = null;
@@ -1867,17 +1802,11 @@ namespace DDrop.Views
                     var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
                         oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
-                    if (singleOldMeasurement?.FrontDropPhoto?.Content != null)
-                        singleOldMeasurement.FrontDropPhoto.Content = null;
-
-                    if (singleOldMeasurement?.FrontDropPhoto?.Contour != null)
-                        singleOldMeasurement.FrontDropPhoto.Contour = null;
-
-                    if (singleOldMeasurement?.SideDropPhoto?.Content != null)
-                        singleOldMeasurement.SideDropPhoto.Content = null;
-
-                    if (singleOldMeasurement?.SideDropPhoto?.Contour != null)
-                        singleOldMeasurement.SideDropPhoto.Contour = null;
+                    foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
+                    {
+                        dropPhoto.Content = null;
+                        dropPhoto.Contour = null;
+                    }
 
                     if (singleOldMeasurement?.ThermalPhoto?.Content != null)
                         singleOldMeasurement.ThermalPhoto.Content = null;
@@ -2060,32 +1989,15 @@ namespace DDrop.Views
         {
             if (CurrentDropPhoto != null)
             {
-                if (measurement.FrontDropPhotoId != Guid.Empty &&
-                    CurrentDropPhoto.PhotoId == measurement.FrontDropPhotoId)
+                foreach (var dropPhoto in measurement.DropPhotos)
                 {
-                    canvas.Children.Remove(measurement.FrontDropPhoto.HorizontalLine);
-                    canvas.Children.Remove(measurement.FrontDropPhoto.VerticalLine);
+                    canvas.Children.Remove(dropPhoto.HorizontalLine);
+                    canvas.Children.Remove(dropPhoto.VerticalLine);
 
-                    if (measurement.FrontDropPhoto.Contour != null)
-                        foreach (var line in measurement.FrontDropPhoto.Contour.Lines)
+                    if (dropPhoto.Contour != null)
+                        foreach (var line in dropPhoto.Contour.Lines)
                             canvas.Children.Remove(line);
                 }
-                else if (measurement.SideDropPhotoId != Guid.Empty &&
-                         CurrentDropPhoto.PhotoId == measurement.SideDropPhotoId)
-                {
-                    canvas.Children.Remove(measurement.SideDropPhoto.HorizontalLine);
-                    canvas.Children.Remove(measurement.SideDropPhoto.VerticalLine);
-
-                    if (measurement.SideDropPhoto.Contour != null)
-                        foreach (var line in measurement.SideDropPhoto.Contour.Lines)
-                            canvas.Children.Remove(line);
-                }
-            }
-
-            if (measurement.FrontDropPhoto != null && CurrentDropPhotos != null && CurrentDropPhotos.Contains(measurement.FrontDropPhoto) ||
-                measurement.SideDropPhoto != null && CurrentDropPhotos != null && CurrentDropPhotos.Contains(measurement.SideDropPhoto))
-            {
-                CurrentDropPhotos = null;
             }
 
             if (measurement.ThermalPhoto != null && CurrentThermalPhotos != null &&
@@ -2098,7 +2010,7 @@ namespace DDrop.Views
         }
 
         private async void DeleteSingleInputPhotoButton_Click(object sender, RoutedEventArgs e)
-        {
+        {  
             var messageBoxResult =
                 MessageBox.Show($"Удалить снимок {CurrentSeries.MeasurementsSeries[PhotosDetails.SelectedIndex].Name}?",
                     "Подтверждение удаления", MessageBoxButton.YesNo);
@@ -2109,38 +2021,24 @@ namespace DDrop.Views
                 _appStateBL.ShowAdorner(CurrentSeriesPhotoContentLoading);
                 try
                 {
-                    await DeleteDropPhoto(CurrentDropPhotos[PhotosDetails.SelectedIndex], CurrentDropPhoto, ImgCurrent.CanDrawing);
+                    await DeleteDropPhoto(CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex], CurrentDropPhoto, ImgCurrent.CanDrawing);
 
                     _logger.LogInfo(new LogEntry
                     {
                         Username = User.Email,
                         LogCategory = LogCategory.Measurement,
-                        Message = $"Снимок {CurrentDropPhotos[PhotosDetails.SelectedIndex].Name} удален."
+                        Message = $"Снимок {CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex].Name} удален."
                     });
 
                     _notifier.ShowSuccess(
-                        $"Снимок {CurrentDropPhotos[PhotosDetails.SelectedIndex].Name} удален.");
+                        $"Снимок {CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex].Name} удален.");
 
-                    if (CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].FrontDropPhotoId ==
-                        CurrentDropPhoto.PhotoId)
-                    {
-                        CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].FrontDropPhoto = null;
-                        CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].FrontDropPhotoId = null;
-                    }
-
-                    if (CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].SideDropPhotoId ==
-                        CurrentDropPhoto.PhotoId)
-                    {
-                        CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].SideDropPhoto = null;
-                        CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].SideDropPhotoId = null;
-                    }
-
-                    CurrentDropPhotos[PhotosDetails.SelectedIndex] = new DropPhotoView()
+                    CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex] = new DropPhotoView()
                     {
                         PhotoType = CurrentDropPhoto.PhotoType
                     };
 
-                    if (CurrentDropPhotos.Any(x => x.Processed))
+                    if (CurrentMeasurement.DropPhotos.Any(x => x.Processed))
                     {
                         await ReCalculateDropParameters();
                     }
@@ -2148,7 +2046,7 @@ namespace DDrop.Views
                 catch (TimeoutException)
                 {
                     _notifier.ShowError(
-                        $"Не удалось удалить снимок {CurrentDropPhotos[PhotosDetails.SelectedIndex].Name}. Не удалось установить подключение. Проверьте интернет соединение.");
+                        $"Не удалось удалить снимок {CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex].Name}. Не удалось установить подключение. Проверьте интернет соединение.");
                 }
                 catch (Exception exception)
                 {
@@ -2342,10 +2240,12 @@ namespace DDrop.Views
                 ThermalDetails.Visibility = Visibility.Visible;
                 ManualEditMenu.Visibility = Visibility.Hidden;
 
-                CurrentDropPhotos.Clear();
+                CurrentMeasurement.DropPhotos.Clear();
 
-                CurrentDropPhotos.Add(CurrentMeasurement.FrontDropPhoto ?? new DropPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
-                CurrentDropPhotos.Add(CurrentMeasurement.SideDropPhoto ?? new DropPhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
+                CurrentMeasurement.DropPhotos = _mapper.Map<DbDropPhoto, DropPhotoView>(await _dropPhotoBl.GetDropPhotosByMeasurementId(CurrentMeasurement.MeasurementId));
+
+                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
+                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
 
                 PhotosDetails.SelectedItem = CurrentDropPhoto;
                 ImageForEdit = ImageInterpreter.LoadImage(CurrentDropPhoto.Content);
@@ -3180,9 +3080,7 @@ namespace DDrop.Views
                     });
                     _notifier.ShowSuccess($"Сохранено новое референсное расстояние для серии {CurrentSeries.Title}.");
 
-                    if (CurrentSeries.MeasurementsSeries.Any(x =>
-                        x.FrontDropPhoto?.XDiameterInPixels > 0 && x.FrontDropPhoto?.YDiameterInPixels > 0 ||
-                        x.SideDropPhoto?.ZDiameterInPixels > 0 && x.SideDropPhoto?.YDiameterInPixels > 0))
+                    if (CurrentSeries.MeasurementsSeries.Any(x => x.Processed))
                         await ReCalculateDropParameters();
                 }
                 catch (TimeoutException)
@@ -3237,9 +3135,10 @@ namespace DDrop.Views
                     if (checkForChecked && checkedCount > 0 && !measurement.IsChecked)
                         continue;
 
-                    if (measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed || 
-                        measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed)
+                    if (measurement.DropPhotos.Any(x => x.Processed)
+                    {
                         await ReCalculateDropParameters(measurement);
+                    }
 
                     pbu.CurValue[pbuHandle1] += 1;
                 }
@@ -3265,8 +3164,8 @@ namespace DDrop.Views
 
                 try
                 {
-                    var frontProcessed = measurement.FrontDropPhoto != null && measurement.FrontDropPhoto.Processed;
-                    var sideProcessed = measurement.SideDropPhoto != null && measurement.SideDropPhoto.Processed;
+                    var frontProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.Processed;
+                    var sideProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.Processed;
 
                     var drop = await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>> (CurrentSeries.ReferencePhotoForSeries), frontProcessed, sideProcessed);
 
@@ -3502,64 +3401,6 @@ namespace DDrop.Views
             BuildTemplates();
         }
 
-        private void StoreMeasurement(MeasurementView measurement, ObservableCollection<MeasurementView> storeTo)
-        {
-            storeTo.Add(new MeasurementView()
-            {
-                MeasurementId = measurement.MeasurementId,
-                SideDropPhoto = measurement.SideDropPhotoId != null ? new DropPhotoView()
-                {
-                    PhotoId = measurement.SideDropPhoto.PhotoId,
-                    SimpleHorizontalLine = measurement.SideDropPhoto?.SimpleHorizontalLine != null
-                        ? new SimpleLineView()
-                        {
-                            X1 = measurement.SideDropPhoto.SimpleHorizontalLine.X1,
-                            X2 = measurement.SideDropPhoto.SimpleHorizontalLine.X2,
-                            Y1 = measurement.SideDropPhoto.SimpleHorizontalLine.Y1,
-                            Y2 = measurement.SideDropPhoto.SimpleHorizontalLine.Y2
-                        }
-                        : null,
-                    SimpleVerticalLine = measurement.SideDropPhoto?.SimpleVerticalLine != null
-                        ? new SimpleLineView()
-                        {
-                            X1 = measurement.SideDropPhoto.SimpleVerticalLine.X1,
-                            X2 = measurement.SideDropPhoto.SimpleVerticalLine.X2,
-                            Y1 = measurement.SideDropPhoto.SimpleVerticalLine.Y1,
-                            Y2 = measurement.SideDropPhoto.SimpleVerticalLine.Y2
-                        }
-                        : null
-                } : null,
-                FrontDropPhoto = measurement.FrontDropPhotoId != null ? new DropPhotoView()
-                {
-                    PhotoId = measurement.FrontDropPhoto.PhotoId,
-                    SimpleHorizontalLine = measurement.FrontDropPhoto?.SimpleHorizontalLine != null
-                        ? new SimpleLineView()
-                        {
-                            X1 = measurement.FrontDropPhoto.SimpleHorizontalLine.X1,
-                            X2 = measurement.FrontDropPhoto.SimpleHorizontalLine.X2,
-                            Y1 = measurement.FrontDropPhoto.SimpleHorizontalLine.Y1,
-                            Y2 = measurement.FrontDropPhoto.SimpleHorizontalLine.Y2
-                        }
-                        : null,
-                    SimpleVerticalLine = measurement.FrontDropPhoto?.SimpleVerticalLine != null
-                        ? new SimpleLineView()
-                        {
-                            X1 = measurement.FrontDropPhoto.SimpleVerticalLine.X1,
-                            X2 = measurement.FrontDropPhoto.SimpleVerticalLine.X2,
-                            Y1 = measurement.FrontDropPhoto.SimpleVerticalLine.Y1,
-                            Y2 = measurement.FrontDropPhoto.SimpleVerticalLine.Y2
-                        }
-                        : null
-                } : null,
-                ThermalPhoto = measurement.ThermalPhoto != null ? new ThermalPhotoView()
-                {
-                    PhotoId = measurement.ThermalPhoto.PhotoId,
-                    Ellipse = measurement.ThermalPhoto.Ellipse,
-                    EllipseCoordinate = measurement.ThermalPhoto.EllipseCoordinate
-                }: null
-            });
-        }
-
         private async void Calculate_OnClick(object sender, RoutedEventArgs e)
         {
             if (CurrentSeries.MeasurementsSeries.Count > 0)
@@ -3602,39 +3443,39 @@ namespace DDrop.Views
                             Treshold2 = Convert.ToInt32(Threshold2.Text)
                         };
 
-                    if (CurrentSeries.MeasurementsSeries[i].SideDropPhoto != null)
+                    foreach (var photo in CurrentSeries.MeasurementSeries[i].DropPhotos)
                     {
-                        var photo = CurrentSeries.MeasurementsSeries[i].SideDropPhoto;
-
                         photo.Content = await GetContent(photo);
 
-                        var points = await GetPoints(photo, photo.Content, parameters);
-                        photo.Contour = _geometryBL.CreateContour(photo.Contour, points, currentCalculationVariant, parameters,
-                            CurrentDropPhoto?.Contour, ImgCurrent);
-                        photo.ContourId = photo.Contour.ContourId;
-
-                        _geometryBL.CreateDiameters(photo, points);
-                    }
-
-                    if (CurrentSeries.MeasurementsSeries[i].FrontDropPhoto != null)
-                    {
-                        var photo = CurrentSeries.MeasurementsSeries[i].FrontDropPhoto;
-
-                        photo.Content = await GetContent(photo);
-                        
                         var points = await GetPoints(photo, photo.Content, parameters);
 
                         if (points == null)
                         {
                             photo.Content = null;
+                            pbu.CurValue[pbuHandle1] += 1;
+
                             continue;
                         }
-                            
-                        photo.Contour = _geometryBL.CreateContour(photo.Contour, points,
-                            currentCalculationVariant, parameters, photo.Contour, ImgCurrent);
+
+                        photo.Contour = _geometryBL.CreateContour(photo.Contour, points, currentCalculationVariant, parameters,
+                            CurrentDropPhoto?.Contour, ImgCurrent);
                         photo.ContourId = photo.Contour.ContourId;
 
                         _geometryBL.CreateDiameters(photo, points);
+
+                        if (CurrentDropPhoto != null && CurrentDropPhoto.PhotoId == photo.PhotoId)
+                        {
+                            ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
+                        }
+                        else
+                        {
+                            photo.Content = null;
+                        }
+
+                        await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(photo));
+                        await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
+
+                        photo.Contour = null;
                     }
 
                     if (CurrentSeries.MeasurementsSeries[i].ThermalPhoto != null)
@@ -3663,38 +3504,12 @@ namespace DDrop.Views
                         var thermalData = GetTemperature(photo);
 
                         photo.EllipseCoordinate = new Point(thermalData.X, thermalData.Y);
+
+                        await _thermalBl.UpdateThermalPhoto(_mapper.Map<ThermalPhotoView, ThermalPhoto>(photo));
+                        await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
                     }
 
                     pbu.CurValue[pbuHandle1] += 1;
-
-                    if (CurrentDropPhoto != null &&
-                        CurrentDropPhoto.PhotoId == CurrentSeries.MeasurementsSeries[i].FrontDropPhotoId)
-                    {
-                        ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-                    }
-                    else
-                    {
-                        var frontDropPhoto = CurrentSeries.MeasurementsSeries[i].FrontDropPhoto;
-                        if (frontDropPhoto != null)
-                        {
-                            frontDropPhoto.Content = null;
-                        }
-                    }
-
-                    if (CurrentDropPhoto != null &&
-                        CurrentDropPhoto.PhotoId == CurrentSeries.MeasurementsSeries[i].SideDropPhotoId)
-                    {
-                        ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-                    }
-                    else
-                    {
-                        var sideDropPhoto = CurrentSeries.MeasurementsSeries[i].SideDropPhoto;
-                        if (sideDropPhoto != null)
-                        {
-                            sideDropPhoto.Content = null;
-                        }
-                    }
-
 
                     if (CurrentThermalPhoto != null && CurrentSeries.MeasurementsSeries[i].ThermalPhoto != null &&
                         CurrentThermalPhoto.PhotoId == CurrentSeries.MeasurementsSeries[i].ThermalPhoto.PhotoId)
@@ -3712,22 +3527,6 @@ namespace DDrop.Views
                         _calculationBL.ReCalculateAllParametersFromLines(
                             _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
                             _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries)));
-
-                    CurrentSeries.MeasurementsSeries[i].RequireSaving = true;
-
-                    await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(CurrentSeries.MeasurementsSeries[i].FrontDropPhoto));
-                    await _dropBl.UpdateDrop(
-                        _mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
-
-                    if (CurrentSeries.MeasurementsSeries[i]?.FrontDropPhoto != null)
-                    {
-                        CurrentSeries.MeasurementsSeries[i].FrontDropPhoto.Contour = null;
-                    }
-
-                    if (CurrentSeries.MeasurementsSeries[i]?.SideDropPhoto != null)
-                    {
-                        CurrentSeries.MeasurementsSeries[i].SideDropPhoto.Contour = null;
-                    }
                 }
 
                 pbu.ResetValue(pbuHandle1);
@@ -3993,14 +3792,6 @@ namespace DDrop.Views
             }
         }
 
-        private void UndoCalculate_OnClick(object sender, RoutedEventArgs e)
-        {
-            var checkedCount = CurrentSeries.MeasurementsSeries.Count(x => x.IsChecked);
-            var message = GetDiscardMessage(checkedCount);
-            var messageBoxResult = MessageBox.Show(message, "Подтверждение", MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes) DiscardAutoCalculationChanges(false, checkedCount);
-        }
-
         private void InitializePaths()
         {
             InterpreterTextBox.Text = Settings.Default.Interpreter;
@@ -4056,148 +3847,12 @@ namespace DDrop.Views
             return !string.IsNullOrWhiteSpace(Settings.Default.ScriptToRun) ||
                                             !string.IsNullOrWhiteSpace(Settings.Default.Interpreter);
         }
-
-        private async void SaveCalculationResults_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (CurrentSeries.MeasurementsSeries.Any(x => x.RequireSaving))
-            {
-                var checkedCount = CurrentSeries.MeasurementsSeries.Count(x => x.IsChecked);
-                var requireSavingCount = CurrentSeries.MeasurementsSeries.Count(x => x.RequireSaving);
-
-                var messageBoxResult =
-                    MessageBox.Show(
-                        checkedCount > 0
-                            ? "Сохранить результаты расчета для выбранных снимков?"
-                            : "Сохранить результаты расчета ? ",
-                        "Подтверждение удаления", MessageBoxButton.YesNo);
-                if (messageBoxResult == MessageBoxResult.Yes)
-                {
-                    var pbuHandle1 = pbu.New(ProgressBar, 0,
-                        checkedCount > 0 ? checkedCount : requireSavingCount, 0);
-
-                    _appStateBL.ShowAdorner(CurrentSeriesImageLoading);
-                    _appStateBL.ShowAdorner(CurrentSeriesPhotoContentLoading);
-                    AutoCalculationMenu.IsEnabled = false;
-
-                    for (var i = CurrentSeries.MeasurementsSeries.Count - 1; i >= 0; i--)
-                    {
-                        try
-                        {
-                            if (checkedCount > 0 && CurrentSeries.MeasurementsSeries[i].RequireSaving &&
-                                !CurrentSeries.MeasurementsSeries[i].IsChecked)
-                            {
-                                DiscardAutoCalculationChange(CurrentSeries.MeasurementsSeries[i]);
-                                continue;
-                            }
-
-                            if (checkedCount > 0 && !CurrentSeries.MeasurementsSeries[i].IsChecked) continue;
-
-                            if (!CurrentSeries.MeasurementsSeries[i].RequireSaving) continue;
-
-                            if (CurrentSeries.MeasurementsSeries[i].FrontDropPhoto != null)
-                            {
-                                await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(CurrentSeries.MeasurementsSeries[i].FrontDropPhoto));
-                                await _dropBl.UpdateDrop(
-                                    _mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
-                            }
-
-
-                            if (CurrentSeries.MeasurementsSeries[i].SideDropPhoto != null)
-                            {
-                                await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(CurrentSeries.MeasurementsSeries[i].SideDropPhoto));
-                                await _dropBl.UpdateDrop(
-                                    _mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
-                            }
-                                
-
-                            if (CurrentMeasurement != null && CurrentSeries.MeasurementsSeries[i].MeasurementId !=
-                                CurrentMeasurement.MeasurementId)
-                            {
-                                if (CurrentSeries.MeasurementsSeries[i].FrontDropPhoto != null)
-                                {
-                                    CurrentSeries.MeasurementsSeries[i].FrontDropPhoto.Content = null;
-                                    CurrentSeries.MeasurementsSeries[i].FrontDropPhoto.Contour = null;
-                                }
-
-                                if (CurrentSeries.MeasurementsSeries[i].SideDropPhoto != null)
-                                {
-                                    CurrentSeries.MeasurementsSeries[i].SideDropPhoto.Content = null;
-                                    CurrentSeries.MeasurementsSeries[i].SideDropPhoto.Contour = null;
-                                }
-                            }
-
-                            _notifier.ShowSuccess(
-                                $"Результаты авторасчета для {CurrentSeries.MeasurementsSeries[i].Name} успешно сохранены.");
-                            _logger.LogInfo(new LogEntry
-                            {
-                                Username = User.Email,
-                                LogCategory = LogCategory.AutoCalculation,
-                                Message =
-                                    $"Результаты авторасчета для {CurrentSeries.MeasurementsSeries[i].Name} успешно сохранены."
-                            });
-                        }
-                        catch (TimeoutException)
-                        {
-                            DiscardAutoCalculationChange(CurrentSeries.MeasurementsSeries[i]);
-                            _notifier.ShowError(
-                                $"Не удалось сохранить результаты авторасчета для {CurrentSeries.MeasurementsSeries[i].Name}. Не удалось установить подключение. Проверьте интернет соединение. Результаты авторасчета отменены.");
-                        }
-                        catch (Exception exception)
-                        {
-                            _logger.LogError(new LogEntry
-                            {
-                                Exception = exception.ToString(),
-                                LogCategory = LogCategory.Common,
-                                InnerException = exception.InnerException?.Message,
-                                Message = exception.Message,
-                                StackTrace = exception.StackTrace,
-                                Username = User.Email,
-                                Details = exception.TargetSite.Name
-                            });
-                            throw;
-                        }
-
-                        pbu.CurValue[pbuHandle1] += 1;
-                    }
-
-                    pbu.ResetValue(pbuHandle1);
-                    pbu.Remove(pbuHandle1);
-
-                    
-                    _appStateBL.HideAdorner(CurrentSeriesImageLoading);
-                    _appStateBL.HideAdorner(CurrentSeriesPhotoContentLoading);
-                    AutoCalculationMenu.IsEnabled = true;
-
-                    await AutoCalculationModeOff();
-
-                    SingleSeriesLoadingComplete(false);
-                }
-            }
-            else
-            {
-                _notifier.ShowInformation("Нет изменений для сохранения.");
-            }
-        }
+        
 
         private async void DiscardCalculationResults_OnClick(object sender, RoutedEventArgs e)
         {
-            if (CurrentSeries.MeasurementsSeries.Any(x => x.RequireSaving))
-            {
-                var messageBoxResult = MessageBox.Show("Закончить авторасчет без сохранения?",
-                    "Подтверждение", MessageBoxButton.YesNo);
-                if (messageBoxResult == MessageBoxResult.Yes)
-                {
-                    DiscardAutoCalculationChanges(true);
-
-                    await AutoCalculationModeOff();
-                    ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-                }
-            }
-            else
-            {
-                await AutoCalculationModeOff();
-                ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-            }
+            await AutoCalculationModeOff();
+            ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
         }
 
 
@@ -4221,69 +3876,6 @@ namespace DDrop.Views
                 AutoCalculationColumn.MinWidth, 0, 200);
             _overrideLoadingBehaviour = false;
             SingleSeriesLoadingComplete(false);
-        }
-
-        private void DiscardAutoCalculationChanges(bool discardAll = false, int checkedCount = 0)
-        {
-            if (CurrentSeries.MeasurementsSeries.Any(x => x.RequireSaving))
-            {
-                foreach (var measurement in CurrentSeries.MeasurementsSeries)
-                {
-                    if (checkedCount > 0 && !measurement.IsChecked && discardAll == false) continue;
-
-                    if (measurement.RequireSaving == false && measurement.IsChecked)
-                    {
-                        _notifier.ShowInformation($"Нет изменений для снимка {measurement.Name}.");
-                        continue;
-                    }
-
-                    DiscardAutoCalculationChange(measurement);
-                }
-
-                Photos.IsEnabled = true;
-                _notifier.ShowSuccess("Изменения успешно отменены.");
-            }
-            else
-            {
-                _notifier.ShowInformation($"Нет изменений для серии {CurrentSeries.Title}.");
-            }
-        }
-
-        private async void DiscardAutoCalculationChange(MeasurementView measurement)
-        {
-            measurement.RequireSaving = false;
-
-            var storedPhoto = _mapper.Map<Measurement, MeasurementView>(await _measurementBl.GetMeasurement(measurement.MeasurementId));
-
-            if (storedPhoto != null)
-            {
-                if (storedPhoto.FrontDropPhoto != null)
-                {
-                    _geometryBL.RestoreOriginalLines(measurement.FrontDropPhoto, storedPhoto.FrontDropPhoto, ImgCurrent.CanDrawing);
-                    _geometryBL.RestoreOriginalContour(measurement.FrontDropPhoto, storedPhoto.FrontDropPhoto, ImgCurrent.CanDrawing,
-                        CurrentDropPhoto?.PhotoId);
-                }
-
-
-                if (storedPhoto.SideDropPhoto != null)
-                {
-                    _geometryBL.RestoreOriginalLines(measurement.SideDropPhoto, storedPhoto.SideDropPhoto, ImgCurrent.CanDrawing);
-                    _geometryBL.RestoreOriginalContour(measurement.SideDropPhoto, storedPhoto.SideDropPhoto, ImgCurrent.CanDrawing,
-                        CurrentDropPhoto?.PhotoId);
-                }
-            }
-
-            _calculationBL.ReCalculateAllParametersFromLines(_mapper.Map<MeasurementView, Measurement>(measurement), _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries));
-
-            if (measurement.MeasurementId == CurrentMeasurement?.MeasurementId)
-                ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-        }
-
-        private static string GetDiscardMessage(int checkedCount)
-        {
-            if (checkedCount > 0) return "Отменить изменения для выбранных снимков?";
-
-            return "Отменить все изменения?";
         }
 
         private void InitilizeUserTemplates()
@@ -4616,7 +4208,7 @@ namespace DDrop.Views
                 if (CurrentSeries != null && CurrentMeasurement != null)
                     ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
 
-                if (_currentSeriesPreviewPhoto != null) LoadSeriesPreviewPhoto(_currentSeriesPreviewPhoto);
+                if (_currentSeriesPreviewMeasurement != null) LoadSeriesPreviewPhoto(_currentSeriesPreviewMeasurement);
             }
 
             if (options.DimensionlessPlotsIsChanged)
@@ -4812,7 +4404,7 @@ namespace DDrop.Views
                     {
                         var oldCurrentPhoto = e.RemovedItems[0] as DropPhotoView;
 
-                        var photoToClear = CurrentDropPhotos.FirstOrDefault(x => oldCurrentPhoto != null && x.PhotoId == oldCurrentPhoto.PhotoId);
+                        var photoToClear =  CurrentMeasurement.DropPhotos.FirstOrDefault(x => oldCurrentPhoto != null && x.PhotoId == oldCurrentPhoto.PhotoId);
                         photoToClear.Content = null;
                         photoToClear.Contour = null;
                     }
@@ -4821,10 +4413,10 @@ namespace DDrop.Views
 
                     _tokenSource = new CancellationTokenSource();
 
-                    CurrentDropPhoto = CurrentDropPhotos[PhotosDetails.SelectedIndex];
-                    CurrentPhotoType = CurrentDropPhotos[PhotosDetails.SelectedIndex].PhotoType;
+                    CurrentDropPhoto = CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex];
+                    CurrentPhotoType = CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex].PhotoType;
 
-                    if (CurrentDropPhotos[PhotosDetails.SelectedIndex].Contour?.Parameters != null)
+                    if (CurrentMeasurement.DropPhotos[PhotosDetails.SelectedIndex].Contour?.Parameters != null)
                     {
                         _currentPhotoAutoCalculationTemplate = new AutoCalculationTemplate
                         {
@@ -4975,32 +4567,6 @@ namespace DDrop.Views
                                 }
                                 else
                                 {
-                                    switch (CurrentDropPhoto.PhotoType)
-                                    {
-                                        case PhotoTypeView.FrontDropPhoto:
-                                            if (owningMeasurement != null)
-                                            {
-                                                if (dropPhoto != null)
-                                                {
-                                                    owningMeasurement.FrontDropPhotoId = dropPhoto.PhotoId;
-                                                    owningMeasurement.FrontDropPhoto = dropPhoto;
-                                                }
-                                            }
-                                            break;
-                                        case PhotoTypeView.SideDropPhoto:
-                                            if (owningMeasurement != null)
-                                            {
-                                                if (dropPhoto != null)
-                                                {
-                                                    owningMeasurement.SideDropPhotoId = dropPhoto.PhotoId;
-                                                    owningMeasurement.SideDropPhoto = dropPhoto;
-                                                }
-                                            }
-                                            break;
-                                        default:
-                                            throw new ArgumentOutOfRangeException();
-                                    }
-
                                     await Task.Run(() => _dropPhotoBl.CreateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(dropPhoto), _mapper.Map<MeasurementView, Measurement>(owningMeasurement)));
 
                                     imageForAdding.Content = null;
@@ -5012,22 +4578,18 @@ namespace DDrop.Views
                                             {
                                                 if (dropPhoto != null)
                                                 {
-                                                    CurrentMeasurement.FrontDropPhotoId = dropPhoto.PhotoId;
-                                                    CurrentMeasurement.FrontDropPhoto = dropPhoto;
+                                                    CurrentMeasurement.DropPhotos[0] = dropPhoto;
                                                 }
                                             }
-                                            CurrentDropPhotos[0] = dropPhoto;
                                             break;
                                         case PhotoTypeView.SideDropPhoto:
                                             if (CurrentMeasurement != null)
                                             {
                                                 if (dropPhoto != null)
                                                 {
-                                                    CurrentMeasurement.SideDropPhotoId = dropPhoto.PhotoId;
-                                                    CurrentMeasurement.SideDropPhoto = dropPhoto;
+                                                    CurrentMeasurement.DropPhotos[1] = dropPhoto;
                                                 }
                                             }
-                                            CurrentDropPhotos[1] = dropPhoto;
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();

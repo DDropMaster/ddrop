@@ -75,8 +75,6 @@ namespace DDrop.AutoMapper
                         x.ProcessedThermal, opt => opt.Ignore())
                     .ForMember(x =>
                         x.IsChecked, opt => opt.Ignore())
-                    .ForMember(x =>
-                        x.RequireSaving, opt => opt.Ignore());
                 cfg.CreateMap<Measurement, DbMeasurement>()
                     .ForMember(x =>
                         x.CurrentSeries, opt => opt.Ignore());

@@ -27,25 +27,29 @@ namespace DDrop.BL.Calculation
             var sideReference = referencePhotos
                 .FirstOrDefault(x => x?.PhotoType == PhotoType.SideDropPhoto);
 
-            if (measurement.FrontDropPhoto != null && frontProcessed && measurement.SideDropPhoto != null && sideProcessed)
+            var frontDropPhoto = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
+
+            var sideDropPhoto = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
+
+            if (frontDropPhoto != null && frontProcessed && sideDropPhoto != null && sideProcessed)
             {
                 if (frontReference?.PixelsInMillimeter == 0 || sideReference?.PixelsInMillimeter == 0)
                 {
                     throw new InvalidOperationException("Укажите референсное расстояние");
                 }
 
-                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter +
-                                         measurement.SideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter) / 2;
+                var yDiameterInMillimeters = (frontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter +
+                                         sideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter) / 2;
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
+                    frontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
                     yDiameterInMillimeters,
-                    measurement.SideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter, 
+                    sideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter, 
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
-            else if ((measurement.FrontDropPhoto == null || !frontProcessed) && measurement.SideDropPhoto != null && sideProcessed)
+            else if ((frontDropPhoto == null || !frontProcessed) && sideDropPhoto != null && sideProcessed)
             {
                 if (sideReference?.PixelsInMillimeter == 0)
                 {
@@ -54,13 +58,13 @@ namespace DDrop.BL.Calculation
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter,
-                    measurement.SideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter,
+                    sideDropPhoto.YDiameterInPixels / (double)sideReference.PixelsInMillimeter,
+                    sideDropPhoto.ZDiameterInPixels / (double)sideReference.PixelsInMillimeter,
                     measurement.Drop);
 
                 await _dropBl.UpdateDrop(measurement.Drop);
             }
-            else if (measurement.FrontDropPhoto != null && frontProcessed && (measurement.SideDropPhoto == null || !sideProcessed))
+            else if (frontDropPhoto != null && frontProcessed && (sideDropPhoto == null || !sideProcessed))
             {
                 if (frontReference?.PixelsInMillimeter == 0)
                 {
@@ -68,8 +72,8 @@ namespace DDrop.BL.Calculation
                 }
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
-                    measurement.FrontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter,
+                    frontDropPhoto.XDiameterInPixels / (double)frontReference.PixelsInMillimeter,
+                    frontDropPhoto.YDiameterInPixels / (double)frontReference.PixelsInMillimeter,
                     0,
                     measurement.Drop);
 
@@ -87,143 +91,139 @@ namespace DDrop.BL.Calculation
             var sideReferencePixelsInMillimeter = referencePhotos
                 .FirstOrDefault(x => x?.PhotoType == PhotoType.SideDropPhoto)?.PixelsInMillimeter;
 
-            if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId != null)
+            var frontDropPhoto = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
+
+            var sideDropPhoto = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
+
+            if (frontDropPhoto.PhotoId != null && sideDropPhoto.PhotoId != null)
             {
-                if (measurement.FrontDropPhoto.SimpleHorizontalLine != null)
+                if (frontDropPhoto.SimpleHorizontalLine != null)
                 {
-                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.X1),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.Y1));
-                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.X2),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.Y2));
-                    measurement.FrontDropPhoto.XDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
+                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.X1),
+                        Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.Y1));
+                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.X2),
+                        Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.Y2));
+                    frontDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.FrontDropPhoto.XDiameterInPixels = 0;
+                    frontDropPhoto.XDiameterInPixels = 0;
                 }
 
-                if (measurement.FrontDropPhoto.SimpleVerticalLine != null)
+                if (frontDropPhoto.SimpleVerticalLine != null)
                 {
-                    var verticalLineFirstPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.X1),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.Y1));
-                    var verticalLineSecondPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.X2),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.Y2));
-                    measurement.FrontDropPhoto.YDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
+                    var verticalLineFirstPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.X1),
+                        Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.Y1));
+                    var verticalLineSecondPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.X2),
+                        Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.Y2));
+                    frontDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.FrontDropPhoto.YDiameterInPixels = 0;
+                    frontDropPhoto.YDiameterInPixels = 0;
                 }
 
 
-                if (measurement.SideDropPhoto.SimpleHorizontalLine != null)
+                if (sideDropPhoto.SimpleHorizontalLine != null)
                 {
-                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.X1),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.Y1));
-                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.X2),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.Y2));
-                    measurement.SideDropPhoto.ZDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
+                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.X1),
+                        Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.Y1));
+                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.X2),
+                        Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.Y2));
+                    sideDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.SideDropPhoto.ZDiameterInPixels = 0;
+                    sideDropPhoto.ZDiameterInPixels = 0;
                 }
 
-                if (measurement.SideDropPhoto.SimpleVerticalLine != null)
+                if (sideDropPhoto.SimpleVerticalLine != null)
                 {
-                    var verticalLineFirstPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.X1),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.Y1));
-                    var verticalLineSecondPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.X2),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.Y2));
-                    measurement.SideDropPhoto.YDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
+                    var verticalLineFirstPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.X1),
+                        Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.Y1));
+                    var verticalLineSecondPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.X2),
+                        Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.Y2));
+                    sideDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.SideDropPhoto.YDiameterInPixels = 0;
+                    sideDropPhoto.YDiameterInPixels = 0;
                 }
 
-                var yDiameterInMillimeters = (measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter +
-                                              measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter) / 2;
+                var yDiameterInMillimeters = (frontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter +
+                                              sideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter) / 2;
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels,
+                    frontDropPhoto.XDiameterInPixels,
                     yDiameterInMillimeters.Value,
-                    measurement.SideDropPhoto.ZDiameterInPixels,
+                    sideDropPhoto.ZDiameterInPixels,
                     measurement.Drop);
             }
-            else if (measurement.FrontDropPhotoId == null && measurement.SideDropPhotoId != null)
+            else if (frontDropPhoto.PhotoId == null && sideDropPhoto.PhotoId != null)
             {
-                if (measurement.SideDropPhoto.SimpleHorizontalLine != null)
+                if (sideDropPhoto.SimpleHorizontalLine != null)
                 {
-                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.X1),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.Y1));
-                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.X2),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleHorizontalLine.Y2));
-                    measurement.SideDropPhoto.ZDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
+                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.X1),
+                        Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.Y1));
+                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.X2),
+                        Convert.ToInt32(sideDropPhoto.SimpleHorizontalLine.Y2));
+                    sideDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.SideDropPhoto.ZDiameterInPixels = 0;
+                    sideDropPhoto.ZDiameterInPixels = 0;
                 }
 
-                if (measurement.SideDropPhoto.SimpleVerticalLine != null)
+                if (sideDropPhoto.SimpleVerticalLine != null)
                 {
-                    var verticalLineFirstPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.X1),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.Y1));
-                    var verticalLineSecondPoint = new Point(Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.X2),
-                        Convert.ToInt32(measurement.SideDropPhoto.SimpleVerticalLine.Y2));
-                    measurement.SideDropPhoto.YDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
+                    var verticalLineFirstPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.X1),
+                        Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.Y1));
+                    var verticalLineSecondPoint = new Point(Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.X2),
+                        Convert.ToInt32(sideDropPhoto.SimpleVerticalLine.Y2));
+                    sideDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.SideDropPhoto.YDiameterInPixels = 0;
+                    sideDropPhoto.YDiameterInPixels = 0;
                 }
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    measurement.SideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter.Value,
-                    measurement.SideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter.Value,
+                    sideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter.Value,
+                    sideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter.Value,
                     measurement.Drop);
             }
-            else if (measurement.FrontDropPhotoId != null && measurement.SideDropPhotoId == null)
+            else if (frontDropPhoto.PhotoId != null && sideDropPhoto.PhotoId == null)
             {
-                if (measurement.FrontDropPhoto.SimpleHorizontalLine != null)
+                if (frontDropPhoto.SimpleHorizontalLine != null)
                 {
-                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.X1),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.Y1));
-                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.X2),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleHorizontalLine.Y2));
-                    measurement.FrontDropPhoto.XDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
+                    var horizontalLineFirstPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.X1),
+                        Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.Y1));
+                    var horizontalLineSecondPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.X2),
+                        Convert.ToInt32(frontDropPhoto.SimpleHorizontalLine.Y2));
+                    frontDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(horizontalLineFirstPoint, horizontalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.FrontDropPhoto.XDiameterInPixels = 0;
+                    frontDropPhoto.XDiameterInPixels = 0;
                 }
 
-                if (measurement.FrontDropPhoto.SimpleVerticalLine != null)
+                if (frontDropPhoto.SimpleVerticalLine != null)
                 {
-                    var verticalLineFirstPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.X1),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.Y1));
-                    var verticalLineSecondPoint = new Point(Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.X2),
-                        Convert.ToInt32(measurement.FrontDropPhoto.SimpleVerticalLine.Y2));
-                    measurement.FrontDropPhoto.YDiameterInPixels =
-                        LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
+                    var verticalLineFirstPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.X1),
+                        Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.Y1));
+                    var verticalLineSecondPoint = new Point(Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.X2),
+                        Convert.ToInt32(frontDropPhoto.SimpleVerticalLine.Y2));
+                    frontDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(verticalLineFirstPoint, verticalLineSecondPoint).Count;
                 }
                 else
                 {
-                    measurement.FrontDropPhoto.YDiameterInPixels = 0;
+                    frontDropPhoto.YDiameterInPixels = 0;
                 }
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    measurement.FrontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter.Value,
-                    measurement.FrontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter.Value,
+                    frontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter.Value,
+                    frontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter.Value,
                     0,
                     measurement.Drop);
             }

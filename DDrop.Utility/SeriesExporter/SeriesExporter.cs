@@ -35,27 +35,13 @@ namespace DDrop.Utility.SeriesExporter
             measurement.MeasurementId = Guid.NewGuid();
             measurement.AddedDate = DateTime.Now;
 
-            if (measurement.FrontDropPhoto != null)
+            foreach (var dropPhoto in measurement.DropPhotos)
             {
-                var frontDropPhotoId = Guid.NewGuid();
-                measurement.FrontDropPhoto.PhotoId = frontDropPhotoId;
-                measurement.FrontDropPhotoId = frontDropPhotoId;
+                dropPhoto.PhotoId = Guid.NewGuid();
 
-                if (measurement.FrontDropPhoto.Contour != null)
+                if (dropPhoto.Contour != null)
                 {
-                    measurement.FrontDropPhoto.Contour.ContourId = frontDropPhotoId;
-                }
-            }
-
-            if (measurement.SideDropPhoto != null)
-            {
-                var sideDropPhotoId = Guid.NewGuid();
-                measurement.SideDropPhoto.PhotoId = sideDropPhotoId;
-                measurement.SideDropPhotoId = sideDropPhotoId;
-
-                if (measurement.SideDropPhoto.Contour != null)
-                {
-                    measurement.SideDropPhoto.Contour.ContourId = sideDropPhotoId;
+                    dropPhoto.Contour.ContourId = dropPhoto.PhotoId;
                 }
             }
 
