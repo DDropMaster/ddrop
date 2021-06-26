@@ -1378,7 +1378,7 @@ namespace DDrop.Views
 
                                         await _measurementBl.CreateMeasurement(_mapper.Map<DbMeasurement, Measurement>(deserializedMeasurement), dbSerieForAdd.SeriesId);
 
-                                        foreach (var dropPhoto in deserializedMeasurement)
+                                        foreach (var dropPhoto in deserializedMeasurement.DropPhotos)
                                         {
                                             dropPhoto.Content = null;
                                             dropPhoto.Contour = null;
@@ -1541,7 +1541,7 @@ namespace DDrop.Views
 
             _tokenSource = new CancellationTokenSource();
 
-            var previewPhoto = _currentSeriesPreviewMeasurement.DropPhotos?.FirstOrDefault(x => x.PhotoId != Guid.Empty)
+            var previewPhoto = _currentSeriesPreviewMeasurement.DropPhotos?.FirstOrDefault(x => x.PhotoId != Guid.Empty);
 
             if (previewPhoto != null)
             {
@@ -2242,7 +2242,7 @@ namespace DDrop.Views
 
                 CurrentMeasurement.DropPhotos.Clear();
 
-                CurrentMeasurement.DropPhotos = _mapper.Map<DbDropPhoto, DropPhotoView>(await _dropPhotoBl.GetDropPhotosByMeasurementId(CurrentMeasurement.MeasurementId));
+                CurrentMeasurement.DropPhotos = _mapper.Map<List<DropPhoto>, ObservableCollection<DropPhotoView>>(await _dropPhotoBl.GetDropPhotosByMeasurementId(CurrentMeasurement.MeasurementId));
 
                 CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
                 CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
@@ -3135,7 +3135,7 @@ namespace DDrop.Views
                     if (checkForChecked && checkedCount > 0 && !measurement.IsChecked)
                         continue;
 
-                    if (measurement.DropPhotos.Any(x => x.Processed)
+                    if (measurement.DropPhotos.Any(x => x.Processed))
                     {
                         await ReCalculateDropParameters(measurement);
                     }
@@ -3164,8 +3164,8 @@ namespace DDrop.Views
 
                 try
                 {
-                    var frontProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.Processed;
-                    var sideProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.Processed;
+                    var frontProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.Processed ?? false;
+                    var sideProcessed = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.Processed ?? false;
 
                     var drop = await _calculationBL.CalculateDropParameters(_mapper.Map<MeasurementView, Measurement>(measurement), _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>> (CurrentSeries.ReferencePhotoForSeries), frontProcessed, sideProcessed);
 
@@ -3443,7 +3443,7 @@ namespace DDrop.Views
                             Treshold2 = Convert.ToInt32(Threshold2.Text)
                         };
 
-                    foreach (var photo in CurrentSeries.MeasurementSeries[i].DropPhotos)
+                    foreach (var photo in CurrentSeries.MeasurementsSeries[i].DropPhotos)
                     {
                         photo.Content = await GetContent(photo);
 
@@ -3505,7 +3505,7 @@ namespace DDrop.Views
 
                         photo.EllipseCoordinate = new Point(thermalData.X, thermalData.Y);
 
-                        await _thermalBl.UpdateThermalPhoto(_mapper.Map<ThermalPhotoView, ThermalPhoto>(photo));
+                        await _thermalPhotoBl.UpdateThermalPhoto(_mapper.Map<ThermalPhotoView, ThermalPhoto>(photo));
                         await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
                     }
 

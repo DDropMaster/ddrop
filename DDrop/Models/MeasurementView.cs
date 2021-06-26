@@ -1,5 +1,8 @@
-﻿using System;
+﻿using DDrop.Enums;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace DDrop.Models
 {
@@ -97,9 +100,9 @@ namespace DDrop.Models
             {
                 if (_drop.RadiusInMeters > 0)
                 {
-                    var frontDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto);
+                    var frontDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto);
 
-                    var sideDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
+                    var sideDropPhoto = _dropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto);
 
                     if (frontDropPhoto == null && sideDropPhoto == null)
                         return false;
