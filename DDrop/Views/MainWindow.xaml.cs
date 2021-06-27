@@ -1766,6 +1766,8 @@ namespace DDrop.Views
             var photosSelectedItem = (MeasurementView) Photos.SelectedItem;
             if (photosSelectedItem != null)
             {
+                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
+
                 CurrentThermalPhotos = new ObservableCollection<ThermalPhotoView>();
 
                 foreach (var dropPhoto in CurrentMeasurement.DropPhotos)
@@ -1788,10 +1790,16 @@ namespace DDrop.Views
                     }
                 }
 
-                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
+                if (CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) == null)
+                {
+                    CurrentMeasurement.DropPhotos.Add(new DropPhotoView { PhotoType = PhotoTypeView.FrontDropPhoto });
+                }
 
-                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new DropPhotoView { PhotoType = PhotoTypeView.FrontDropPhoto });
-                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new DropPhotoView { PhotoType = PhotoTypeView.SideDropPhoto });
+                if (CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) == null)
+                {
+                    CurrentMeasurement.DropPhotos.Add(new DropPhotoView { PhotoType = PhotoTypeView.SideDropPhoto });
+                }
+
                 CurrentThermalPhotos.Add(CurrentMeasurement.ThermalPhoto ?? new ThermalPhotoView {PhotoType = PhotoTypeView.ThermalPhoto});
 
                 ImageForEdit = null;

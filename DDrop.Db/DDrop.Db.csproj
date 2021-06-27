@@ -301,6 +301,14 @@
     <Compile Include="Migrations\202106141004147_ProcessedWasAMistake.designer.cs">
       <DependentUpon>202106141004147_ProcessedWasAMistake.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202106262226154_DropPhotosAsCollection.cs" />
+    <Compile Include="Migrations\202106262226154_DropPhotosAsCollection.designer.cs">
+      <DependentUpon>202106262226154_DropPhotosAsCollection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106270854128_RemoveDropPhotosFromMeasurement.cs" />
+    <Compile Include="Migrations\202106270854128_RemoveDropPhotosFromMeasurement.designer.cs">
+      <DependentUpon>202106270854128_RemoveDropPhotosFromMeasurement.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -488,6 +496,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202106141004147_ProcessedWasAMistake.resx">
       <DependentUpon>202106141004147_ProcessedWasAMistake.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106262226154_DropPhotosAsCollection.resx">
+      <DependentUpon>202106262226154_DropPhotosAsCollection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106270854128_RemoveDropPhotosFromMeasurement.resx">
+      <DependentUpon>202106270854128_RemoveDropPhotosFromMeasurement.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
