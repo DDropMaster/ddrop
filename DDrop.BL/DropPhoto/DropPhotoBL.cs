@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,6 +97,11 @@ namespace DDrop.BL.Measurement
         public async Task CreateDropPhoto(DropPhoto dropPhoto, BE.Models.Measurement owningMeasurement)
         {
             await Task.Run(() => _dDropRepository.CreateDropPhoto(_mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto), _mapper.Map<BE.Models.Measurement, DbMeasurement>(owningMeasurement)));
+        }
+
+        public async Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId)
+        {
+            return _mapper.Map<List<DbDropPhoto>, List<DropPhoto>>(await Task.Run(() => _dDropRepository.GetDropPhotosByMeasurementId(measurementId)));
         }
     }
 }

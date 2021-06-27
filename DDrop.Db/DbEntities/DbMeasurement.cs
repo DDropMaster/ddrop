@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,18 +22,12 @@ namespace DDrop.Db.DbEntities
 
         public virtual DbDrop Drop { get; set; }
 
-        public Guid? SideDropPhotoId { get; set; }
-        [ForeignKey("SideDropPhotoId")]
-        public virtual DbDropPhoto SideDropPhoto { get; set; }
-
-        public Guid? FrontDropPhotoId { get; set; }
-        [ForeignKey("FrontDropPhotoId")]
-        public virtual DbDropPhoto FrontDropPhoto { get; set; }
-
         public Guid? CommentId { get; set; }
         [ForeignKey("CommentId")]
         public virtual DbComment Comment { get; set; }
 
         public virtual DbThermalPhoto ThermalPhoto { get; set; }
+
+        public List<DbDropPhoto> DropPhotos { get; set; }
     }
 }

@@ -74,9 +74,7 @@ namespace DDrop.AutoMapper
                     .ForMember(x =>
                         x.ProcessedThermal, opt => opt.Ignore())
                     .ForMember(x =>
-                        x.IsChecked, opt => opt.Ignore())
-                    .ForMember(x =>
-                        x.RequireSaving, opt => opt.Ignore());
+                        x.IsChecked, opt => opt.Ignore());
                 cfg.CreateMap<Measurement, DbMeasurement>()
                     .ForMember(x =>
                         x.CurrentSeries, opt => opt.Ignore());
@@ -114,6 +112,7 @@ namespace DDrop.AutoMapper
                         x.VerticalLine, opt => opt.MapFrom<DropPhotoVerticalLineResolver>());
                 cfg.CreateMap<DropPhotoView, DropPhoto>();
                 cfg.CreateMap<DropPhoto, DbDropPhoto>()
+                    .ForMember(x => x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>
                         x.HorizontalLine, opt =>
                         opt.MapFrom(src => src.SimpleHorizontalLine != null ?

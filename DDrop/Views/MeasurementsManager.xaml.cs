@@ -632,28 +632,27 @@ namespace DDrop.Views
                     };
 
                     ResultingMeasurements[i].Drop = drop;
+                    ResultingMeasurements[i].DropPhotos = new ObservableCollection<DropPhotoView>();
 
                     if (!string.IsNullOrEmpty(FrontDropPhotos[i]?.FilePath))
                     {
                         var frontPhotoId = Guid.NewGuid();
-                        ResultingMeasurements[i].FrontDropPhotoId = frontPhotoId;
-                        ResultingMeasurements[i].FrontDropPhoto = new DropPhotoView()
+                        ResultingMeasurements[i].DropPhotos.Add(new DropPhotoView()
                         {
                             PhotoId = frontPhotoId,
                             Name = FrontDropPhotos[i].Name,
                             Content = File.ReadAllBytes(FrontDropPhotos[i].FilePath),
                             AddedDate = DateTime.Now,
-                            CreationDateTime = File.GetCreationTime(FrontDropPhotos[i].FilePath),                           
+                            CreationDateTime = File.GetCreationTime(FrontDropPhotos[i].FilePath),
                             PhotoType = PhotoTypeView.FrontDropPhoto
-                        };
+                        });
                     }
 
                     if (!string.IsNullOrEmpty(SideDropPhotos[i]?.FilePath))
                     {
                         var sidePhotoId = Guid.NewGuid();
 
-                        ResultingMeasurements[i].SideDropPhotoId = sidePhotoId;
-                        ResultingMeasurements[i].SideDropPhoto = new DropPhotoView()
+                        ResultingMeasurements[i].DropPhotos.Add(new DropPhotoView()
                         {
                             PhotoId = sidePhotoId,
                             Name = SideDropPhotos[i].Name,
@@ -661,7 +660,7 @@ namespace DDrop.Views
                             AddedDate = DateTime.Now,
                             CreationDateTime = File.GetCreationTime(SideDropPhotos[i].FilePath),
                             PhotoType = PhotoTypeView.SideDropPhoto
-                        };
+                        });
                     }
 
                     if (!string.IsNullOrEmpty(ThermalPhotos[i]?.FilePath))
@@ -677,17 +676,18 @@ namespace DDrop.Views
                         };
                     }
 
+                    ResultingMeasurements[i].DropPhotos.OrderBy(x => x.PhotoType);
+
                     try
                     {
                         var seriesId = _currentSeries.SeriesId;
                         var measurementForAdding = ResultingMeasurements[i];
                         await Task.Run(() => _measurementBl.CreateMeasurement(_mapper.Map<MeasurementView, Measurement>(measurementForAdding), seriesId));
 
-                        if (ResultingMeasurements[i].FrontDropPhoto != null)
-                            ResultingMeasurements[i].FrontDropPhoto.Content = null;
-
-                        if (ResultingMeasurements[i].SideDropPhoto != null)
-                            ResultingMeasurements[i].SideDropPhoto.Content = null;
+                        foreach (var dropPhoto in ResultingMeasurements[i].DropPhotos)
+                        {
+                            dropPhoto.Content = null;
+                        }
 
                         if (ResultingMeasurements[i].ThermalPhoto != null)
                             ResultingMeasurements[i].ThermalPhoto.Content = null;

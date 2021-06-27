@@ -35,6 +35,7 @@ namespace DDrop.DAL
         Task CreateDropPhoto(DbDropPhoto dropPhoto, DbMeasurement measurement);
         Task UpdateDropPhotoName(string newName, Guid photoId);
         Task DeleteDropPhoto(DbDropPhoto dropPhoto);
+        Task<List<DbDropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId);
         Task UpdateMeasurementName(string newName, Guid measurementId);
         Task UpdateMeasurementAmbientTemperature(double temperature, Guid measurementId);
         Task<byte[]> GetPhotoContent(Guid photoId, CancellationToken cancellationToken);

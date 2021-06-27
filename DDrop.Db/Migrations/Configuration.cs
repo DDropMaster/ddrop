@@ -7,6 +7,7 @@ namespace DDrop.Db.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            CommandTimeout = 360;
         }
 
         protected override void Seed(DDropContext context)

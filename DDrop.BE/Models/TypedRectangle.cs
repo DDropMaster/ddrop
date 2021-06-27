@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Windows.Shapes;
-using DDrop.BE.Enums;
+﻿using DDrop.BE.Enums;
 
 namespace DDrop.BE.Models
 {
