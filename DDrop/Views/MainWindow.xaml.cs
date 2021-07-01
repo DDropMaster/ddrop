@@ -874,8 +874,8 @@ namespace DDrop.Views
 
                 CurrentReferencePhotos = new ObservableCollection<ReferencePhotoView>
                 {
-                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto },
-                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.SideDropPhoto }
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontReferenceDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontReferenceDropPhoto },
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideReferenceDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.SideReferenceDropPhoto }
                 };
 
                 CurrentSeries.ReferencePhotoForSeries = CurrentReferencePhotos;
