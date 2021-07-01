@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbEntities\DbBasePhoto.cs" />
     <Compile Include="DbEntities\DbComment.cs" />
     <Compile Include="DbEntities\DbContour.cs" />
     <Compile Include="DbEntities\DbDrop.cs" />
@@ -309,6 +310,22 @@
     <Compile Include="Migrations\202106270854128_RemoveDropPhotosFromMeasurement.designer.cs">
       <DependentUpon>202106270854128_RemoveDropPhotosFromMeasurement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202106271634069_BaseDropPhotoTable.cs" />
+    <Compile Include="Migrations\202106271634069_BaseDropPhotoTable.designer.cs">
+      <DependentUpon>202106271634069_BaseDropPhotoTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106271635588_ReferencePhotoWithBase.cs" />
+    <Compile Include="Migrations\202106271635588_ReferencePhotoWithBase.designer.cs">
+      <DependentUpon>202106271635588_ReferencePhotoWithBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106271639167_ThermalPhotoWithBase.cs" />
+    <Compile Include="Migrations\202106271639167_ThermalPhotoWithBase.designer.cs">
+      <DependentUpon>202106271639167_ThermalPhotoWithBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202107011522109_DropPhotosWithBase.cs" />
+    <Compile Include="Migrations\202107011522109_DropPhotosWithBase.designer.cs">
+      <DependentUpon>202107011522109_DropPhotosWithBase.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -502,6 +519,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202106270854128_RemoveDropPhotosFromMeasurement.resx">
       <DependentUpon>202106270854128_RemoveDropPhotosFromMeasurement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106271634069_BaseDropPhotoTable.resx">
+      <DependentUpon>202106271634069_BaseDropPhotoTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106271635588_ReferencePhotoWithBase.resx">
+      <DependentUpon>202106271635588_ReferencePhotoWithBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106271639167_ThermalPhotoWithBase.resx">
+      <DependentUpon>202106271639167_ThermalPhotoWithBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107011522109_DropPhotosWithBase.resx">
+      <DependentUpon>202107011522109_DropPhotosWithBase.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

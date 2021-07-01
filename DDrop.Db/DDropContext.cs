@@ -13,6 +13,7 @@ namespace DDrop.Db
         public DbSet<DbUser> Users { get; set; }
         public DbSet<DbPlot> Plots { get; set; }
         public DbSet<DbSeries> Series { get; set; }
+        public DbSet<DbBasePhoto> BasePhotos { get; set; }
         public DbSet<DbMeasurement> Measurements { get; set; }
         public DbSet<DbDropPhoto> DropPhotos { get; set; }
         public DbSet<DbContour> Contours { get; set; }
