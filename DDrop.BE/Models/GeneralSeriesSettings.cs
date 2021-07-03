@@ -7,5 +7,7 @@ namespace DDrop.BE.Models
         public bool UseCreationDateTime { get; set; }
 
         public bool UseThermalPlot { get; set; }
+
+        public bool IsAcoustic { get; set; }
     }
 }

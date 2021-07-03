@@ -58,38 +58,39 @@ namespace DDrop.Logic.Plotting
             switch (plotType)
             {
                 case PlotTypeView.Radius:
-                    if (series.CanDrawPlot)
+                {
+                    for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                     {
-                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                        double time = 0.0;
+
+                        if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
                         {
-                            double time = 0.0;
-
-                            if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
-                            {
-                                time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
-                            }
-
-                            var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
-                            if (dropRadiusInMeters != null)
-                                plot.Points.Add(new SimplePointView()
-                                {
-                                    X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
-                                    Y = dropRadiusInMeters.Value
-                                });
+                            time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
                         }
 
-                        if (dimensionless)
+                        var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
+                        if (dropRadiusInMeters != null)
+                            plot.Points.Add(new SimplePointView()
+                            {
+                                X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                Y = dropRadiusInMeters.Value
+                            });
+                    }
+
+                    if (dimensionless)
+                    {
+                        var xDiv = plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != null ||
+                                    plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != 0
+                            ? plot.Settings?.DimensionlessSettings?.XDimensionlessDivider
+                            : null;
+
+                        var yDiv = plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != null ||
+                                    plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != 0
+                            ? plot.Settings?.DimensionlessSettings?.YDimensionlessDivider
+                            : null;
+
+                        if (plot.Points.Count > 0)
                         {
-                            var xDiv = plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != null ||
-                                       plot.Settings?.DimensionlessSettings?.XDimensionlessDivider != 0
-                                ? plot.Settings?.DimensionlessSettings?.XDimensionlessDivider
-                                : null;
-
-                            var yDiv = plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != null ||
-                                       plot.Settings?.DimensionlessSettings?.YDimensionlessDivider != 0
-                                ? plot.Settings?.DimensionlessSettings?.YDimensionlessDivider
-                                : null;
-
                             var initialRadius = plot.Points[0].Y;
                             var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
                             for (int j = 0; j < plot.Points.Count; j++)
@@ -98,43 +99,44 @@ namespace DDrop.Logic.Plotting
                                 plot.Points[j].Y = plot.Points[j].Y / initialRadius;
                             }
                         }
-
-                        return plot;
                     }
-                    break;
+
+                    return plot;
+                }
                 case PlotTypeView.Temperature:
-                    if (series.CanDrawTemperaturePlot)
+                {
+                    double averageAmbientTemperatures = 0;
+
+                    if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
                     {
-                        double averageAmbientTemperatures = 0;
-
-                        if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
+                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                         {
-                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
-                            {
-                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                            }
-
-                            plot = series.ThermalPlot;
-                            plot.IsEditable = true;
-                        }
-                        else
-                        {
-                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
-                            {
-                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                                var time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
-
-                                var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
-                                if (dropTemperature != null)
-                                    plot.Points.Add(new SimplePointView()
-                                    {
-                                        X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
-                                        Y = dropTemperature.Value
-                                    });
-                            }
+                            averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
                         }
 
-                        if (dimensionless)
+                        plot = series.ThermalPlot;
+                        plot.IsEditable = true;
+                    }
+                    else
+                    {
+                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                        {
+                            averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
+                            var time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
+
+                            var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
+                            if (dropTemperature != null)
+                                plot.Points.Add(new SimplePointView()
+                                {
+                                    X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                    Y = dropTemperature.Value
+                                });
+                        }
+                    }
+
+                    if (dimensionless)
+                    {
+                        if (plot.Points.Count > 0)
                         {
                             averageAmbientTemperatures = averageAmbientTemperatures / series.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
                             var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
@@ -144,15 +146,13 @@ namespace DDrop.Logic.Plotting
                                 plot.Points[j].Y = plot.Points[j].Y / averageAmbientTemperatures;
                             }
                         }
-
-                        return plot;
                     }
-                    break;
+
+                    return plot;
+                }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(plotType), plotType, null);
             }
-
-            return null;
         }
     }
 }

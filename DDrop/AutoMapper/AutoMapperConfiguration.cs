@@ -236,8 +236,8 @@ namespace DDrop.AutoMapper
                                 : null))
                     .ForMember(x => x.CurrentUser, opt =>
                         opt.Ignore())
-                    .ForMember(x => x.Series, opt =>
-                        opt.Ignore())
+                    //.ForMember(x => x.Series, opt =>
+                    //    opt.Ignore())
                     .ForMember(dest =>
                         dest.Points, opt =>
                         opt.MapFrom(src => src.Points != null ?

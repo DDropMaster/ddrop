@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DDrop.Db.DbEntities
 {
     [Table("BasePhotos")]
-    public class DbBasePhoto
+    public abstract class DbBasePhoto
     {
         [Key] public Guid PhotoId { get; set; }
 

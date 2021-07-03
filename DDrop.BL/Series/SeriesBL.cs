@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using AutoMapper;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
@@ -48,7 +47,7 @@ namespace DDrop.BL.Series
             await Task.Run(() => _dDropRepository.UpdateSeriesName(text, seriesId));
         }
 
-        public async Task UpdateSeriesIntervalBetweenPhotos(int intervalBetweenPhotos, Guid seriesId)
+        public async Task UpdateSeriesIntervalBetweenPhotos(double intervalBetweenPhotos, Guid seriesId)
         {
             await Task.Run(() => _dDropRepository.UpdateSeriesIntervalBetweenPhotos(intervalBetweenPhotos, seriesId));
         }

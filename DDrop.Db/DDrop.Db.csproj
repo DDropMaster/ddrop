@@ -326,6 +326,14 @@
     <Compile Include="Migrations\202107011522109_DropPhotosWithBase.designer.cs">
       <DependentUpon>202107011522109_DropPhotosWithBase.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202107031811051_IsAcoustic.cs" />
+    <Compile Include="Migrations\202107031811051_IsAcoustic.designer.cs">
+      <DependentUpon>202107031811051_IsAcoustic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202107031838548_IsAcousticMovedToSettings.cs" />
+    <Compile Include="Migrations\202107031838548_IsAcousticMovedToSettings.designer.cs">
+      <DependentUpon>202107031838548_IsAcousticMovedToSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -531,6 +539,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202107011522109_DropPhotosWithBase.resx">
       <DependentUpon>202107011522109_DropPhotosWithBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107031811051_IsAcoustic.resx">
+      <DependentUpon>202107031811051_IsAcoustic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107031838548_IsAcousticMovedToSettings.resx">
+      <DependentUpon>202107031838548_IsAcousticMovedToSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

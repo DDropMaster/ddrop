@@ -233,6 +233,7 @@
     <Compile Include="Models\DimensionlessSettingsView.cs" />
     <Compile Include="Models\GeneralSeriesSettingsView.cs" />
     <Compile Include="Models\PlotSettingsView.cs" />
+    <Compile Include="Models\PlotToExcel.cs" />
     <Compile Include="Utility\RelayCommand.cs" />
     <Compile Include="ViewModels\CommentEditViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />

@@ -141,6 +141,15 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
+                                    <DataGridCheckBoxColumn Width="85" IsReadOnly="False"
+                                                            Binding="{Binding Settings.GeneralSeriesSettings.IsAcoustic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                            CanUserResize="False" Header="Акустическая">
+                                        <DataGridCheckBoxColumn.CellStyle>
+                                            <Style>
+                                                <EventSetter Event="CheckBox.Checked" Handler="OnAcousticChecked"/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.CellStyle>
+                                    </DataGridCheckBoxColumn>
                                     <DataGridTemplateColumn Width="45" Header="Статус" IsReadOnly="True"
                                                             CanUserResize="False">
                                         <DataGridTemplateColumn.CellTemplate>

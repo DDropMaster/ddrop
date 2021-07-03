@@ -24,5 +24,8 @@ namespace DDrop.Models
 
         [DisplayName("Объем, кубические метры")]
         public double VolumeInCubicalMeters { get; set; }
+
+        [DisplayName("Температура")]
+        public double Temperature { get; set; }
     }
 }

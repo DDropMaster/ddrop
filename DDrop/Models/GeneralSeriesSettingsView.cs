@@ -24,5 +24,16 @@
                 RaisePropertyChanged("UseThermalPlot");
             }
         }
+
+        private bool _isAcoustic;
+        public bool IsAcoustic
+        {
+            get => _isAcoustic;
+            set
+            {
+                _isAcoustic = value;
+                RaisePropertyChanged("IsAcoustic");
+            }
+        }
     }
 }

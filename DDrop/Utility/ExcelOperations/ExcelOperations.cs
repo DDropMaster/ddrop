@@ -61,23 +61,33 @@ namespace DDrop.Utility.ExcelOperations
                             worksheet.Cells["A2:C2"].Merge = true;
                             worksheet.Cells["A3:C3"].Merge = true;
                             worksheet.Cells["A4:C4"].Merge = true;
+                            worksheet.Cells["A5:C5"].Merge = true;
+                            worksheet.Cells["A6:C6"].Merge = true;
+                            worksheet.Cells["A7:C7"].Merge = true;
 
                             worksheet.Cells["D1:G1"].Merge = true;
                             worksheet.Cells["D2:G2"].Merge = true;
                             worksheet.Cells["D3:G3"].Merge = true;
                             worksheet.Cells["D4:G4"].Merge = true;
+                            worksheet.Cells["D5:G5"].Merge = true;
+                            worksheet.Cells["D6:G6"].Merge = true;
+                            worksheet.Cells["D7:G7"].Merge = true;
 
                             worksheet.Cells["A1"].Value = "Название серии:";
                             worksheet.Cells["A2"].Value = "Очет от:";
                             worksheet.Cells["A3"].Value = "Интервал между снимками, c:";
                             worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Спереди), px:";
                             worksheet.Cells["A5"].Value = "Пикселей в миллиметре (Сбоку), px:";
+                            worksheet.Cells["A6"].Value = "Вещество";
+                            worksheet.Cells["A7"].Value = "Акустическая";
 
                             worksheet.Cells["D1"].Value = currentSeries.Title;
                             worksheet.Cells["D2"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
                             worksheet.Cells["D3"].Value = currentSeries.IntervalBetweenPhotos;
                             worksheet.Cells["D4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
                             worksheet.Cells["D5"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
+                            worksheet.Cells["D6"].Value = currentSeries.Substance.CommonName;
+                            worksheet.Cells["D7"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
 
                             var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
 
@@ -101,7 +111,8 @@ namespace DDrop.Utility.ExcelOperations
                                             VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
                                             XDiameterInMeters = measurement.Drop.XDiameterInMeters,
                                             YDiameterInMeters = measurement.Drop.YDiameterInMeters,
-                                            ZDiameterInMeters = measurement.Drop.ZDiameterInMeters
+                                            ZDiameterInMeters = measurement.Drop.ZDiameterInMeters,
+                                            Temperature = measurement.Drop.Temperature ?? 0
                                         });
                                     }
                                 }
@@ -122,12 +133,16 @@ namespace DDrop.Utility.ExcelOperations
                                             XDiameterInMeters = measurement.Drop.XDiameterInMeters,
                                             YDiameterInMeters = measurement.Drop.YDiameterInMeters,
                                             ZDiameterInMeters = measurement.Drop.ZDiameterInMeters,
+                                            Temperature = measurement.Drop.Temperature ?? 0
                                         });
                                     }
                                 }
                             }
 
-                            worksheet.Cells["A6"].LoadFromCollection(singleSeriesToExcelOutput, true);
+                            worksheet.Cells["A8:G8"].Merge = true;
+                            worksheet.Cells["A8"].Value = "Данные";
+
+                            worksheet.Cells["A9"].LoadFromCollection(singleSeriesToExcelOutput, true);
 
                             var end = worksheet.Dimension.End.Row;
 
@@ -141,9 +156,8 @@ namespace DDrop.Utility.ExcelOperations
                                     $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
                                 seriesChart.Legend.Position = eLegendPosition.Right;
 
-                                seriesChart.Series.Add(worksheet.Cells[$"G7:G{end}"], worksheet.Cells[$"A7:A{end}"]);
-                                seriesCombinedChart.Series.Add(worksheet.Cells[$"G7:G{end}"],
-                                    worksheet.Cells[$"A7:A{end}"]);
+                                seriesChart.Series.Add(worksheet.Cells[$"F10:G{end}"], worksheet.Cells[$"A10:A{end}"]);
+                                seriesCombinedChart.Series.Add(worksheet.Cells[$"F10:F{end}"], worksheet.Cells[$"A10:A{end}"]);
 
                                 seriesChart.XAxis.Title.Text = "Время, с";
                                 seriesChart.YAxis.Title.Text = "Радиус, м";
@@ -158,13 +172,27 @@ namespace DDrop.Utility.ExcelOperations
                             worksheet.Cells.AutoFitColumns();
                             indexer++;
                         }
+
+                        if (currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && currentSeries.ThermalPlot != null)
+                        {
+                            
+                        }
                     }
                     
                     seriesCombinedChart.SetSize(510, 660);
                     seriesCombinedChart.SetPosition(mainWorksheet.Dimension.End.Row + 1, 0, 0, 0);
                 }
 
+                foreach (var plot in user.Plots)
+                {
+                    mainWorksheet = excelPackage.Workbook.Worksheets.Add($"График: {plot.Name}");
+
+                    var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
+                }
+
+                
                 mainWorksheet.Cells.AutoFitColumns();
+                
 
                 var excelFile = new FileInfo($@"{fileName}");
                 excelPackage.SaveAs(excelFile);

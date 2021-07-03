@@ -56,6 +56,7 @@ namespace DDrop.AutoMapper
                 {
                     UseCreationDateTime = seriesSettings.GeneralSeriesSettings.UseCreationDateTime,
                     UseThermalPlot = seriesSettings.GeneralSeriesSettings.UseThermalPlot,
+                    IsAcoustic = seriesSettings.GeneralSeriesSettings.IsAcoustic
                 };
             }
 

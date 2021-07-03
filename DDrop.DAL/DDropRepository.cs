@@ -102,8 +102,6 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.Users.Attach(plot.CurrentUser);
-
                     if (plot.Series != null)
                     {
                         context.Series.Attach(plot.Series);
@@ -396,6 +394,7 @@ namespace DDrop.DAL
                                     p.CommentId,
                                     p.ContourId,
                                     p.Comment,
+                                    p.MeasurementId
                                 }),
                                 Drop = new
                                 {
@@ -418,7 +417,7 @@ namespace DDrop.DAL
                                     s.ThermalPhoto.CreationDateTime,
                                     s.ThermalPhoto.EllipseCoordinate,
                                     s.ThermalPhoto.CommentId,
-                                    s.ThermalPhoto.Comment
+                                    s.ThermalPhoto.Comment,
                                 } : null,
                             }),
                             ReferencePhotoForSeries = x.ReferencePhotoForSeries.Select(z => new
@@ -496,6 +495,7 @@ namespace DDrop.DAL
                                     CommentId = p.CommentId,
                                     ContourId = p.ContourId,
                                     Comment = p.Comment,
+                                    MeasurementId = p.MeasurementId
                                 }).ToList(),
                             }).ToList(),
                             ReferencePhotoForSeries = series.ReferencePhotoForSeries.Select(z => new DbReferencePhoto
@@ -1115,7 +1115,7 @@ namespace DDrop.DAL
             }
         }
 
-        public async Task UpdateSeriesIntervalBetweenPhotos(int interval, Guid seriesId)
+        public async Task UpdateSeriesIntervalBetweenPhotos(double interval, Guid seriesId)
         {
             using (var context = new DDropContext())
             {

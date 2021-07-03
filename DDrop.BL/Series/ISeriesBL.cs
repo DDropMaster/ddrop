@@ -13,7 +13,7 @@ namespace DDrop.BL.Series
         Task<DbSeries> GetDbSeriesForExportById(Guid seriesId);
         Task CreateFullSeries(DbSeries dbSerieForAdd);
         Task UpdateSeriesName(string text, Guid seriesId);
-        Task UpdateSeriesIntervalBetweenPhotos(int intervalBetweenPhotos, Guid seriesId);
+        Task UpdateSeriesIntervalBetweenPhotos(double intervalBetweenPhotos, Guid seriesId);
         Task<List<BE.Models.Series>> GetSeriesByUserId(Guid userId);
         Task UpdateSeriesRegionOfInterest(string regionOfInterest, Guid seriesId);
         Task UpdateSeriesSettings(string settings, Guid seriesId);

@@ -3,7 +3,7 @@ using DDrop.BE.Enums;
 
 namespace DDrop.BE.Models
 {
-    public class BasePhoto
+    public abstract class BasePhoto
     {
         public Guid PhotoId { get; set; }
 

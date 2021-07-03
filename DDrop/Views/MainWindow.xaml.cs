@@ -874,8 +874,8 @@ namespace DDrop.Views
 
                 CurrentReferencePhotos = new ObservableCollection<ReferencePhotoView>
                 {
-                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontReferenceDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontReferenceDropPhoto },
-                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideReferenceDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.SideReferenceDropPhoto }
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto },
+                    CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new ReferencePhotoView() { PhotoType = PhotoTypeView.SideDropPhoto }
                 };
 
                 CurrentSeries.ReferencePhotoForSeries = CurrentReferencePhotos;
@@ -955,36 +955,29 @@ namespace DDrop.Views
         {
             if (User.UserSeries.Any(x => x.IsChecked))
             {
-                if (User.IsAnySelectedSeriesCanDrawPlot)
+                SeriesManagerIsLoading();
+                var saveFileDialog = new SaveFileDialog
                 {
-                    SeriesManagerIsLoading();
-                    var saveFileDialog = new SaveFileDialog
-                    {
-                        Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*",
-                        AddExtension = true,
-                        CheckPathExists = true
-                    };
+                    Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*",
+                    AddExtension = true,
+                    CheckPathExists = true
+                };
 
-                    if (saveFileDialog.ShowDialog() == true)
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    try
                     {
-                        try
-                        {
-                            ExcelOperations.CreateSingleSeriesExcelFile(User, saveFileDialog.FileName);
+                        ExcelOperations.CreateSingleSeriesExcelFile(User, saveFileDialog.FileName);
 
-                            _notifier.ShowSuccess($"Файл {saveFileDialog.SafeFileName} успешно сохранен.");
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            _notifier.ShowError($"{exception.InnerException?.InnerException?.Message}");
-                        }
+                        _notifier.ShowSuccess($"Файл {saveFileDialog.SafeFileName} успешно сохранен.");
                     }
+                    catch (InvalidOperationException exception)
+                    {
+                        _notifier.ShowError($"{exception.InnerException?.InnerException?.Message}");
+                    }
+                }
 
-                    SeriesManagerLoadingComplete();
-                }
-                else
-                {
-                    _notifier.ShowInformation("Нельзя построить график для выбранных серий.");
-                }
+                SeriesManagerLoadingComplete();
             }
             else
             {
@@ -1185,9 +1178,6 @@ namespace DDrop.Views
                     if (item.Name == "SingleSeries")
                     {
                         Photos.ItemsSource = CurrentSeries.MeasurementsSeries;
-
-                        if (!CurrentSeries.CanDrawPlot && SingleSeriesTabControl.SelectedIndex == 2)
-                            SingleSeriesTabControl.SelectedIndex = 0;
                     }
                     else if (item.Name == "SeriesManager")
                     {
@@ -1615,7 +1605,7 @@ namespace DDrop.Views
         {
             if (CurrentSeries != null)
             {
-                if (int.TryParse(IntervalBetweenPhotos?.Text, out var intervalBetweenPhotos))
+                if (double.TryParse(IntervalBetweenPhotos?.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var intervalBetweenPhotos))
                 {
                     try
                     {
@@ -2079,8 +2069,7 @@ namespace DDrop.Views
 
         private async void EditInputPhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            var pixelsInMillimeter =
-                CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == CurrentDropPhoto.PhotoType)?.PixelsInMillimeter;
+            var pixelsInMillimeter = CurrentSeries.ReferencePhotoForSeries.FirstOrDefault(x => x.PhotoType == CurrentDropPhoto.PhotoType)?.PixelsInMillimeter;
 
             if (pixelsInMillimeter != null && pixelsInMillimeter != 0)
             {
@@ -6065,7 +6054,6 @@ namespace DDrop.Views
                     await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings),
                         currentSeries.SeriesId));
 
-                    //TODO: SERIESID
                     if (currentSeries.ThermalPlot == null)
                     {
                         PlotView plotForAdd = new PlotView()
@@ -6245,5 +6233,15 @@ namespace DDrop.Views
                 }
             }
         }
+
+        private async void OnAcousticChecked(object sender, RoutedEventArgs e)
+        {
+            if (CurrentSeries != null)
+            {
+                var currentSeries = CurrentSeries;
+
+                await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings), currentSeries.SeriesId));
+            }
+        } 
     }
 }

@@ -25,7 +25,7 @@ namespace DDrop.DAL
         Task CreateFullSeries(DbSeries series);
         Task<List<DbReferencePhoto>> GetReferencePhotoById(DbSeries series);
         Task<List<DbMeasurement>> GetMeasurements(DbSeries series);
-        Task UpdateSeriesIntervalBetweenPhotos(int interval, Guid seriesId);
+        Task UpdateSeriesIntervalBetweenPhotos(double interval, Guid seriesId);
         Task CreateMeasurement(DbMeasurement measurement, Guid seriesId);
         Task<DbMeasurement> GetMeasurement(Guid measurementId);
         Task UpdateDrop(DbDrop drop);
