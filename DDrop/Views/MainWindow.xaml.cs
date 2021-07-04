@@ -811,7 +811,7 @@ namespace DDrop.Views
             }
         }
 
-        private async void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != e.OriginalSource) return;
 
@@ -3444,7 +3444,7 @@ namespace DDrop.Views
                     {
                         photo.Content = await GetContent(photo);
 
-                        var points = await GetPoints(photo, photo.Content, parameters);
+                        var points = GetPoints(photo, photo.Content, parameters);
 
                         if (points == null)
                         {
@@ -3484,7 +3484,7 @@ namespace DDrop.Views
                         if (CurrentSeries.Settings.AutoCalculationSettings.ThermalAutoCalculationSettings !=
                             ThermalAutoCalculationSettingsView.InRoi)
                         {
-                            var points = await GetPoints(photo, photo.FlirImage.Image.GetRGBValues(), parameters);
+                            var points = GetPoints(photo, photo.FlirImage.Image.GetRGBValues(), parameters);
                             photo.Contour = _geometryBL.CreateContour(photo.Contour, points, currentCalculationVariant,
                                 parameters, photo.Contour, ImgCurrent);
                             photo.ContourId = photo.Contour.ContourId;
@@ -3655,7 +3655,7 @@ namespace DDrop.Views
             return result;
         }
 
-        private async Task<Point[]> GetPoints(BasePhotoView dropPhoto, byte[] content, AutoCalculationParametersView parameters)
+        private Point[] GetPoints(BasePhotoView dropPhoto, byte[] content, AutoCalculationParametersView parameters)
         {
             Point[] points;
 
@@ -5672,7 +5672,7 @@ namespace DDrop.Views
 
             foreach (var userPlot in User.Plots)
             {
-                if (userPlot.PlotType == plotType && plots.FirstOrDefault(x => x.PlotId == userPlot.PlotId) == null)
+                if (userPlot.PlotType == plotType)
                 {
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
@@ -5689,7 +5689,22 @@ namespace DDrop.Views
                         }
                     }
 
-                    plots.Add(userPlot);
+                    if (!Settings.Default.DimensionlessPlots)
+                    {
+                        foreach (var point in userPlot.Points)
+                        {
+                            if (userPlot.Settings?.DimensionlessSettings?.XDimensionlessDivider != null)
+                                point.X = point.X * userPlot.Settings.DimensionlessSettings.XDimensionlessDivider;
+
+                            if (userPlot.Settings?.DimensionlessSettings?.YDimensionlessDivider != null)
+                                point.Y = point.Y * userPlot.Settings.DimensionlessSettings.YDimensionlessDivider;
+                        }
+                    }
+
+                    if (plots.FirstOrDefault(x => x.PlotId == userPlot.PlotId) == null)
+                    {
+                        plots.Add(userPlot);
+                    }
                 }
             }
 
@@ -6012,7 +6027,7 @@ namespace DDrop.Views
             _notifier.ShowSuccess("Настройки обновлены");
         }
 
-        private async void ImportPlot_OnClick(object sender, RoutedEventArgs e)
+        private void ImportPlot_OnClick(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -6029,7 +6044,7 @@ namespace DDrop.Views
             }
         }
 
-        private async void CheckNextNotCalculated_OnClick(object sender, RoutedEventArgs e)
+        private void CheckNextNotCalculated_OnClick(object sender, RoutedEventArgs e)
         {
             foreach (var item in CurrentSeries.MeasurementsSeries)
             {

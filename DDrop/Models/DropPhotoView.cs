@@ -139,7 +139,6 @@ namespace DDrop.Models
             }
         }
 
-        private bool _editable;
         public bool Editable
         {
             get

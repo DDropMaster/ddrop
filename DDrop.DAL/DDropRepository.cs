@@ -526,6 +526,14 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task<DbPlot> GetPlot(Guid plotId)
+        {
+            using (var context = new DDropContext())
+            {
+                return await context.Plots.FirstOrDefaultAsync(x => x.PlotId == plotId);
+            }
+        }
+
         private async Task<DbPlot> GetSeriesPlot(Guid seriesId)
         {
             using (var context = new DDropContext())

@@ -95,7 +95,7 @@ namespace DDrop.BL.Substance
                 }
                 catch (HttpRequestException e)
                 {
-                    throw new AccessViolationException();
+                    throw new AccessViolationException(e.InnerException.ToString());
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace DDrop.BL.Substance
                 }
                 catch (HttpRequestException e)
                 {
-                    throw new AccessViolationException();
+                    throw new AccessViolationException(e.InnerException.ToString());
                 }
             }
         }

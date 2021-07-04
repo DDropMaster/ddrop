@@ -93,7 +93,6 @@ namespace DDrop.Models
             }
         }
 
-        private bool _processed;
         public bool Processed
         {
             get

@@ -1558,11 +1558,13 @@
                             <Label x:Name="XDimensionlessDividerLabel" Visibility="Hidden" FontSize="10" Padding="0 2 0 0" Content="Обезразмеривающий коэффициент по X:" Margin="104,10,0,10" HorizontalAlignment="Left" Width="192"/>
                             <TextBox Visibility="Hidden" Grid.Column="0" Grid.Row="0" Name="XDimensionlessDividerTextBox" Height="19"
                                      VerticalAlignment="Top" Margin="301,10,0,0" HorizontalAlignment="Left" Width="65" 
-                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.XDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.XDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, Delay=1000}"/>
+
                             <Label x:Name="YDimensionlessDividerLabel" Visibility="Hidden" FontSize="10" Padding="0 2 0 0" Content="Обезразмеривающий коэффициент по Y:" Margin="402,10,0,10" HorizontalAlignment="Left" Width="192"/>
                             <TextBox Visibility="Hidden" Grid.Column="0" Grid.Row="0" Name="YDimensionlessDividerTextBox" Height="19"
                                      VerticalAlignment="Top" Margin="599,10,0,0" HorizontalAlignment="Left" Width="65" 
-                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.YDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding CurrentPlot.Settings.DimensionlessSettings.YDimensionlessDivider, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, Delay=1000 }"/>
+
                         </Grid>
                     </Border>
                     <scatterPlot:ScatterPlot

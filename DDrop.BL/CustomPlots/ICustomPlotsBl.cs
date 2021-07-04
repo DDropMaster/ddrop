@@ -6,6 +6,7 @@ namespace DDrop.BL.CustomPlots
 {
     public interface ICustomPlotsBl
     {
+        Task<Plot> GetPlot(Guid plotId);
         Task CreatePlot(Plot plot);
         Task DeletePlot(Plot plot);
         Task UpdatePlot(Plot plot);
