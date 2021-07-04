@@ -5,9 +5,9 @@ namespace DDrop.Models
     class PlotToExcel
     {
         [DisplayName("X")]
-        public double Time { get; set; }
+        public double X { get; set; }
 
         [DisplayName("Y")]
-        public string Name { get; set; }
+        public double Y { get; set; }
     }
 }

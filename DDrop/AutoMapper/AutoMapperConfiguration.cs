@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
 using AutoMapper;
 using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
@@ -236,8 +235,6 @@ namespace DDrop.AutoMapper
                                 : null))
                     .ForMember(x => x.CurrentUser, opt =>
                         opt.Ignore())
-                    //.ForMember(x => x.Series, opt =>
-                    //    opt.Ignore())
                     .ForMember(dest =>
                         dest.Points, opt =>
                         opt.MapFrom(src => src.Points != null ?

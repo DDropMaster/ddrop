@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using DDrop.Enums;
 using DDrop.Models;
@@ -70,11 +69,13 @@ namespace DDrop.Logic.Plotting
 
                         var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
                         if (dropRadiusInMeters != null)
+                        {
                             plot.Points.Add(new SimplePointView()
                             {
                                 X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
                                 Y = dropRadiusInMeters.Value
                             });
+                        }    
                     }
 
                     if (dimensionless)

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using DDrop.Enums;
 using DDrop.Models;
+using DDrop.Properties;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Table;
@@ -23,18 +24,31 @@ namespace DDrop.Utility.ExcelOperations
                 mainWorksheet.Cells["A1:C1"].Merge = true;
                 mainWorksheet.Cells["A2:C2"].Merge = true;
                 mainWorksheet.Cells["A3:C3"].Merge = true;
+                mainWorksheet.Cells["A4:C4"].Merge = true;
+                mainWorksheet.Cells["A5:C5"].Merge = true;
 
                 mainWorksheet.Cells["D1:H1"].Merge = true;
                 mainWorksheet.Cells["D2:H2"].Merge = true;
-                mainWorksheet.Cells["D3:H3"].Merge = true;
+                mainWorksheet.Cells["D4:H4"].Merge = true;
+                mainWorksheet.Cells["D5:H5"].Merge = true;
 
                 mainWorksheet.Cells["A1"].Value = "Имя:";
                 mainWorksheet.Cells["A2"].Value = "Фамилия:";
                 mainWorksheet.Cells["A3"].Value = "Email:";
+                mainWorksheet.Cells["A4"].Value = "Отчет от:";
+                mainWorksheet.Cells["A5"].Value = "Безразмерные графики:";
+
+                mainWorksheet.Cells["A1"].Style.Font.Bold = true;
+                mainWorksheet.Cells["A2"].Style.Font.Bold = true;
+                mainWorksheet.Cells["A3"].Style.Font.Bold = true;
+                mainWorksheet.Cells["A4"].Style.Font.Bold = true;
+                mainWorksheet.Cells["A5"].Style.Font.Bold = true;
 
                 mainWorksheet.Cells["D1"].Value = user.FirstName;
                 mainWorksheet.Cells["D2"].Value = user.LastName;
                 mainWorksheet.Cells["D3"].Value = user.Email;
+                mainWorksheet.Cells["D4"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                mainWorksheet.Cells["D5"].Value = Settings.Default.DimensionlessPlots ? "Да" : "Нет";
 
                 var seriesCombinedChart =
                     mainWorksheet.Drawings.AddChart("seriesCombinedChart", eChartType.XYScatterLines) as
@@ -44,8 +58,8 @@ namespace DDrop.Utility.ExcelOperations
                 {
                     seriesCombinedChart.Title.Text = "Зависимость радиуса капли от времени испарения";
                     seriesCombinedChart.Legend.Position = eLegendPosition.Right;
-                    seriesCombinedChart.XAxis.Title.Text = "Время, с";
-                    seriesCombinedChart.YAxis.Title.Text = "Радиус, м";
+                    seriesCombinedChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                    seriesCombinedChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
 
                     var indexer = 0;
 
@@ -57,37 +71,42 @@ namespace DDrop.Utility.ExcelOperations
                         {
                             var worksheet = excelPackage.Workbook.Worksheets.Add($"{currentSeries.Title}");
 
-                            worksheet.Cells["A1:C1"].Merge = true;
-                            worksheet.Cells["A2:C2"].Merge = true;
-                            worksheet.Cells["A3:C3"].Merge = true;
-                            worksheet.Cells["A4:C4"].Merge = true;
-                            worksheet.Cells["A5:C5"].Merge = true;
-                            worksheet.Cells["A6:C6"].Merge = true;
-                            worksheet.Cells["A7:C7"].Merge = true;
+                            worksheet.Cells["A1:D1"].Merge = true;
+                            worksheet.Cells["A2:D2"].Merge = true;
+                            worksheet.Cells["A3:D3"].Merge = true;
+                            worksheet.Cells["A4:D4"].Merge = true;
+                            worksheet.Cells["A5:D5"].Merge = true;
+                            worksheet.Cells["A6:D6"].Merge = true;
 
-                            worksheet.Cells["D1:G1"].Merge = true;
-                            worksheet.Cells["D2:G2"].Merge = true;
-                            worksheet.Cells["D3:G3"].Merge = true;
-                            worksheet.Cells["D4:G4"].Merge = true;
-                            worksheet.Cells["D5:G5"].Merge = true;
-                            worksheet.Cells["D6:G6"].Merge = true;
-                            worksheet.Cells["D7:G7"].Merge = true;
+                            worksheet.Cells["E1:H1"].Merge = true;
+                            worksheet.Cells["E2:H2"].Merge = true;
+                            worksheet.Cells["E3:H3"].Merge = true;
+                            worksheet.Cells["E4:H4"].Merge = true;
+                            worksheet.Cells["E5:H5"].Merge = true;
+                            worksheet.Cells["E6:H6"].Merge = true;
 
                             worksheet.Cells["A1"].Value = "Название серии:";
-                            worksheet.Cells["A2"].Value = "Очет от:";
-                            worksheet.Cells["A3"].Value = "Интервал между снимками, c:";
-                            worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Спереди), px:";
-                            worksheet.Cells["A5"].Value = "Пикселей в миллиметре (Сбоку), px:";
-                            worksheet.Cells["A6"].Value = "Вещество";
-                            worksheet.Cells["A7"].Value = "Акустическая";
+                            worksheet.Cells["A2"].Value = "Интервал между снимками, c:";
+                            worksheet.Cells["A3"].Value = "Пикселей в миллиметре (Спереди), px:";
+                            worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Сбоку), px:";
+                            worksheet.Cells["A5"].Value = "Вещество";
+                            worksheet.Cells["A6"].Value = "Акустическая";
 
-                            worksheet.Cells["D1"].Value = currentSeries.Title;
-                            worksheet.Cells["D2"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-                            worksheet.Cells["D3"].Value = currentSeries.IntervalBetweenPhotos;
-                            worksheet.Cells["D4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
-                            worksheet.Cells["D5"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
-                            worksheet.Cells["D6"].Value = currentSeries.Substance.CommonName;
-                            worksheet.Cells["D7"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
+                            worksheet.Cells["A1"].Style.Font.Bold = true;
+                            worksheet.Cells["A2"].Style.Font.Bold = true;
+                            worksheet.Cells["A3"].Style.Font.Bold = true;
+                            worksheet.Cells["A4"].Style.Font.Bold = true;
+                            worksheet.Cells["A5"].Style.Font.Bold = true;
+                            worksheet.Cells["A6"].Style.Font.Bold = true;
+
+                            worksheet.Cells["A7:H7"].Merge = true;
+
+                            worksheet.Cells["E1"].Value = currentSeries.Title;
+                            worksheet.Cells["E2"].Value = currentSeries.IntervalBetweenPhotos;
+                            worksheet.Cells["E3"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
+                            worksheet.Cells["E4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
+                            worksheet.Cells["E5"].Value = currentSeries.Substance.CommonName;
+                            worksheet.Cells["E6"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
 
                             var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
 
@@ -139,31 +158,31 @@ namespace DDrop.Utility.ExcelOperations
                                 }
                             }
 
-                            worksheet.Cells["A8:G8"].Merge = true;
+                            worksheet.Cells["A8:H8"].Merge = true;
                             worksheet.Cells["A8"].Value = "Данные";
+                            worksheet.Cells["A8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                            worksheet.Cells["A8"].Style.Font.Bold = true;
 
                             worksheet.Cells["A9"].LoadFromCollection(singleSeriesToExcelOutput, true);
+                            worksheet.Cells["A9:H9"].Style.Font.Bold = true;
 
                             var end = worksheet.Dimension.End.Row;
 
-                            var seriesChart =
-                                worksheet.Drawings.AddChart("seriesChart", eChartType.XYScatterLines) as
-                                    ExcelScatterChart;
+                            var seriesChart = worksheet.Drawings.AddChart("seriesChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
                             if (seriesChart != null)
                             {
-                                seriesChart.Title.Text =
-                                    $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                                seriesChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
                                 seriesChart.Legend.Position = eLegendPosition.Right;
 
-                                seriesChart.Series.Add(worksheet.Cells[$"F10:G{end}"], worksheet.Cells[$"A10:A{end}"]);
+                                seriesChart.Series.Add(worksheet.Cells[$"F10:F{end}"], worksheet.Cells[$"A10:A{end}"]);
                                 seriesCombinedChart.Series.Add(worksheet.Cells[$"F10:F{end}"], worksheet.Cells[$"A10:A{end}"]);
 
-                                seriesChart.XAxis.Title.Text = "Время, с";
-                                seriesChart.YAxis.Title.Text = "Радиус, м";
+                                seriesChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                                seriesChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
 
-                                seriesChart.Series[0].Header = worksheet.Cells["D1"].Value.ToString();
-                                seriesCombinedChart.Series[indexer].Header = worksheet.Cells["D1"].Value.ToString();
+                                seriesChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
+                                seriesCombinedChart.Series[indexer].Header = worksheet.Cells["E1"].Value.ToString();
 
                                 seriesChart.SetSize(510, 660);
                                 seriesChart.SetPosition(end + 1, 0, 0, 0);
@@ -178,25 +197,85 @@ namespace DDrop.Utility.ExcelOperations
                             
                         }
                     }
-                    
+
+                    foreach (var plot in user.Plots)
+                    {
+                        var plotWorkSheet = excelPackage.Workbook.Worksheets.Add($"График: {plot.Name}");
+
+                        plotWorkSheet.Cells["A1:C1"].Merge = true;
+                        plotWorkSheet.Cells["D1:G1"].Merge = true;
+
+                        plotWorkSheet.Cells["A1"].Value = "Название графика:";
+                        plotWorkSheet.Cells["D1"].Value = plot.Name;
+
+                        var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
+
+                        foreach (var point in plot.Points)
+                        {
+                            plotToExcelOutput.Add(new PlotToExcel
+                            {
+                                X = point.X,
+                                Y = point.Y
+                            });
+                        }
+
+                        plotWorkSheet.Cells["A3"].LoadFromCollection(plotToExcelOutput, true);
+
+                        if (plotToExcelOutput.Count > 0)
+                        {
+                            var end = plotWorkSheet.Dimension.End.Row;
+
+                            var manualPlotChart = plotWorkSheet.Drawings.AddChart("manualPlotChart", eChartType.XYScatterLines) as ExcelScatterChart;
+
+                            if (manualPlotChart != null)
+                            {
+                                manualPlotChart.Title.Text = plot.PlotType == PlotTypeView.Temperature
+                                    ? $"Зависимость температуры капли от времени испарения для графика {plot.Name}"
+                                    : $"Зависимость радиуса капли от времени испарения для графика {plot.Name}";
+                                manualPlotChart.Legend.Position = eLegendPosition.Right;
+
+                                manualPlotChart.Series.Add(plotWorkSheet.Cells[$"B4:B{end}"], plotWorkSheet.Cells[$"A4:A{end}"]);
+
+                                manualPlotChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                                manualPlotChart.YAxis.Title.Text = GetPlotYAxisTitle(plot.PlotType, Settings.Default.DimensionlessPlots);
+
+                                manualPlotChart.Series[0].Header = plotWorkSheet.Cells["D1"].Value.ToString();
+
+                                manualPlotChart.SetSize(510, 660);
+                                manualPlotChart.SetPosition(end + 1, 0, 0, 0);
+                            }
+                        }
+
+                        plotWorkSheet.Cells.AutoFitColumns();
+                    }
+
                     seriesCombinedChart.SetSize(510, 660);
                     seriesCombinedChart.SetPosition(mainWorksheet.Dimension.End.Row + 1, 0, 0, 0);
                 }
-
-                foreach (var plot in user.Plots)
-                {
-                    mainWorksheet = excelPackage.Workbook.Worksheets.Add($"График: {plot.Name}");
-
-                    var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
-                }
-
                 
-                mainWorksheet.Cells.AutoFitColumns();
-                
+                mainWorksheet.Cells.AutoFitColumns();                
 
                 var excelFile = new FileInfo($@"{fileName}");
                 excelPackage.SaveAs(excelFile);
             }
+        }
+
+        private static string GetPlotYAxisTitle(PlotTypeView plotType, bool dimensionless)
+        {
+            if (plotType == PlotTypeView.Radius && dimensionless)
+            {
+                return "Радиус";
+            }
+            else if (plotType == PlotTypeView.Radius && !dimensionless)
+            {
+                return "Радиус, м";
+            }
+            else if (plotType == PlotTypeView.Temperature && dimensionless)
+            {
+                return "Температура";
+            }
+
+            return "Температура, градусы Цельсия";
         }
 
         public static ObservableCollection<SimplePointView> GetPlotPointsFromFile(string fileName)

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DDrop.Db;
 using DDrop.Db.DbEntities;
+using Z.EntityFramework.Plus;
 
 namespace DDrop.DAL
 {
@@ -79,11 +80,11 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    var users = await context.Users.Include(x => x.Plots).FirstOrDefaultAsync(x => x.Email == email);
+                    var users = await context.Users.IncludeFilter(x => x.Plots.Where(z => z.Series == null)).FirstOrDefaultAsync(x => x.Email == email);
 
                     if (users != null)
                     {
-                        users.Plots = users.Plots.Where(x => x.Series == null).ToList();
+                        //users.Plots = users.Plots.Where(x => x.Series == null).ToList();
                         users.UserSeries = null;
                     }
 
@@ -430,7 +431,7 @@ namespace DDrop.DAL
                                 z.CreationDateTime,
                                 z.PhotoType,
                                 z.CurrentSeriesId,
-                            })
+                            }),
                         }).ToArrayAsync();
 
                     var dbSeries = new List<DbSeries>();
@@ -508,10 +509,10 @@ namespace DDrop.DAL
                                 CreationDateTime = z.CreationDateTime,
                                 PhotoType = z.PhotoType,
                                 CurrentSeriesId = z.CurrentSeriesId,
-                            }).ToList()
+                            }).ToList(),
                         };
 
-                        seriesToAdd.ThermalPlot = await GetSeriesPlot(seriesToAdd.SeriesId, seriesToAdd);
+                        seriesToAdd.ThermalPlot = await GetSeriesPlot(seriesToAdd.SeriesId);
 
                         dbSeries.Add(seriesToAdd);
                     }
@@ -525,16 +526,21 @@ namespace DDrop.DAL
             }
         }
 
-        private async Task<DbPlot> GetSeriesPlot(Guid seriesId, DbSeries series)
+        private async Task<DbPlot> GetSeriesPlot(Guid seriesId)
         {
             using (var context = new DDropContext())
             {
                 var seriesPlot = await context.Plots
+                    .AsNoTracking()
                     .Where(x => x.Series.SeriesId == seriesId)
                     .Select(x => new
                     {
                         x.Name,
                         x.Points,
+                        Series = new
+                        {
+                            x.Series.SeriesId,
+                        },
                         x.CurrentUserId,
                         x.PlotId,
                         x.PlotType,
@@ -549,7 +555,10 @@ namespace DDrop.DAL
                 return new DbPlot
                 {
                     Name = seriesPlot.Name,
-                    Series = series,
+                    Series = new DbSeries
+                    {
+                        SeriesId = seriesPlot.Series.SeriesId
+                    },
                     Points = seriesPlot.Points,
                     CurrentUserId = seriesPlot.CurrentUserId,
                     PlotType = seriesPlot.PlotType,
