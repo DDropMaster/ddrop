@@ -7,7 +7,7 @@ namespace DDrop.Models
         [DisplayName("Время, с")] 
         public double Time { get; set; }
 
-        [DisplayName("Имя файла")] 
+        [DisplayName("Название")] 
         public string Name { get; set; }
 
         [DisplayName("X диаметр, м")]

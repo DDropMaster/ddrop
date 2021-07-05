@@ -136,9 +136,7 @@
     <Compile Include="SettingsRepository\SettingsRepository.cs" />
     <Compile Include="SettingsRepository\StringConvertationHelper.cs" />
     <Compile Include="Validation\ValidationHelper.cs" />
-    <Compile Include="ValueConverters\AddConverter.cs" />
     <Compile Include="ValueConverters\EnumDescriptionConverter.cs" />
-    <Compile Include="ValueConverters\EnumToStringConverter.cs" />
     <Compile Include="ValueConverters\InverseBooleanConverter.cs" />
     <Compile Include="ValueConverters\VisibleToBoolConverter.cs" />
   </ItemGroup>

@@ -50,210 +50,293 @@ namespace DDrop.Utility.ExcelOperations
                 mainWorksheet.Cells["D4"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
                 mainWorksheet.Cells["D5"].Value = Settings.Default.DimensionlessPlots ? "Да" : "Нет";
 
-                var seriesCombinedChart =
-                    mainWorksheet.Drawings.AddChart("seriesCombinedChart", eChartType.XYScatterLines) as
-                        ExcelScatterChart;
+                var seriesCombinedRadiusChart = mainWorksheet.Drawings.AddChart("seriesCombinedRadiusChart", eChartType.XYScatterLines) as ExcelScatterChart;
+                var seriesCombinedTemperatureChart = mainWorksheet.Drawings.AddChart("seriesCombinedTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
-                if (seriesCombinedChart != null)
+                seriesCombinedRadiusChart.Title.Text = "Зависимость радиуса капли от времени испарения";
+                seriesCombinedRadiusChart.Legend.Position = eLegendPosition.Right;
+                seriesCombinedRadiusChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                seriesCombinedRadiusChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
+
+                seriesCombinedTemperatureChart.Title.Text = "Зависимость температуры капли от времени испарения";
+                seriesCombinedTemperatureChart.Legend.Position = eLegendPosition.Right;
+                seriesCombinedTemperatureChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                seriesCombinedTemperatureChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Температура" : "Температура, градусы Цельсия";
+
+                var indexerRadius = 0;
+                var indexerTemperature = 0;
+
+                var exportAll = user.UserSeries.Where(x => x.IsChecked).ToList().Count == 0;
+
+                foreach (var plot in user.Plots)
                 {
-                    seriesCombinedChart.Title.Text = "Зависимость радиуса капли от времени испарения";
-                    seriesCombinedChart.Legend.Position = eLegendPosition.Right;
-                    seriesCombinedChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
-                    seriesCombinedChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
+                    var plotWorkSheet = excelPackage.Workbook.Worksheets.Add($"График: {plot.Name}");
 
-                    var indexer = 0;
+                    plotWorkSheet.Cells["A1:C1"].Merge = true;
+                    plotWorkSheet.Cells["D1:G1"].Merge = true;
 
-                    var exportAll = user.UserSeries.Where(x => x.IsChecked).ToList().Count == 0;
+                    plotWorkSheet.Cells["A1"].Value = "Название графика:";
+                    plotWorkSheet.Cells["A1"].Style.Font.Bold = true;
+                    plotWorkSheet.Cells["D1"].Value = plot.Name;
 
-                    foreach (var currentSeries in user.UserSeries)
+                    var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
+
+                    foreach (var point in plot.Points)
                     {
-                        if (currentSeries.IsChecked || exportAll)
+                        plotToExcelOutput.Add(new PlotToExcel
                         {
-                            var worksheet = excelPackage.Workbook.Worksheets.Add($"{currentSeries.Title}");
+                            X = Settings.Default.DimensionlessPlots ? point.X / plot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
+                            Y = Settings.Default.DimensionlessPlots ? point.Y / plot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                        });
+                    }
 
-                            worksheet.Cells["A1:D1"].Merge = true;
-                            worksheet.Cells["A2:D2"].Merge = true;
-                            worksheet.Cells["A3:D3"].Merge = true;
-                            worksheet.Cells["A4:D4"].Merge = true;
-                            worksheet.Cells["A5:D5"].Merge = true;
-                            worksheet.Cells["A6:D6"].Merge = true;
+                    plotWorkSheet.Cells["A3"].LoadFromCollection(plotToExcelOutput, true);
+                    plotWorkSheet.Cells["A3:B3"].Style.Font.Bold = true;
 
-                            worksheet.Cells["E1:H1"].Merge = true;
-                            worksheet.Cells["E2:H2"].Merge = true;
-                            worksheet.Cells["E3:H3"].Merge = true;
-                            worksheet.Cells["E4:H4"].Merge = true;
-                            worksheet.Cells["E5:H5"].Merge = true;
-                            worksheet.Cells["E6:H6"].Merge = true;
+                    if (plotToExcelOutput.Count > 0)
+                    {
+                        var end = plotWorkSheet.Dimension.End.Row;
 
-                            worksheet.Cells["A1"].Value = "Название серии:";
-                            worksheet.Cells["A2"].Value = "Интервал между снимками, c:";
-                            worksheet.Cells["A3"].Value = "Пикселей в миллиметре (Спереди), px:";
-                            worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Сбоку), px:";
-                            worksheet.Cells["A5"].Value = "Вещество";
-                            worksheet.Cells["A6"].Value = "Акустическая";
+                        var manualPlotChart = plotWorkSheet.Drawings.AddChart("manualPlotChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
-                            worksheet.Cells["A1"].Style.Font.Bold = true;
-                            worksheet.Cells["A2"].Style.Font.Bold = true;
-                            worksheet.Cells["A3"].Style.Font.Bold = true;
-                            worksheet.Cells["A4"].Style.Font.Bold = true;
-                            worksheet.Cells["A5"].Style.Font.Bold = true;
-                            worksheet.Cells["A6"].Style.Font.Bold = true;
+                        if (manualPlotChart != null)
+                        {
+                            manualPlotChart.Title.Text = plot.PlotType == PlotTypeView.Temperature
+                                ? $"Зависимость температуры капли от времени испарения для графика {plot.Name}"
+                                : $"Зависимость радиуса капли от времени испарения для графика {plot.Name}";
+                            manualPlotChart.Legend.Position = eLegendPosition.Right;
 
-                            worksheet.Cells["A7:H7"].Merge = true;
+                            manualPlotChart.Series.Add(plotWorkSheet.Cells[$"B4:B{end}"], plotWorkSheet.Cells[$"A4:A{end}"]);
 
-                            worksheet.Cells["E1"].Value = currentSeries.Title;
-                            worksheet.Cells["E2"].Value = currentSeries.IntervalBetweenPhotos;
-                            worksheet.Cells["E3"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
-                            worksheet.Cells["E4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
-                            worksheet.Cells["E5"].Value = currentSeries.Substance.CommonName;
-                            worksheet.Cells["E6"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
+                            if (plot.PlotType == PlotTypeView.Radius)
+                            {
+                                seriesCombinedRadiusChart.Series.Add(plotWorkSheet.Cells[$"B4:B{end}"], plotWorkSheet.Cells[$"A4:A{end}"]);
+                                seriesCombinedRadiusChart.Series[indexerRadius].Header = plotWorkSheet.Cells["D1"].Value.ToString();
+                                indexerRadius++;
+                            }
 
-                            var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
+                            if (plot.PlotType == PlotTypeView.Temperature)
+                            {
+                                seriesCombinedTemperatureChart.Series.Add(plotWorkSheet.Cells[$"B4:B{end}"], plotWorkSheet.Cells[$"A4:A{end}"]);
+                                seriesCombinedTemperatureChart.Series[indexerTemperature].Header = plotWorkSheet.Cells["D1"].Value.ToString();
+                                indexerTemperature++;
+                            }
+
+                            manualPlotChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                            manualPlotChart.YAxis.Title.Text = GetPlotYAxisTitle(plot.PlotType, Settings.Default.DimensionlessPlots);
+
+                            manualPlotChart.Series[0].Header = plotWorkSheet.Cells["D1"].Value.ToString();
+
+                            manualPlotChart.SetSize(510, 660);
+                            manualPlotChart.SetPosition(end + 1, 0, 0, 0);
+                        }
+                    }
+
+                    plotWorkSheet.Cells.AutoFitColumns();
+                }
+
+                foreach (var currentSeries in user.UserSeries)
+                {
+                    if (currentSeries.IsChecked || exportAll)
+                    {
+                        var worksheet = excelPackage.Workbook.Worksheets.Add($"{currentSeries.Title}");
+
+                        worksheet.Cells["A1:D1"].Merge = true;
+                        worksheet.Cells["A2:D2"].Merge = true;
+                        worksheet.Cells["A3:D3"].Merge = true;
+                        worksheet.Cells["A4:D4"].Merge = true;
+                        worksheet.Cells["A5:D5"].Merge = true;
+                        worksheet.Cells["A6:D6"].Merge = true;
+
+                        worksheet.Cells["E1:H1"].Merge = true;
+                        worksheet.Cells["E2:H2"].Merge = true;
+                        worksheet.Cells["E3:H3"].Merge = true;
+                        worksheet.Cells["E4:H4"].Merge = true;
+                        worksheet.Cells["E5:H5"].Merge = true;
+                        worksheet.Cells["E6:H6"].Merge = true;
+
+                        worksheet.Cells["A1"].Value = "Название серии:";
+                        worksheet.Cells["A2"].Value = "Интервал между снимками, c:";
+                        worksheet.Cells["A3"].Value = "Пикселей в миллиметре (Спереди), px:";
+                        worksheet.Cells["A4"].Value = "Пикселей в миллиметре (Сбоку), px:";
+                        worksheet.Cells["A5"].Value = "Вещество";
+                        worksheet.Cells["A6"].Value = "Акустическая";
+
+                        worksheet.Cells["A1"].Style.Font.Bold = true;
+                        worksheet.Cells["A2"].Style.Font.Bold = true;
+                        worksheet.Cells["A3"].Style.Font.Bold = true;
+                        worksheet.Cells["A4"].Style.Font.Bold = true;
+                        worksheet.Cells["A5"].Style.Font.Bold = true;
+                        worksheet.Cells["A6"].Style.Font.Bold = true;
+
+                        worksheet.Cells["A7:H7"].Merge = true;
+
+                        worksheet.Cells["E1"].Value = currentSeries.Title;
+                        worksheet.Cells["E2"].Value = currentSeries.IntervalBetweenPhotos;
+                        worksheet.Cells["E3"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
+                        worksheet.Cells["E4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto)?.PixelsInMillimeter ?? 0;
+                        worksheet.Cells["E5"].Value = currentSeries.Substance.CommonName;
+                        worksheet.Cells["E6"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
+
+                        var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
+                        var singleSeriesPlotToExcelOutput = new ObservableCollection<PlotToExcel>();
+
+                        double averageAmbientTemperatures = 0;
+
+                        for (var i = 0; i < currentSeries.MeasurementsSeries.Count; i++)
+                        {
+                            var measurement = currentSeries.MeasurementsSeries[i];
+
+                            double time = 0.0;
+
+                            averageAmbientTemperatures += measurement.AmbientTemperature ?? 0;
 
                             if (currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime)
                             {
-                                var orderedMeasurements = currentSeries.MeasurementsSeries
-                                    .OrderBy(x => x.CreationDateTime)
-                                    .ToList();
+                                time = (measurement.CreationDateTime - currentSeries.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
+                            }
 
-                                for (var i = 0; i < currentSeries.MeasurementsSeries.Count; i++)
+                            if (measurement.Drop.RadiusInMeters != null)
+                            {
+                                singleSeriesToExcelOutput.Add(new SeriesToExcel
                                 {
-                                    var measurement = currentSeries.MeasurementsSeries[i];
+                                    Time = currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : i * currentSeries.IntervalBetweenPhotos,
+                                    Name = measurement.Name,
+                                    RadiusInMeters = measurement.Drop.RadiusInMeters.Value,
+                                    VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
+                                    XDiameterInMeters = measurement.Drop.XDiameterInMeters,
+                                    YDiameterInMeters = measurement.Drop.YDiameterInMeters,
+                                    ZDiameterInMeters = measurement.Drop.ZDiameterInMeters,
+                                    Temperature = measurement.Drop.Temperature ?? 0
+                                });
+                            }
+                        }
 
-                                    if (measurement.Drop.RadiusInMeters != null)
-                                    {
-                                        singleSeriesToExcelOutput.Add(new SeriesToExcel
-                                        {
-                                            Time = (orderedMeasurements[i].CreationDateTime - orderedMeasurements[0].CreationDateTime).TotalSeconds,
-                                            Name = measurement.Name,
-                                            RadiusInMeters = measurement.Drop.RadiusInMeters.Value,
-                                            VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
-                                            XDiameterInMeters = measurement.Drop.XDiameterInMeters,
-                                            YDiameterInMeters = measurement.Drop.YDiameterInMeters,
-                                            ZDiameterInMeters = measurement.Drop.ZDiameterInMeters,
-                                            Temperature = measurement.Drop.Temperature ?? 0
-                                        });
-                                    }
+                        if (Settings.Default.DimensionlessPlots)
+                        {
+                            if (singleSeriesToExcelOutput.Count > 0)
+                            {
+                                var initialRadius = singleSeriesToExcelOutput[0].RadiusInMeters;
+                                var wholeEvaporationTime = singleSeriesToExcelOutput[singleSeriesToExcelOutput.Count - 1].Time;
+                                averageAmbientTemperatures = averageAmbientTemperatures / currentSeries.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
+
+
+                                for (int j = 0; j < singleSeriesToExcelOutput.Count; j++)
+                                {
+                                    singleSeriesToExcelOutput[j].Time = singleSeriesToExcelOutput[j].Time / wholeEvaporationTime;
+                                    singleSeriesToExcelOutput[j].RadiusInMeters = singleSeriesToExcelOutput[j].RadiusInMeters / initialRadius;
+                                    singleSeriesToExcelOutput[j].Temperature = singleSeriesToExcelOutput[j].Temperature / averageAmbientTemperatures;
                                 }
                             }
-                            else
+                        }
+
+                        worksheet.Cells["A8:H8"].Merge = true;
+                        worksheet.Cells["A8"].Value = "Данные";
+                        worksheet.Cells["A8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        worksheet.Cells["A8"].Style.Font.Bold = true;
+
+                        worksheet.Cells["A9"].LoadFromCollection(singleSeriesToExcelOutput, true);
+                        worksheet.Cells["A9:H9"].Style.Font.Bold = true;
+
+                        if (currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && currentSeries.ThermalPlot != null)
+                        {
+                            worksheet.Cells["J8:Q8"].Merge = true;
+                            worksheet.Cells["J8"].Value = "Дополнительный температурный график";
+                            worksheet.Cells["J8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                            worksheet.Cells["J8"].Style.Font.Bold = true;
+
+                            foreach (var point in currentSeries.ThermalPlot.Points)
                             {
-                                for (var i = 0; i < currentSeries.MeasurementsSeries.Count; i++)
+                                singleSeriesPlotToExcelOutput.Add(new PlotToExcel
                                 {
-                                    var measurement = currentSeries.MeasurementsSeries[i];
-                                    if (measurement.Drop.RadiusInMeters != null)
-                                    {
-                                        singleSeriesToExcelOutput.Add(new SeriesToExcel
-                                        {
-                                            Time = i * currentSeries.IntervalBetweenPhotos,
-                                            Name = measurement.Name,
-                                            RadiusInMeters = measurement.Drop.RadiusInMeters.Value,
-                                            VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
-                                            XDiameterInMeters = measurement.Drop.XDiameterInMeters,
-                                            YDiameterInMeters = measurement.Drop.YDiameterInMeters,
-                                            ZDiameterInMeters = measurement.Drop.ZDiameterInMeters,
-                                            Temperature = measurement.Drop.Temperature ?? 0
-                                        });
-                                    }
-                                }
+                                    X = Settings.Default.DimensionlessPlots ? point.X / currentSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
+                                    Y = Settings.Default.DimensionlessPlots ? point.Y / currentSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                                });
                             }
 
-                            worksheet.Cells["A8:H8"].Merge = true;
-                            worksheet.Cells["A8"].Value = "Данные";
-                            worksheet.Cells["A8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                            worksheet.Cells["A8"].Style.Font.Bold = true;
+                            worksheet.Cells["J9"].LoadFromCollection(singleSeriesPlotToExcelOutput, true);
+                            worksheet.Cells["J9:K9"].Style.Font.Bold = true;
+                        }
 
-                            worksheet.Cells["A9"].LoadFromCollection(singleSeriesToExcelOutput, true);
-                            worksheet.Cells["A9:H9"].Style.Font.Bold = true;
+                        var end = worksheet.Dimension.End.Row;
 
-                            var end = worksheet.Dimension.End.Row;
+                        if (singleSeriesToExcelOutput.Count > 0)
+                        {
+                            var seriesRadiusChart = worksheet.Drawings.AddChart("seriesRadiusChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
-                            var seriesChart = worksheet.Drawings.AddChart("seriesChart", eChartType.XYScatterLines) as ExcelScatterChart;
+                            seriesRadiusChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                            seriesRadiusChart.Legend.Position = eLegendPosition.Right;
 
-                            if (seriesChart != null)
+                            seriesRadiusChart.Series.Add(worksheet.Cells[$"F10:F{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
+                            seriesCombinedRadiusChart.Series.Add(worksheet.Cells[$"F10:F{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
+
+                            seriesRadiusChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                            seriesRadiusChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
+
+                            if (!currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && singleSeriesToExcelOutput.Any(x => x.Temperature != 0 && !double.IsNaN(x.Temperature)))
                             {
-                                seriesChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
-                                seriesChart.Legend.Position = eLegendPosition.Right;
+                                var seriesTemperatureChart = worksheet.Drawings.AddChart("seriesTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
+                             
+                                seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                                seriesTemperatureChart.Legend.Position = eLegendPosition.Right;
 
-                                seriesChart.Series.Add(worksheet.Cells[$"F10:F{end}"], worksheet.Cells[$"A10:A{end}"]);
-                                seriesCombinedChart.Series.Add(worksheet.Cells[$"F10:F{end}"], worksheet.Cells[$"A10:A{end}"]);
+                                seriesTemperatureChart.Series.Add(worksheet.Cells[$"H10:H{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
+                                seriesCombinedTemperatureChart.Series.Add(worksheet.Cells[$"H10:H{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
 
-                                seriesChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
-                                seriesChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Радиус" : "Радиус, м";
+                                seriesTemperatureChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                                seriesTemperatureChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Температура" : "Температура, градусы Цельсия";
 
-                                seriesChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
-                                seriesCombinedChart.Series[indexer].Header = worksheet.Cells["E1"].Value.ToString();
+                                seriesTemperatureChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
+                                seriesCombinedTemperatureChart.Series[indexerTemperature].Header = worksheet.Cells["E1"].Value.ToString();
 
-                                seriesChart.SetSize(510, 660);
-                                seriesChart.SetPosition(end + 1, 0, 0, 0);
+                                seriesTemperatureChart.SetSize(510, 660);
+                                seriesTemperatureChart.SetPosition(end + 1, 0, 10, 0);
+
+                                indexerTemperature++;
                             }
+
+                            seriesRadiusChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
+                            seriesCombinedRadiusChart.Series[indexerRadius].Header = worksheet.Cells["E1"].Value.ToString();
+
+                            seriesRadiusChart.SetSize(510, 660);
+                            seriesRadiusChart.SetPosition(end + 1, 0, 0, 0);
 
                             worksheet.Cells.AutoFitColumns();
-                            indexer++;
+                            indexerRadius++;
                         }
 
                         if (currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && currentSeries.ThermalPlot != null)
                         {
+                            var seriesTemperatureChart = worksheet.Drawings.AddChart("seriesTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
+
+                            seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                            seriesTemperatureChart.Legend.Position = eLegendPosition.Right;
+
+                            seriesTemperatureChart.Series.Add(worksheet.Cells[$"K10:K{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"], worksheet.Cells[$"J10:J{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"]);
+                            seriesCombinedTemperatureChart.Series.Add(worksheet.Cells[$"K10:K{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"], worksheet.Cells[$"J10:J{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"]);
+
+                            seriesTemperatureChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
+                            seriesTemperatureChart.YAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Температура" : "Температура, градусы Цельсия";
+
+                            seriesTemperatureChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
+                            seriesCombinedTemperatureChart.Series[indexerTemperature].Header = worksheet.Cells["E1"].Value.ToString();
                             
+                            seriesTemperatureChart.SetSize(510, 660);
+                            seriesTemperatureChart.SetPosition(end + 1, 0, 10, 0);
+
+                            indexerTemperature++;
                         }
                     }
-
-                    foreach (var plot in user.Plots)
-                    {
-                        var plotWorkSheet = excelPackage.Workbook.Worksheets.Add($"График: {plot.Name}");
-
-                        plotWorkSheet.Cells["A1:C1"].Merge = true;
-                        plotWorkSheet.Cells["D1:G1"].Merge = true;
-
-                        plotWorkSheet.Cells["A1"].Value = "Название графика:";
-                        plotWorkSheet.Cells["D1"].Value = plot.Name;
-
-                        var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
-
-                        foreach (var point in plot.Points)
-                        {
-                            plotToExcelOutput.Add(new PlotToExcel
-                            {
-                                X = point.X,
-                                Y = point.Y
-                            });
-                        }
-
-                        plotWorkSheet.Cells["A3"].LoadFromCollection(plotToExcelOutput, true);
-
-                        if (plotToExcelOutput.Count > 0)
-                        {
-                            var end = plotWorkSheet.Dimension.End.Row;
-
-                            var manualPlotChart = plotWorkSheet.Drawings.AddChart("manualPlotChart", eChartType.XYScatterLines) as ExcelScatterChart;
-
-                            if (manualPlotChart != null)
-                            {
-                                manualPlotChart.Title.Text = plot.PlotType == PlotTypeView.Temperature
-                                    ? $"Зависимость температуры капли от времени испарения для графика {plot.Name}"
-                                    : $"Зависимость радиуса капли от времени испарения для графика {plot.Name}";
-                                manualPlotChart.Legend.Position = eLegendPosition.Right;
-
-                                manualPlotChart.Series.Add(plotWorkSheet.Cells[$"B4:B{end}"], plotWorkSheet.Cells[$"A4:A{end}"]);
-
-                                manualPlotChart.XAxis.Title.Text = Settings.Default.DimensionlessPlots ? "Время" : "Время, с";
-                                manualPlotChart.YAxis.Title.Text = GetPlotYAxisTitle(plot.PlotType, Settings.Default.DimensionlessPlots);
-
-                                manualPlotChart.Series[0].Header = plotWorkSheet.Cells["D1"].Value.ToString();
-
-                                manualPlotChart.SetSize(510, 660);
-                                manualPlotChart.SetPosition(end + 1, 0, 0, 0);
-                            }
-                        }
-
-                        plotWorkSheet.Cells.AutoFitColumns();
-                    }
-
-                    seriesCombinedChart.SetSize(510, 660);
-                    seriesCombinedChart.SetPosition(mainWorksheet.Dimension.End.Row + 1, 0, 0, 0);
                 }
-                
-                mainWorksheet.Cells.AutoFitColumns();                
+
+                seriesCombinedRadiusChart.SetSize(510, 660);
+                seriesCombinedRadiusChart.SetPosition(mainWorksheet.Dimension.End.Row + 1, 0, 0, 0);
+
+                seriesCombinedTemperatureChart.SetSize(510, 660);
+                seriesCombinedTemperatureChart.SetPosition(mainWorksheet.Dimension.End.Row + 1, 0, 10, 0);
+
+
+                mainWorksheet.Cells.AutoFitColumns();              
 
                 var excelFile = new FileInfo($@"{fileName}");
                 excelPackage.SaveAs(excelFile);

@@ -4210,7 +4210,7 @@ namespace DDrop.Views
 
             if (options.DimensionlessPlotsIsChanged)
             {
-                UpdatePlots();
+                UpdatePlots(true);
             }
         }
 
@@ -5600,7 +5600,7 @@ namespace DDrop.Views
 
         private PlotTypeView _currentPlotType;
 
-        private void RefreshAvailablePlots()
+        private void RefreshAvailablePlots(bool demensionlessChanged)
         {
             if (RadiusTabItem.IsSelected)
             {
@@ -5612,8 +5612,8 @@ namespace DDrop.Views
                 _currentPlotType = PlotTypeView.Temperature;
             }
 
-            AvailableRadiusPlots = PreparePlots(AvailableRadiusPlots, PlotTypeView.Radius);
-            AvailableTemperaturePlots = PreparePlots(AvailableTemperaturePlots, PlotTypeView.Temperature);
+            AvailableRadiusPlots = PreparePlots(AvailableRadiusPlots, PlotTypeView.Radius, demensionlessChanged);
+            AvailableTemperaturePlots = PreparePlots(AvailableTemperaturePlots, PlotTypeView.Temperature, demensionlessChanged);
         }
 
         private void CreateAxes()
@@ -5643,7 +5643,7 @@ namespace DDrop.Views
             }
         }
 
-        private ObservableCollection<PlotView> PreparePlots(ObservableCollection<PlotView> plots, PlotTypeView plotType)
+        private ObservableCollection<PlotView> PreparePlots(ObservableCollection<PlotView> plots, PlotTypeView plotType, bool demensionlessChanged)
         {
             foreach (var series in User.UserSeries)
             {
@@ -5677,7 +5677,7 @@ namespace DDrop.Views
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
 
-                    if (Settings.Default.DimensionlessPlots)
+                    if (Settings.Default.DimensionlessPlots && demensionlessChanged)
                     {
                         foreach (var point in userPlot.Points)
                         {
@@ -5689,7 +5689,7 @@ namespace DDrop.Views
                         }
                     }
 
-                    if (!Settings.Default.DimensionlessPlots)
+                    if (!Settings.Default.DimensionlessPlots && demensionlessChanged)
                     {
                         foreach (var point in userPlot.Points)
                         {
@@ -5779,9 +5779,9 @@ namespace DDrop.Views
             }
         }
 
-        private void UpdatePlots()
+        private void UpdatePlots(bool demensionlessChanged = false)
         {
-            RefreshAvailablePlots();
+            RefreshAvailablePlots(demensionlessChanged);
             ReCalculatePlots();
         }
 
