@@ -13,9 +13,9 @@ namespace DDrop.BE.Models
 
         public Drop Drop { get; set; }
 
-        public string AddedDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
-        public string CreationDateTime { get; set; }
+        public DateTime CreationDateTime { get; set; }
 
         public int MeasurementOrderInSeries { get; set; }
 

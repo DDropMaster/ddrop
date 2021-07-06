@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DDrop.Models
+namespace DDrop.BL.ExcelOperations.Models
 {
     class PlotToExcel
     {

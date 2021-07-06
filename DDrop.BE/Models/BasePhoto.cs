@@ -11,9 +11,9 @@ namespace DDrop.BE.Models
 
         public byte[] Content { get; set; }
 
-        public string AddedDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
-        public string CreationDateTime { get; set; }
+        public DateTime CreationDateTime { get; set; }
 
         public PhotoType PhotoType { get; set; }
     }

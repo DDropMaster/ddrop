@@ -118,9 +118,6 @@
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.SqlServerCompact.6.4.4\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
-    </Reference>
     <Reference Include="Flir.Atlas.Image, Version=2.0.14266.1000, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Downloads\Soft\FLIRImageProcessor-master\FLIRImageProcessor-master\src\lib\FLIR\x86\Flir.Atlas.Image.dll</HintPath>
@@ -233,7 +230,6 @@
     <Compile Include="Models\DimensionlessSettingsView.cs" />
     <Compile Include="Models\GeneralSeriesSettingsView.cs" />
     <Compile Include="Models\PlotSettingsView.cs" />
-    <Compile Include="Models\PlotToExcel.cs" />
     <Compile Include="Utility\RelayCommand.cs" />
     <Compile Include="ViewModels\CommentEditViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -293,7 +289,6 @@
     <Compile Include="Models\PlotView.cs" />
     <Compile Include="Models\ReferencePhotoView.cs" />
     <Compile Include="Models\SeriesSettingsView.cs" />
-    <Compile Include="Models\SeriesToExcel.cs" />
     <Compile Include="Models\SeriesView.cs" />
     <Compile Include="Models\SimpleLineView.cs" />
     <Compile Include="Models\SimplePointView.cs" />
@@ -317,7 +312,6 @@
     <Compile Include="Views\Registration.xaml.cs">
       <DependentUpon>Registration.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utility\ExcelOperations\ExcelOperations.cs" />
     <Page Include="Views\Account.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

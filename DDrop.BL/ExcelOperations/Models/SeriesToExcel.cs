@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 
-namespace DDrop.Models
+namespace DDrop.BL.ExcelOperations.Models
 {
     public class SeriesToExcel
     {
-        [DisplayName("Время, с")] 
+        [DisplayName("Время, с")]
         public double Time { get; set; }
 
-        [DisplayName("Название")] 
+        [DisplayName("Название")]
         public string Name { get; set; }
 
         [DisplayName("X диаметр, м")]
@@ -19,7 +19,7 @@ namespace DDrop.Models
         [DisplayName("Z диаметр, м")]
         public double ZDiameterInMeters { get; set; }
 
-        [DisplayName("Радиус, м")] 
+        [DisplayName("Радиус, м")]
         public double RadiusInMeters { get; set; }
 
         [DisplayName("Объем, кубические метры")]

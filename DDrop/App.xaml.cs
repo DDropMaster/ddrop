@@ -28,6 +28,8 @@ using DDrop.Logic.Plotting;
 using DDrop.Logic.SeriesLogic;
 using DDrop.Utility.SettingsRepository;
 using DDrop.Views;
+using DDrop.Utility.ExcelOperations;
+using DDrop.BL.ExcelOperations;
 
 namespace DDrop
 {
@@ -74,11 +76,13 @@ namespace DDrop
             container.RegisterType<IDDropRepository, DDropRepository>();
             container.RegisterType<IDropletImageProcessor, DropletImageProcessor>();
             container.RegisterType<IPythonProvider, PythonProvider>();
+            container.RegisterType<IExcelOperationsBl, ExcelOperationsBl>();
             container.RegisterType<ILogger, Logger>(new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(
                     new ResolvedParameter<IDDropRepository>()
                 ));
             container.RegisterInstance(AutoMapperConfiguration.InitializeAutoMapper());
+
 
             container.Resolve<MainWindow>();
         }

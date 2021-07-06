@@ -26,6 +26,8 @@ using DDrop.BL.Calculation;
 using DDrop.BL.Comments;
 using DDrop.BL.CustomPlots;
 using DDrop.BL.Drop;
+using DDrop.BL.ExcelOperations;
+using DDrop.BL.ExcelOperations.Models;
 using DDrop.BL.ExportBL;
 using DDrop.BL.ImageProcessing.CSharp;
 using DDrop.BL.ImageProcessing.Python;
@@ -57,7 +59,6 @@ using DDrop.Utility.ImageOperations.ImageValidator;
 using DDrop.Utility.Logger;
 using DDrop.Utility.SeriesExporter;
 using DDrop.Utility.SeriesLocalStorageOperations;
-using DDrop.ViewModels;
 using Flir.Atlas.Image;
 using LiveCharts;
 using LiveCharts.Wpf;
@@ -86,7 +87,7 @@ namespace DDrop.Views
             IGeometryBL geometryBL, IAppStateBL appStateBL, ICalculationBL calculationBL, IMapper mapper, IPlotBl plotBl, 
             IThermalBL thermalBl, IThermalPhotoBL thermalPhotoBl, ISubstanceBL substanceBl,
             IReferenceBl referenceBl, IUserBl userBl, ICommentsBL commentsBl, ICustomPlotsBl customPlotsBl, IExportBl exportBl,
-            ISeriesLogic seriesLogic)
+            ISeriesLogic seriesLogic, IExcelOperationsBl excelOperationBl)
         {
             InitializeComponent();
             InitializePaths();
@@ -121,6 +122,7 @@ namespace DDrop.Views
             _customPlotsBl = customPlotsBl;
             _exportBl = exportBl;
             _seriesLogic = seriesLogic;
+            _excelOperationsBl = excelOperationBl;
 
             AppMainWindow.Show();
 
@@ -180,6 +182,7 @@ namespace DDrop.Views
         private readonly ICustomPlotsBl _customPlotsBl;
         private readonly IExportBl _exportBl;
         private readonly ISeriesLogic _seriesLogic;
+        private readonly IExcelOperationsBl _excelOperationsBl;
 
         private readonly ObservableCollection<AutoCalculationTemplate> _autoCalculationDefaultTemplates =
             new ObservableCollection<AutoCalculationTemplate>();
@@ -967,7 +970,14 @@ namespace DDrop.Views
                 {
                     try
                     {
-                        ExcelOperations.CreateSingleSeriesExcelFile(User, saveFileDialog.FileName);
+                        var checkedSeries = User.UserSeries.Where(x => x.IsChecked).ToList();
+                        var userPlots = _mapper.Map<ObservableCollection<PlotView>, List<Plot>>(User.Plots);
+
+                        var excelReport = new ExcelReport(saveFileDialog.FileName, Settings.Default.DimensionlessPlots,
+                                                          _mapper.Map<List<SeriesView>, List<Series>>(checkedSeries),
+                                                          User.FirstName, User.LastName, User.Email, userPlots);
+
+                        _excelOperationsBl.CreateSingleSeriesExcelFile(excelReport);
 
                         _notifier.ShowSuccess($"Файл {saveFileDialog.SafeFileName} успешно сохранен.");
                     }
@@ -2753,7 +2763,7 @@ namespace DDrop.Views
                 {
                     try
                     {
-                        await _measurementBl.UpdateMeasurementsOrderInSeries(_mapper.Map<ObservableCollection<MeasurementView>, ObservableCollection<Measurement>>(CurrentSeries.MeasurementsSeries));
+                        await _measurementBl.UpdateMeasurementsOrderInSeries(_mapper.Map<ObservableCollection<MeasurementView>, List<Measurement>>(CurrentSeries.MeasurementsSeries));
 
                         _logger.LogInfo(new LogEntry
                         {
@@ -5674,6 +5684,8 @@ namespace DDrop.Views
             {
                 if (userPlot.PlotType == plotType)
                 {
+                    
+
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
 
@@ -6040,7 +6052,7 @@ namespace DDrop.Views
 
             if (openFileDialog.ShowDialog() == true)
             {
-                CurrentPlot.Points = ExcelOperations.GetPlotPointsFromFile(openFileDialog.FileName);
+                CurrentPlot.Points = _mapper.Map<List<SimplePoint>, ObservableCollection<SimplePointView>>(_excelOperationsBl.GetPlotPointsFromFile(openFileDialog.FileName));
             }
         }
 

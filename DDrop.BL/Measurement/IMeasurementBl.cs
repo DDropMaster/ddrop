@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace DDrop.BL.Measurement
@@ -11,7 +10,7 @@ namespace DDrop.BL.Measurement
         Task DeleteMeasurement(BE.Models.Measurement measurement);
         Task UpdateMeasurementName(string text, Guid currentMeasurementId);
         Task UpdateAmbientTemperature(double value, Guid currentMeasurementId);
-        Task UpdateMeasurementsOrderInSeries(ObservableCollection<BE.Models.Measurement> measurementsSeries);
+        Task UpdateMeasurementsOrderInSeries(List<BE.Models.Measurement> measurementsSeries);
         Task<List<BE.Models.Measurement>> GetMeasurements(BE.Models.Series series);
         Task<BE.Models.Measurement> GetMeasurement(Guid measurementId);
     }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using DDrop.BE.Enums;
 
 namespace DDrop.BE.Models
@@ -8,7 +8,7 @@ namespace DDrop.BE.Models
     {
         public Guid PlotId { get; set; }
 
-        public ObservableCollection<SimplePoint> Points { get; set; }
+        public List<SimplePoint> Points { get; set; }
 
         public string Name { get; set; }
 

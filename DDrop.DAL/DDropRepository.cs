@@ -80,11 +80,13 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    var users = await context.Users.IncludeFilter(x => x.Plots.Where(z => z.Series == null)).FirstOrDefaultAsync(x => x.Email == email);
+                    var users = await context.Users
+                        .IncludeFilter(x => x.Plots.Where(z => z.Series == null)
+                        .Select(p => new { PlotId = p.PlotId, Name = p.Name, PlotType = p.PlotType, CurrentUserId = p.CurrentUserId, Settings = p.Settings }))
+                        .FirstOrDefaultAsync(x => x.Email == email);
 
                     if (users != null)
                     {
-                        //users.Plots = users.Plots.Where(x => x.Series == null).ToList();
                         users.UserSeries = null;
                     }
 
@@ -534,6 +536,14 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task<string> GetPlotPoints(Guid plotId)
+        {
+            using (var context = new DDropContext())
+            {
+                return (await context.Plots.FirstOrDefaultAsync(x => x.PlotId == plotId)).Points;
+            }
+        }
+
         private async Task<DbPlot> GetSeriesPlot(Guid seriesId)
         {
             using (var context = new DDropContext())
@@ -544,7 +554,6 @@ namespace DDrop.DAL
                     .Select(x => new
                     {
                         x.Name,
-                        x.Points,
                         Series = new
                         {
                             x.Series.SeriesId,
@@ -567,7 +576,6 @@ namespace DDrop.DAL
                     {
                         SeriesId = seriesPlot.Series.SeriesId
                     },
-                    Points = seriesPlot.Points,
                     CurrentUserId = seriesPlot.CurrentUserId,
                     PlotType = seriesPlot.PlotType,
                     PlotId = seriesPlot.PlotId,

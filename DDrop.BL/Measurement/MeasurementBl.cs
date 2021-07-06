@@ -41,9 +41,9 @@ namespace DDrop.BL.Measurement
             await Task.Run(() => _dDropRepository.UpdateMeasurementAmbientTemperature(value, currentMeasurementId));
         }
 
-        public async Task UpdateMeasurementsOrderInSeries(ObservableCollection<BE.Models.Measurement> measurementsSeries)
+        public async Task UpdateMeasurementsOrderInSeries(List<BE.Models.Measurement> measurementsSeries)
         {
-            await _dDropRepository.UpdateMeasurementsOrderInSeries(_mapper.Map<ObservableCollection<BE.Models.Measurement>, List<DbMeasurement>>(measurementsSeries));
+            await _dDropRepository.UpdateMeasurementsOrderInSeries(_mapper.Map<List<BE.Models.Measurement>, List<DbMeasurement>>(measurementsSeries));
         }
 
         public async Task<List<BE.Models.Measurement>> GetMeasurements(BE.Models.Series series)

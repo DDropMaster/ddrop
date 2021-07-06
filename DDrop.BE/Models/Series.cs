@@ -19,7 +19,7 @@ namespace DDrop.BE.Models
 
         public double IntervalBetweenPhotos { get; set; }
 
-        public string AddedDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
         public Guid? CommentId { get; set; }
 

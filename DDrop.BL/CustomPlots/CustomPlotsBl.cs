@@ -44,5 +44,10 @@ namespace DDrop.BL.CustomPlots
         {
             return _mapper.Map<DbPlot, Plot>(await Task.Run(() => _dDropRepository.GetPlot(plotId)));
         }
+
+        public async Task<string> GetPlotPoints(Guid plotId)
+        {
+            return await _dDropRepository.GetPlotPoints(plotId);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace DDrop.BE.Models
@@ -17,7 +18,7 @@ namespace DDrop.BE.Models
 
         public string Email { get; set; }
 
-        public ObservableCollection<Series> UserSeries { get; set; }
+        public List<Series> UserSeries { get; set; }
 
         public ObservableCollection<Plot> Plots { get; set; }
     }
