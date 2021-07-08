@@ -138,6 +138,7 @@ namespace DDrop.Views
             YAxesCollection = new AxesCollection();
             AvailableTemperaturePlots = new ObservableCollection<PlotView>();
             AvailableRadiusPlots = new ObservableCollection<PlotView>();
+            _lineSeriesPreview = new ObservableCollection<TypedLineView>();
 
             _typedRectangleSeriesPreview = new TypedRectangleView();
         }
@@ -152,8 +153,8 @@ namespace DDrop.Views
         private bool? _allSelectedPlots = false;
         private bool _allSelectedTemperaturePlotsChanging;
         private bool? _allSelectedTemperaturePlots = false;
-        private Line _horizontalLineSeriesPreview;
-        private Line _verticalLineSeriesPreview;
+        private ObservableCollection<TypedLineView> _lineSeriesPreview;
+
         private TypedRectangleView _typedRectangleSeriesPreview;
 
         public bool DrawingHorizontalLine { get; set; }
@@ -204,7 +205,6 @@ namespace DDrop.Views
         public bool SaveThermalPhotoRequired;
         private double _initialTemperature;
 
-        private DropPhotoView _copiedPhoto;
         private ThermalPhotoView _copiedThermalPhoto;
 
         public static readonly DependencyProperty CurrentReferencePhotoProperty =
@@ -820,8 +820,11 @@ namespace DDrop.Views
 
             if (User.UserSeries.Count > 0 && SeriesDataGrid.SelectedItem != null)
             {
-                PreviewCanvas.Children.Remove(_horizontalLineSeriesPreview);
-                PreviewCanvas.Children.Remove(_verticalLineSeriesPreview);
+                foreach (var line in _lineSeriesPreview)
+                {
+                    PreviewCanvas.Children.Remove(line.Line);
+                }
+
                 PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
                 if (_contourSeriesPreview != null)
                 {
@@ -830,11 +833,16 @@ namespace DDrop.Views
                         PreviewCanvas.Children.Remove(line);
                     }
                 }
-                
-                if (CurrentDropPhoto?.HorizontalLine != null)
-                    ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-                if (CurrentDropPhoto?.VerticalLine != null)
-                    ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
+
+                if (CurrentDropPhoto != null)
+                {
+                    foreach (var line in CurrentDropPhoto?.Lines)
+                    {
+                        ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                    }
+                }
+
+
                 if (CurrentSeries?.RegionOfInterest != null)
                 {
                     foreach (var typedRectangle in CurrentSeries.RegionOfInterest)
@@ -954,7 +962,7 @@ namespace DDrop.Views
             }
         }
 
-        private void ExportSeriesButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportSeriesButton_Click(object sender, RoutedEventArgs e)
         {
             if (User.UserSeries.Any(x => x.IsChecked))
             {
@@ -977,7 +985,7 @@ namespace DDrop.Views
                                                           _mapper.Map<List<SeriesView>, List<Series>>(checkedSeries),
                                                           User.FirstName, User.LastName, User.Email, userPlots);
 
-                        _excelOperationsBl.CreateSingleSeriesExcelFile(excelReport);
+                        await _excelOperationsBl.CreateSingleSeriesExcelFile(excelReport);
 
                         _notifier.ShowSuccess($"Файл {saveFileDialog.SafeFileName} успешно сохранен.");
                     }
@@ -1032,9 +1040,13 @@ namespace DDrop.Views
                                 Message = $"Серия {User.UserSeries[i].Title} была удалена."
                             });
 
-                            PreviewCanvas.Children.Remove(_horizontalLineSeriesPreview);
-                            PreviewCanvas.Children.Remove(_verticalLineSeriesPreview);
+                            foreach (var line in _lineSeriesPreview)
+                            {
+                                PreviewCanvas.Children.Remove(line.Line);
+                            }
+
                             PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
+
                             if (_contourSeriesPreview != null)
                             {
                                 foreach (var line in _contourSeriesPreview)
@@ -1043,10 +1055,11 @@ namespace DDrop.Views
                                 }
                             }
 
-                            if (CurrentDropPhoto?.HorizontalLine != null)
-                                ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-                            if (CurrentDropPhoto?.VerticalLine != null)
-                                ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
+                            foreach (var line in CurrentDropPhoto?.Lines)
+                            {
+                                ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                            }
+
                             if (CurrentSeries?.RegionOfInterest != null)
                             {
                                 foreach (var typedRectangle in CurrentSeries.RegionOfInterest)
@@ -1106,8 +1119,12 @@ namespace DDrop.Views
                 {
                     SeriesWindowLoading();
                     SeriesManagerIsLoading();
-                    PreviewCanvas.Children.Remove(_horizontalLineSeriesPreview);
-                    PreviewCanvas.Children.Remove(_verticalLineSeriesPreview);
+
+                    foreach (var line in _lineSeriesPreview)
+                    {
+                        PreviewCanvas.Children.Remove(line.Line);
+                    }
+
                     PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
 
                     if (_contourSeriesPreview != null)
@@ -1118,10 +1135,11 @@ namespace DDrop.Views
                         }
                     }
 
-                    if (CurrentDropPhoto?.HorizontalLine != null)
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-                    if (CurrentDropPhoto?.VerticalLine != null)
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
+                    foreach (var line in CurrentDropPhoto?.Lines)
+                    {
+                        ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                    }
+
                     if (CurrentSeries?.RegionOfInterest != null)
                     {
                         foreach (var typedRectangle in CurrentSeries.RegionOfInterest)
@@ -1554,8 +1572,7 @@ namespace DDrop.Views
 
                 ImgPreview.Source = ImageInterpreter.LoadImage(previewPhoto.Content);
 
-                _geometryBL.PrepareLines(previewPhoto, out _horizontalLineSeriesPreview, out _verticalLineSeriesPreview,
-                    Settings.Default.ShowLinesOnPreview);
+                _geometryBL.PrepareLines(previewPhoto, out _lineSeriesPreview, Settings.Default.ShowLinesOnPreview);
                 _geometryBL.PrepareContour(previewPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
 
                 if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
@@ -1568,10 +1585,12 @@ namespace DDrop.Views
                 PreviewCanvas.Children.Clear();
                 if (ImgPreview != null)
                     PreviewCanvas.Children.Add(ImgPreview);
-                if (_horizontalLineSeriesPreview != null)
-                    PreviewCanvas.Children.Add(_horizontalLineSeriesPreview);
-                if (_verticalLineSeriesPreview != null)
-                    PreviewCanvas.Children.Add(_verticalLineSeriesPreview);
+
+                foreach (var line in _lineSeriesPreview)
+                {
+                    PreviewCanvas.Children.Add(line.Line);
+                }
+
                 if (_contourSeriesPreview != null)
                     foreach (var line in _contourSeriesPreview)
                         PreviewCanvas.Children.Add(line);
@@ -1763,17 +1782,24 @@ namespace DDrop.Views
 
         private void Photos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var photosSelectedItem = (MeasurementView) Photos.SelectedItem;
-            if (photosSelectedItem != null)
+            if (e.RemovedItems.Count > 0)
             {
-                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
+                var oldCurrentMeasurement = e.RemovedItems[0] as MeasurementView;
+                var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
+                    oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
-                CurrentThermalPhotos = new ObservableCollection<ThermalPhotoView>();
-
-                foreach (var dropPhoto in CurrentMeasurement.DropPhotos)
+                foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
                 {
-                    ImgCurrent.CanDrawing.Children.Remove(dropPhoto?.HorizontalLine);
-                    ImgCurrent.CanDrawing.Children.Remove(dropPhoto?.VerticalLine);
+                    dropPhoto.Content = null;
+                    dropPhoto.Contour = null;
+
+                    if (dropPhoto.Lines != null)
+                    {
+                        foreach (var line in dropPhoto?.Lines)
+                        {
+                            ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                        }
+                    }
 
                     if (dropPhoto?.Contour != null)
                     {
@@ -1781,6 +1807,17 @@ namespace DDrop.Views
                             ImgCurrent.CanDrawing.Children.Remove(line);
                     }
                 }
+
+                if (singleOldMeasurement?.ThermalPhoto?.Content != null)
+                    singleOldMeasurement.ThermalPhoto.Content = null;
+            }
+
+            var photosSelectedItem = (MeasurementView) Photos.SelectedItem;
+            if (photosSelectedItem != null)
+            {
+                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
+
+                CurrentThermalPhotos = new ObservableCollection<ThermalPhotoView>();
 
                 if (CurrentSeries?.RegionOfInterest != null)
                 {
@@ -1803,22 +1840,6 @@ namespace DDrop.Views
                 CurrentThermalPhotos.Add(CurrentMeasurement.ThermalPhoto ?? new ThermalPhotoView {PhotoType = PhotoTypeView.ThermalPhoto});
 
                 ImageForEdit = null;
-
-                if (e.RemovedItems.Count > 0)
-                {
-                    var oldCurrentMeasurement = e.RemovedItems[0] as MeasurementView;
-                    var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
-                        oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
-
-                    foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
-                    {
-                        dropPhoto.Content = null;
-                        dropPhoto.Contour = null;
-                    }
-
-                    if (singleOldMeasurement?.ThermalPhoto?.Content != null)
-                        singleOldMeasurement.ThermalPhoto.Content = null;
-                }
             }
             else
             {
@@ -1872,8 +1893,13 @@ namespace DDrop.Views
         {
             if (dropPhoto != null && canvas != null)
             {
-                canvas.Children.Remove(dropPhoto.HorizontalLine);
-                canvas.Children.Remove(dropPhoto.VerticalLine);
+                if (dropPhoto.Lines != null)
+                {
+                    foreach (var line in dropPhoto.Lines)
+                    {
+                        canvas.Children.Remove(line.Line);
+                    }
+                }
 
                 if (dropPhoto.Contour != null)
                     foreach (var line in dropPhoto.Contour.Lines)
@@ -1887,12 +1913,17 @@ namespace DDrop.Views
                     }
                 }
 
-                if (dropPhoto.HorizontalLine != null && Settings.Default.ShowLinesOnPreview ||
-                    dropPhoto.HorizontalLine != null && _photoEditModeOn)
-                    canvas.Children.Add(dropPhoto.HorizontalLine);
-                if (dropPhoto.VerticalLine != null && Settings.Default.ShowLinesOnPreview ||
-                    dropPhoto.VerticalLine != null && _photoEditModeOn)
-                    canvas.Children.Add(dropPhoto.VerticalLine);
+                if (Settings.Default.ShowLinesOnPreview || _photoEditModeOn)
+                {
+                    if (dropPhoto.Lines != null)
+                    {
+                        foreach (var line in dropPhoto.Lines)
+                        {
+                            canvas.Children.Add(line.Line);
+                        }
+                    }
+                }
+
                 if (dropPhoto.Contour != null && Settings.Default.ShowContourOnPreview ||
                     dropPhoto.Contour != null && _autoCalculationModeOn)
                     foreach (var line in dropPhoto.Contour.Lines)
@@ -1982,8 +2013,10 @@ namespace DDrop.Views
         {
             if (currentDropPhoto != null && dropPhoto.PhotoId == currentDropPhoto.PhotoId)
             {
-                canvas.Children.Remove(dropPhoto.HorizontalLine);
-                canvas.Children.Remove(dropPhoto.VerticalLine);
+                foreach (var line in dropPhoto.Lines)
+                {
+                    canvas.Children.Remove(line.Line);
+                }
 
                 if (dropPhoto.Contour != null)
                     foreach (var line in dropPhoto.Contour.Lines)
@@ -1999,8 +2032,10 @@ namespace DDrop.Views
             {
                 foreach (var dropPhoto in measurement.DropPhotos)
                 {
-                    canvas.Children.Remove(dropPhoto.HorizontalLine);
-                    canvas.Children.Remove(dropPhoto.VerticalLine);
+                    foreach (var line in dropPhoto.Lines)
+                    {
+                        canvas.Children.Remove(line.Line);
+                    }
 
                     if (dropPhoto.Contour != null)
                         foreach (var line in dropPhoto.Contour.Lines)
@@ -2086,24 +2121,6 @@ namespace DDrop.Views
                 await PhotoEditModeOn(CurrentDropPhoto.PhotoType);
 
                 ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-
-                if (CurrentDropPhoto.HorizontalLine == null)
-                    CurrentDropPhoto.HorizontalLine = new Line();
-
-                if (CurrentDropPhoto.VerticalLine == null)
-                    CurrentDropPhoto.VerticalLine = new Line();
-
-                _copiedPhoto = new DropPhotoView()
-                {
-                    PhotoId = CurrentDropPhoto.PhotoId,
-                    HorizontalLine = CurrentDropPhoto.HorizontalLine,
-                    VerticalLine = CurrentDropPhoto.VerticalLine,
-                    SimpleHorizontalLine = CurrentDropPhoto.SimpleHorizontalLine,
-                    SimpleVerticalLine = CurrentDropPhoto.SimpleVerticalLine
-                };
-
-
-                _geometryBL.StoreContour(CurrentDropPhoto.Contour, _copiedPhoto.Contour);
 
                 PhotosDetails.ItemsSource = new ObservableCollection<DropPhotoView> { CurrentDropPhoto };
 
@@ -2293,7 +2310,6 @@ namespace DDrop.Views
             _loadPhotosContent = true;
 
             Photos.ScrollIntoView(Photos.SelectedItem);
-            _copiedPhoto = null;
         }
 
         private void VerticalRulerToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -2402,36 +2418,18 @@ namespace DDrop.Views
                 }
                 else
                 {
-                    ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-                    ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
-
-                    _geometryBL.RestoreOriginalContour(CurrentDropPhoto, _copiedPhoto, ImgCurrent.CanDrawing,
-                        CurrentMeasurement.MeasurementId);
+                    foreach (var line in CurrentDropPhoto.Lines)
+                    {
+                        ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                    }
 
                     if (CurrentDropPhoto.Contour != null)
                     {
-                        CurrentDropPhoto.Contour.Lines = new ObservableCollection<Line>();
-
-                        foreach (var contourSimpleLine in CurrentDropPhoto.Contour.SimpleLines)
-                            CurrentDropPhoto.Contour.Lines.Add(new Line
-                            {
-                                X1 = contourSimpleLine.X1,
-                                X2 = contourSimpleLine.X2,
-                                Y1 = contourSimpleLine.Y1,
-                                Y2 = contourSimpleLine.Y2,
-                                Stroke = System.Windows.Media.Brushes.Red,
-                                StrokeThickness = 2
-                            });
+                        foreach (var line in CurrentDropPhoto.Contour.Lines)
+                            ImgCurrent.CanDrawing.Children.Remove(line);
                     }
 
-                    CurrentDropPhoto.HorizontalLine = _copiedPhoto.HorizontalLine;
-                    CurrentDropPhoto.VerticalLine = _copiedPhoto.VerticalLine;
-                    CurrentDropPhoto.SimpleVerticalLine = _copiedPhoto.SimpleVerticalLine;
-                    CurrentDropPhoto.SimpleHorizontalLine = _copiedPhoto.SimpleHorizontalLine;
-
-                    CurrentDropPhoto.XDiameterInPixels = _initialXDiameterInPixels;
-                    CurrentDropPhoto.YDiameterInPixels = _initialYDiameterInPixels;
-                    CurrentDropPhoto.ZDiameterInPixels = _initialZDiameterInPixels;
+                    CurrentDropPhoto = _mapper.Map<DropPhoto, DropPhotoView>(await _dropPhotoBl.GetDropPhoto(CurrentDropPhoto.PhotoId));
 
                     ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
                 }
@@ -4414,6 +4412,8 @@ namespace DDrop.Views
                         var photoToClear =  CurrentMeasurement.DropPhotos.FirstOrDefault(x => oldCurrentPhoto != null && x.PhotoId == oldCurrentPhoto.PhotoId);
                         photoToClear.Content = null;
                         photoToClear.Contour = null;
+                        photoToClear.Lines = null;
+                        photoToClear.SimpleLines = null;
                     }
 
                     _tokenSource?.Cancel();
@@ -4469,8 +4469,10 @@ namespace DDrop.Views
                 {
                     if (CurrentMeasurement != null)
                     {
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
+                        foreach (var line in CurrentDropPhoto.Lines)
+                        {
+                            ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                        }
                     }
                 }
                 catch (TimeoutException)
@@ -4546,10 +4548,8 @@ namespace DDrop.Views
                                 if (CurrentDropPhoto.PhotoId != Guid.Empty)
                                 {
                                     CurrentDropPhoto.Contour = null;
-                                    CurrentDropPhoto.VerticalLine = null;
-                                    CurrentDropPhoto.HorizontalLine = null;
-                                    CurrentDropPhoto.SimpleVerticalLine = null;
-                                    CurrentDropPhoto.SimpleHorizontalLine = null;
+                                    CurrentDropPhoto.Lines = null;
+                                    CurrentDropPhoto.SimpleLines = null;
                                     CurrentDropPhoto.Content = imageForAdding.Content;
                                     CurrentDropPhoto.Name = imageForAdding.Name;
                                     CurrentDropPhoto.AddedDate = imageForAdding.AddedDate;
@@ -5291,70 +5291,9 @@ namespace DDrop.Views
 
                 if (_twoLineMode)
                 {
-                    if (Math.Abs(DrawnShapes.Line.X1 - DrawnShapes.Line.X2) >=
-                        Math.Abs(DrawnShapes.Line.Y1 - DrawnShapes.Line.Y2) && !DrawingVerticalLine ||
-                        DrawingHorizontalLine)
-                    {
-                        DrawnShapes.Line.Stroke = System.Windows.Media.Brushes.DeepPink;
+                    var lineType = GetLineMode();
 
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.HorizontalLine);
-
-                        if (CurrentDropPhoto.Contour != null)
-                        {
-                            foreach (var line in CurrentDropPhoto.Contour.Lines) ImgCurrent.CanDrawing.Children.Remove(line);
-
-                            CurrentDropPhoto.Contour.SimpleLines.Clear();
-                            CurrentDropPhoto.Contour.Lines.Clear();
-
-                            CurrentDropPhoto.Contour = null;
-                        }
-
-                        CurrentDropPhoto.HorizontalLine = DrawnShapes.Line;
-                        var horizontalLineForAdd = new SimpleLineView()
-                        {
-                            X1 = DrawnShapes.Line.X1,
-                            X2 = DrawnShapes.Line.X2,
-                            Y1 = DrawnShapes.Line.Y1,
-                            Y2 = DrawnShapes.Line.Y2
-                        };
-
-                        CurrentDropPhoto.SimpleHorizontalLine = horizontalLineForAdd;
-
-                        if (CurrentDropPhoto.PhotoType == PhotoTypeView.FrontDropPhoto)
-                            CurrentDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
-
-                        if (CurrentDropPhoto.PhotoType == PhotoTypeView.SideDropPhoto)
-                            CurrentDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
-                    }
-                    else if (Math.Abs(DrawnShapes.Line.X1 - DrawnShapes.Line.X2) < Math.Abs(DrawnShapes.Line.Y1 - DrawnShapes.Line.Y2) && !DrawingHorizontalLine || DrawingVerticalLine)
-                    {
-                        DrawnShapes.Line.Stroke = System.Windows.Media.Brushes.Green;
-
-                        ImgCurrent.CanDrawing.Children.Remove(CurrentDropPhoto.VerticalLine);
-
-                        if (CurrentDropPhoto.Contour != null)
-                        {
-                            foreach (var line in CurrentDropPhoto.Contour.Lines) ImgCurrent.CanDrawing.Children.Remove(line);
-
-                            CurrentDropPhoto.Contour.SimpleLines.Clear();
-                            CurrentDropPhoto.Contour.Lines.Clear();
-
-                            CurrentDropPhoto.Contour = null;
-                        }
-
-                        CurrentDropPhoto.VerticalLine = DrawnShapes.Line;
-                        var verticalLineForAdd = new SimpleLineView()
-                        {
-                            X1 = DrawnShapes.Line.X1,
-                            X2 = DrawnShapes.Line.X2,
-                            Y1 = DrawnShapes.Line.Y1,
-                            Y2 = DrawnShapes.Line.Y2
-                        };
-
-                        CurrentDropPhoto.SimpleVerticalLine = verticalLineForAdd;
-
-                        CurrentDropPhoto.YDiameterInPixels = Convert.ToInt32(LineLengthHelper.GetPointsOnLine(point11, point22).Count);
-                    }
+                    CreateLines(point11, point22, lineType);
                 }
                 else
                 {
@@ -5377,6 +5316,77 @@ namespace DDrop.Views
                         LineLengthHelper.GetPointsOnLine(point11, point22).Count;
                 }
             }
+        }
+
+        private void CreateLines(Point point11, Point point22, LineTypeView lineType)
+        {
+            DrawnShapes.Line.Stroke = lineType == LineTypeView.Horizontal ? System.Windows.Media.Brushes.DeepPink : System.Windows.Media.Brushes.Green;
+
+            var lineToRemove = CurrentDropPhoto.Lines.FirstOrDefault(x => x.LineType == lineType);
+
+            if (lineToRemove != null)
+            {
+                ImgCurrent.CanDrawing.Children.Remove(lineToRemove.Line);
+                CurrentDropPhoto.Lines.First(x => x.LineType == lineType).Line = DrawnShapes.Line;
+            }
+            else
+            {
+                CurrentDropPhoto.Lines.Add(new TypedLineView
+                {
+                    LineType = lineType,
+                    Line = DrawnShapes.Line
+                });
+            }
+
+            if (CurrentDropPhoto.Contour != null)
+            {
+                foreach (var line in CurrentDropPhoto.Contour.Lines) ImgCurrent.CanDrawing.Children.Remove(line);
+
+                CurrentDropPhoto.Contour.SimpleLines.Clear();
+                CurrentDropPhoto.Contour.Lines.Clear();
+
+                CurrentDropPhoto.Contour = null;
+            }
+
+            var lineForAdd = new SimpleLineView()
+            {
+                X1 = DrawnShapes.Line.X1,
+                X2 = DrawnShapes.Line.X2,
+                Y1 = DrawnShapes.Line.Y1,
+                Y2 = DrawnShapes.Line.Y2,
+                LineType = lineType
+            };
+
+            var simpleLine = CurrentDropPhoto.SimpleLines.FirstOrDefault(l => l.LineType == lineType);
+
+            if (simpleLine != null)
+            {
+                simpleLine = lineForAdd;
+            }
+            else
+            {
+                CurrentDropPhoto.SimpleLines.Add(lineForAdd);
+            }
+
+            if (CurrentDropPhoto.PhotoType == PhotoTypeView.FrontDropPhoto)
+                CurrentDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+
+            if (CurrentDropPhoto.PhotoType == PhotoTypeView.SideDropPhoto)
+                CurrentDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+        }
+
+        private LineTypeView GetLineMode()
+        {
+            if (Math.Abs(DrawnShapes.Line.X1 - DrawnShapes.Line.X2) >= Math.Abs(DrawnShapes.Line.Y1 - DrawnShapes.Line.Y2) && !DrawingVerticalLine || DrawingHorizontalLine)
+            {
+                return LineTypeView.Horizontal;
+            }
+            else if (Math.Abs(DrawnShapes.Line.X1 - DrawnShapes.Line.X2) < Math.Abs(DrawnShapes.Line.Y1 - DrawnShapes.Line.Y2) && !DrawingHorizontalLine || DrawingVerticalLine)
+            {
+                return LineTypeView.Vertical;
+            }
+
+            return LineTypeView.Undefined;
         }
 
         private async void EditPlots_OnClick(object sender, RoutedEventArgs e)
@@ -5610,7 +5620,7 @@ namespace DDrop.Views
 
         private PlotTypeView _currentPlotType;
 
-        private void RefreshAvailablePlots(bool demensionlessChanged)
+        private void RefreshAvailablePlots(bool dimensionlessChanged)
         {
             if (RadiusTabItem.IsSelected)
             {
@@ -5622,8 +5632,8 @@ namespace DDrop.Views
                 _currentPlotType = PlotTypeView.Temperature;
             }
 
-            AvailableRadiusPlots = PreparePlots(AvailableRadiusPlots, PlotTypeView.Radius, demensionlessChanged);
-            AvailableTemperaturePlots = PreparePlots(AvailableTemperaturePlots, PlotTypeView.Temperature, demensionlessChanged);
+            AvailableRadiusPlots = PreparePlots(AvailableRadiusPlots, PlotTypeView.Radius, dimensionlessChanged);
+            AvailableTemperaturePlots = PreparePlots(AvailableTemperaturePlots, PlotTypeView.Temperature, dimensionlessChanged);
         }
 
         private void CreateAxes()
@@ -5653,7 +5663,7 @@ namespace DDrop.Views
             }
         }
 
-        private ObservableCollection<PlotView> PreparePlots(ObservableCollection<PlotView> plots, PlotTypeView plotType, bool demensionlessChanged)
+        private ObservableCollection<PlotView> PreparePlots(ObservableCollection<PlotView> plots, PlotTypeView plotType, bool dimensionlessChanged)
         {
             foreach (var series in User.UserSeries)
             {
@@ -5689,7 +5699,7 @@ namespace DDrop.Views
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
 
-                    if (Settings.Default.DimensionlessPlots && demensionlessChanged)
+                    if (Settings.Default.DimensionlessPlots && dimensionlessChanged)
                     {
                         foreach (var point in userPlot.Points)
                         {
@@ -5701,7 +5711,7 @@ namespace DDrop.Views
                         }
                     }
 
-                    if (!Settings.Default.DimensionlessPlots && demensionlessChanged)
+                    if (!Settings.Default.DimensionlessPlots && dimensionlessChanged)
                     {
                         foreach (var point in userPlot.Points)
                         {
@@ -5791,9 +5801,9 @@ namespace DDrop.Views
             }
         }
 
-        private void UpdatePlots(bool demensionlessChanged = false)
+        private void UpdatePlots(bool dimensionlessChanged = false)
         {
-            RefreshAvailablePlots(demensionlessChanged);
+            RefreshAvailablePlots(dimensionlessChanged);
             ReCalculatePlots();
         }
 

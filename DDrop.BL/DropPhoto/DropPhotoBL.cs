@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using AutoMapper;
 using DDrop.BE.Models;
-using DDrop.BL.Comments;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
 using DDrop.Utility.ImageOperations;
@@ -102,6 +100,16 @@ namespace DDrop.BL.Measurement
         public async Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId)
         {
             return _mapper.Map<List<DbDropPhoto>, List<DropPhoto>>(await Task.Run(() => _dDropRepository.GetDropPhotosByMeasurementId(measurementId)));
+        }
+    
+        public async Task<string> GetDropPhotoLines(Guid photoId)
+        {
+            return await _dDropRepository.GetDropPhotoLines(photoId);
+        }
+
+        public async Task<DropPhoto> GetDropPhoto(Guid photoId)
+        {
+            return _mapper.Map<DbDropPhoto, DropPhoto>(await _dDropRepository.GetDropPhoto(photoId));
         }
     }
 }

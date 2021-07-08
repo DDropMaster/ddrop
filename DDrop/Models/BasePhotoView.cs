@@ -29,8 +29,8 @@ namespace DDrop.Models
             }
         }
 
-        private DateTime _addedDate;
-        public DateTime AddedDate
+        private DateTime? _addedDate;
+        public DateTime? AddedDate
         {
             get => _addedDate;
             set
@@ -40,8 +40,8 @@ namespace DDrop.Models
             }
         }
 
-        private DateTime _creationDateTime;
-        public DateTime CreationDateTime
+        private DateTime? _creationDateTime;
+        public DateTime? CreationDateTime
         {
             get => _creationDateTime;
             set

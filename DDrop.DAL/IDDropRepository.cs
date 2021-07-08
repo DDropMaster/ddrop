@@ -21,6 +21,8 @@ namespace DDrop.DAL
         Task UpdateRegionOfInterest(Guid seriesId, string regionOfInterest);
         Task<DbPlot> GetPlot(Guid plotId);
         Task<string> GetPlotPoints(Guid plotId);
+        Task<string> GetDropPhotoLines(Guid photoId);
+        Task<DbDropPhoto> GetDropPhoto(Guid photoId);
         Task UpdateSeriesSettings(Guid seriesId, string settings);
         Task UpdateSeriesName(string seriesName, Guid seriesId);
         Task DeleteSingleSeries(DbSeries series);

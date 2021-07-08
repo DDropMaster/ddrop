@@ -15,5 +15,7 @@ namespace DDrop.BL.Measurement
         Task CreateDropPhoto(DropPhoto dropPhoto, BE.Models.Measurement owningMeasurement);
         Task<Contour> GetDropPhotoContour(Guid contourId);
         Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId);
+        Task<string> GetDropPhotoLines(Guid photoId);
+        Task<DropPhoto> GetDropPhoto(Guid photoId);
     }
 }

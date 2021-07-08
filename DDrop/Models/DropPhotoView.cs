@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using DDrop.Enums;
 
 namespace DDrop.Models
@@ -42,47 +42,25 @@ namespace DDrop.Models
             }
         }
 
-        private SimpleLineView _simpleHorizontalLine;
-        public SimpleLineView SimpleHorizontalLine
+        private ObservableCollection<SimpleLineView> _simpleLines;
+        public ObservableCollection<SimpleLineView> SimpleLines
         {
-            get => _simpleHorizontalLine;
+            get => _simpleLines;
             set
             {
-                _simpleHorizontalLine = value;
-                RaisePropertyChanged("SimpleHorizontalLine");
+                _simpleLines = value;
+                RaisePropertyChanged("SimpleLines");
             }
         }
 
-        private Line _horizontalLine;
-        public Line HorizontalLine
+        private ObservableCollection<TypedLineView> _lines;
+        public ObservableCollection<TypedLineView> Lines
         {
-            get => _horizontalLine;
+            get => _lines;
             set
             {
-                _horizontalLine = value;
-                RaisePropertyChanged("HorizontalLine");
-            }
-        }
-
-        private SimpleLineView _simpleVerticalLine;
-        public SimpleLineView SimpleVerticalLine
-        {
-            get => _simpleVerticalLine;
-            set
-            {
-                _simpleVerticalLine = value;
-                RaisePropertyChanged("SimpleVerticalLine");
-            }
-        }
-
-        private Line _verticalLine;
-        public Line VerticalLine
-        {
-            get => _verticalLine;
-            set
-            {
-                _verticalLine = value;
-                RaisePropertyChanged("VerticalLine");
+                _lines = value;
+                RaisePropertyChanged("Lines");
             }
         }
 

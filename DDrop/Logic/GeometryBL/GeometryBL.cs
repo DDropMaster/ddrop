@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Windows.Controls;
+using System.Linq;
 using System.Windows.Shapes;
 using DDrop.Controls.PixelDrawer;
 using DDrop.Enums;
@@ -12,34 +12,21 @@ namespace DDrop.Logic.GeometryBL
 {
     public class GeometryBL : IGeometryBL
     {
-        public void PrepareLines(DropPhotoView selectedPhoto, out Line horizontalLine, out Line verticalLine,
-            bool showLinesOnPreview)
+        public void PrepareLines(DropPhotoView selectedPhoto, out ObservableCollection<TypedLineView> lines, bool showLinesOnPreview)
         {
-            if (selectedPhoto.HorizontalLine != null && showLinesOnPreview)
-                horizontalLine = new Line
-                {
-                    X1 = selectedPhoto.HorizontalLine.X1,
-                    X2 = selectedPhoto.HorizontalLine.X2,
-                    Y1 = selectedPhoto.HorizontalLine.Y1,
-                    Y2 = selectedPhoto.HorizontalLine.Y2,
-                    StrokeThickness = 2,
-                    Stroke = Brushes.DeepPink
-                };
-            else
-                horizontalLine = null;
+            lines = new ObservableCollection<TypedLineView>();
 
-            if (selectedPhoto.VerticalLine != null && showLinesOnPreview)
-                verticalLine = new Line
+            if (showLinesOnPreview)
+            {
+                foreach (var line in selectedPhoto.Lines)
                 {
-                    X1 = selectedPhoto.VerticalLine.X1,
-                    X2 = selectedPhoto.VerticalLine.X2,
-                    Y1 = selectedPhoto.VerticalLine.Y1,
-                    Y2 = selectedPhoto.VerticalLine.Y2,
-                    StrokeThickness = 2,
-                    Stroke = Brushes.Green
-                };
-            else
-                verticalLine = null;
+                    lines.Add(new TypedLineView
+                    {
+                        LineType = line.LineType,
+                        Line = line.Line
+                    });
+                }
+            }
         }
 
         public void CreateDiameters(DropPhotoView dropPhoto, Point[] points)
@@ -75,82 +62,37 @@ namespace DDrop.Logic.GeometryBL
                 }
             }
 
-            if (dropPhoto.SimpleHorizontalLine == null)
-                dropPhoto.SimpleHorizontalLine = new SimpleLineView();
+            var horizontalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal) ?? new SimpleLineView { LineType = LineTypeView.Horizontal };
 
-            dropPhoto.SimpleHorizontalLine.X1 = simpleHorizontalDiameter.X1;
-            dropPhoto.SimpleHorizontalLine.X2 = simpleHorizontalDiameter.X2;
-            dropPhoto.SimpleHorizontalLine.Y1 = simpleHorizontalDiameter.Y1;
-            dropPhoto.SimpleHorizontalLine.Y2 = simpleHorizontalDiameter.Y1;
+            horizontalSimpleLine.X1 = simpleHorizontalDiameter.X1;
+            horizontalSimpleLine.X2 = simpleHorizontalDiameter.X2;
+            horizontalSimpleLine.Y1 = simpleHorizontalDiameter.Y1;
+            horizontalSimpleLine.Y2 = simpleHorizontalDiameter.Y1;
 
-            if (dropPhoto.HorizontalLine == null)
-                dropPhoto.HorizontalLine = new Line();
+            var horizontalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal) ?? new TypedLineView { LineType = LineTypeView.Horizontal, Line = new Line() };
 
-            dropPhoto.HorizontalLine.X1 = simpleHorizontalDiameter.X1;
-            dropPhoto.HorizontalLine.X2 = simpleHorizontalDiameter.X2;
-            dropPhoto.HorizontalLine.Y1 = simpleHorizontalDiameter.Y1;
-            dropPhoto.HorizontalLine.Y2 = simpleHorizontalDiameter.Y1;
-            dropPhoto.HorizontalLine.StrokeThickness = 2;
-            dropPhoto.HorizontalLine.Stroke = Brushes.DeepPink;
+            horizontalLine.Line.X1 = simpleHorizontalDiameter.X1;
+            horizontalLine.Line.X2 = simpleHorizontalDiameter.X2;
+            horizontalLine.Line.Y1 = simpleHorizontalDiameter.Y1;
+            horizontalLine.Line.Y2 = simpleHorizontalDiameter.Y1;
+            horizontalLine.Line.StrokeThickness = 2;
+            horizontalLine.Line.Stroke = Brushes.DeepPink;
 
-            if (dropPhoto.SimpleVerticalLine == null)
-                dropPhoto.SimpleVerticalLine = new SimpleLineView();
+            var verticalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical) ?? new SimpleLineView { LineType = LineTypeView.Vertical };
 
-            dropPhoto.SimpleVerticalLine.X1 = simpleVerticalDiameter.X1;
-            dropPhoto.SimpleVerticalLine.X2 = simpleVerticalDiameter.X1;
-            dropPhoto.SimpleVerticalLine.Y1 = simpleVerticalDiameter.Y1;
-            dropPhoto.SimpleVerticalLine.Y2 = simpleVerticalDiameter.Y2;
+            horizontalSimpleLine.X1 = simpleHorizontalDiameter.X1;
+            horizontalSimpleLine.X2 = simpleHorizontalDiameter.X2;
+            horizontalSimpleLine.Y1 = simpleHorizontalDiameter.Y1;
+            horizontalSimpleLine.Y2 = simpleHorizontalDiameter.Y1;
 
-            if (dropPhoto.VerticalLine == null)
-                dropPhoto.VerticalLine = new Line();
+            var verticalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical) ?? new TypedLineView { LineType = LineTypeView.Vertical, Line = new Line() };
 
-            dropPhoto.VerticalLine.X1 = simpleVerticalDiameter.X1;
-            dropPhoto.VerticalLine.X2 = simpleVerticalDiameter.X1;
-            dropPhoto.VerticalLine.Y1 = simpleVerticalDiameter.Y1;
-            dropPhoto.VerticalLine.Y2 = simpleVerticalDiameter.Y2;
-            dropPhoto.VerticalLine.StrokeThickness = 2;
-            dropPhoto.VerticalLine.Stroke = Brushes.Green;
-        }
-
-        public void RestoreOriginalLines(DropPhotoView dropPhoto, DropPhotoView storedPhoto, Canvas canvas)
-        {
-            if (storedPhoto.SimpleHorizontalLine != null)
-            {
-                dropPhoto.SimpleHorizontalLine.X1 = storedPhoto.SimpleHorizontalLine.X1;
-                dropPhoto.SimpleHorizontalLine.X2 = storedPhoto.SimpleHorizontalLine.X2;
-                dropPhoto.SimpleHorizontalLine.Y1 = storedPhoto.SimpleHorizontalLine.Y1;
-                dropPhoto.SimpleHorizontalLine.Y2 = storedPhoto.SimpleHorizontalLine.Y2;
-
-                dropPhoto.HorizontalLine.X1 = dropPhoto.SimpleHorizontalLine.X1;
-                dropPhoto.HorizontalLine.X2 = dropPhoto.SimpleHorizontalLine.X2;
-                dropPhoto.HorizontalLine.Y1 = dropPhoto.SimpleHorizontalLine.Y1;
-                dropPhoto.HorizontalLine.Y2 = dropPhoto.SimpleHorizontalLine.Y2;
-            }
-            else
-            {
-                canvas.Children.Remove(dropPhoto.HorizontalLine);
-                dropPhoto.SimpleHorizontalLine = null;
-                dropPhoto.HorizontalLine = null;
-            }
-
-            if (storedPhoto.SimpleVerticalLine != null)
-            {
-                dropPhoto.SimpleVerticalLine.X1 = storedPhoto.SimpleVerticalLine.X1;
-                dropPhoto.SimpleVerticalLine.X2 = storedPhoto.SimpleVerticalLine.X2;
-                dropPhoto.SimpleVerticalLine.Y1 = storedPhoto.SimpleVerticalLine.Y1;
-                dropPhoto.SimpleVerticalLine.Y2 = storedPhoto.SimpleVerticalLine.Y2;
-
-                dropPhoto.VerticalLine.X1 = dropPhoto.SimpleVerticalLine.X1;
-                dropPhoto.VerticalLine.X2 = dropPhoto.SimpleVerticalLine.X2;
-                dropPhoto.VerticalLine.Y1 = dropPhoto.SimpleVerticalLine.Y1;
-                dropPhoto.VerticalLine.Y2 = dropPhoto.SimpleVerticalLine.Y2;
-            }
-            else
-            {
-                canvas.Children.Remove(dropPhoto.VerticalLine);
-                dropPhoto.SimpleVerticalLine = null;
-                dropPhoto.VerticalLine = null;
-            }
+            verticalLine.Line.X1 = simpleVerticalDiameter.X1;
+            verticalLine.Line.X2 = simpleVerticalDiameter.X2;
+            verticalLine.Line.Y1 = simpleVerticalDiameter.Y1;
+            verticalLine.Line.Y2 = simpleVerticalDiameter.Y1;
+            verticalLine.Line.StrokeThickness = 2;
+            verticalLine.Line.Stroke = Brushes.DeepPink;
         }
 
         public void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour,
@@ -228,74 +170,6 @@ namespace DDrop.Logic.GeometryBL
             }
 
             return contour;
-        }
-
-        public void StoreContour(ContourView contour, ContourView storeTo)
-        {
-            if (contour != null)
-            {
-                var storedContour = new ContourView()
-                {
-                    ContourId = contour.ContourId,
-                    CalculationVariants = contour.CalculationVariants,
-                    Parameters = new AutoCalculationParametersView()
-                    {
-                        Ksize = contour.Parameters.Ksize,
-                        Size1 = contour.Parameters.Size1,
-                        Size2 = contour.Parameters.Size2,
-                        Treshold1 = contour.Parameters.Treshold1,
-                        Treshold2 = contour.Parameters.Treshold2
-                    },
-                    SimpleLines = new ObservableCollection<SimpleLineView>()
-                };
-
-                foreach (var line in contour.SimpleLines)
-                    storedContour.SimpleLines.Add(new SimpleLineView()
-                    {
-                        X1 = line.X1,
-                        X2 = line.X2,
-                        Y1 = line.Y1,
-                        Y2 = line.Y2
-                    });
-
-                storeTo = storedContour;
-            }
-            else
-            {
-                storeTo = null;
-            }
-        }
-
-        public void RestoreOriginalContour(DropPhotoView dropPhoto, DropPhotoView storedPhoto,
-            Canvas canvas, Guid? currentMeasurementId)
-        {
-            if (storedPhoto.Contour != null && dropPhoto.Contour != null)
-            {
-                dropPhoto.Contour.ContourId = storedPhoto.Contour.ContourId;
-                dropPhoto.Contour.CalculationVariants = storedPhoto.Contour.CalculationVariants;
-                dropPhoto.Contour.Parameters = storedPhoto.Contour.Parameters;
-                dropPhoto.Contour.SimpleLines = storedPhoto.Contour.SimpleLines;
-            }
-            else if (storedPhoto.Contour != null && dropPhoto.Contour == null)
-            {
-                dropPhoto.Contour = new ContourView()
-                {
-                    SimpleLines = new ObservableCollection<SimpleLineView>(),
-                    ContourId = storedPhoto.Contour.ContourId,
-                    CalculationVariants = storedPhoto.Contour.CalculationVariants,
-                    Parameters = storedPhoto.Contour.Parameters
-                };
-
-                dropPhoto.Contour.SimpleLines = storedPhoto.Contour.SimpleLines;
-            }
-            else
-            {
-                if (dropPhoto.Contour != null && currentMeasurementId != null && dropPhoto.PhotoId == currentMeasurementId)
-                    foreach (var line in dropPhoto.Contour.Lines)
-                        canvas.Children.Remove(line);
-
-                dropPhoto.Contour = null;
-            }
         }
     }
 }

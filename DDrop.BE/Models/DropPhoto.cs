@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DDrop.BE.Models
 {
@@ -10,9 +11,7 @@ namespace DDrop.BE.Models
 
         public int ZDiameterInPixels { get; set; }
 
-        public SimpleLine SimpleHorizontalLine { get; set; }
-
-        public SimpleLine SimpleVerticalLine { get; set; }
+        public List<SimpleLine> SimpleLines { get; set; }
 
         public Guid? ContourId { get; set; }
 

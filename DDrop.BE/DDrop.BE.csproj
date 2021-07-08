@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\CommentableEntityType.cs" />
+    <Compile Include="Enums\LineType.cs" />
     <Compile Include="Enums\PlotBuildingMode.cs" />
     <Compile Include="Enums\PlotType.cs" />
     <Compile Include="Enums\TemperatureDetectingMode.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Models\Thermal\GpsInfo.cs" />
     <Compile Include="Models\Thermal\ThermalData.cs" />
     <Compile Include="Models\Thermal\ThermalParameters.cs" />
+    <Compile Include="Models\TypedLine.cs" />
     <Compile Include="Models\TypedRectangle.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

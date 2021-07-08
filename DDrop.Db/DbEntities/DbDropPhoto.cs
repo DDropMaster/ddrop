@@ -16,8 +16,7 @@ namespace DDrop.Db.DbEntities
         [ForeignKey("ContourId")]
         public virtual DbContour Contour { get; set; }
 
-        public string HorizontalLine { get; set; }
-        public string VerticalLine { get; set; }
+        public string SimpleLines { get; set; }
 
         public Guid? CommentId { get; set; }
         [ForeignKey("CommentId")]

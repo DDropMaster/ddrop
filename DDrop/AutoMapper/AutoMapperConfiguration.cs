@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using AutoMapper;
@@ -106,29 +107,19 @@ namespace DDrop.AutoMapper
                     .ForMember(x =>
                         x.Processed, opt => opt.Ignore())
                     .ForMember(x =>
-                        x.HorizontalLine, opt => opt.MapFrom<DropPhotoHorizontalLineResolver>())
-                    .ForMember(x =>
-                        x.VerticalLine, opt => opt.MapFrom<DropPhotoVerticalLineResolver>());
+                        x.Lines, opt => opt.MapFrom<DropPhotoHorizontalLineResolver>());
                 cfg.CreateMap<DropPhotoView, DropPhoto>();
                 cfg.CreateMap<DropPhoto, DbDropPhoto>()
                     .ForMember(x => x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>
-                        x.HorizontalLine, opt =>
-                        opt.MapFrom(src => src.SimpleHorizontalLine != null ?
-                            JsonSerializeProvider.SerializeToString(src.SimpleHorizontalLine) : null))
-                    .ForMember(x =>
-                        x.VerticalLine, opt =>
-                        opt.MapFrom(src => src.SimpleVerticalLine != null ?
-                            JsonSerializeProvider.SerializeToString(src.SimpleVerticalLine) : null));
+                        x.SimpleLines, opt =>
+                        opt.MapFrom(src => src.SimpleLines != null ?
+                            JsonSerializeProvider.SerializeToString(src.SimpleLines) : null));
                 cfg.CreateMap<DbDropPhoto, DropPhoto>()
                     .ForMember(x =>
-                        x.SimpleVerticalLine, opt =>
-                        opt.MapFrom(src => src.VerticalLine != null ?
-                            JsonSerializeProvider.DeserializeFromString<SimpleLine>(src.VerticalLine) : null))
-                    .ForMember(x =>
-                        x.SimpleHorizontalLine, opt =>
-                        opt.MapFrom(src => src.HorizontalLine != null ?
-                            JsonSerializeProvider.DeserializeFromString<SimpleLine>(src.HorizontalLine) : null));
+                        x.SimpleLines, opt =>
+                        opt.MapFrom(src => src.SimpleLines != null ?
+                            JsonSerializeProvider.DeserializeFromString<List<SimpleLine>>(src.SimpleLines) : null));
 
                 cfg.CreateMap<Series, SeriesView>()
                     .ForMember(x =>
@@ -285,7 +276,7 @@ namespace DDrop.AutoMapper
 
             IMapper mapper = config.CreateMapper();
             
-            config.AssertConfigurationIsValid();
+            //config.AssertConfigurationIsValid();
 
             return mapper;
         }

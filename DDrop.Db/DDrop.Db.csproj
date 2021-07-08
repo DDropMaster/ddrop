@@ -334,6 +334,18 @@
     <Compile Include="Migrations\202107031838548_IsAcousticMovedToSettings.designer.cs">
       <DependentUpon>202107031838548_IsAcousticMovedToSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202107062026229_LinesCollection.cs" />
+    <Compile Include="Migrations\202107062026229_LinesCollection.designer.cs">
+      <DependentUpon>202107062026229_LinesCollection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202107062316444_LinesCollectionRename.cs" />
+    <Compile Include="Migrations\202107062316444_LinesCollectionRename.designer.cs">
+      <DependentUpon>202107062316444_LinesCollectionRename.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202107081954366_DropSeparateLinesColumns.cs" />
+    <Compile Include="Migrations\202107081954366_DropSeparateLinesColumns.designer.cs">
+      <DependentUpon>202107081954366_DropSeparateLinesColumns.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -545,6 +557,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202107031838548_IsAcousticMovedToSettings.resx">
       <DependentUpon>202107031838548_IsAcousticMovedToSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107062026229_LinesCollection.resx">
+      <DependentUpon>202107062026229_LinesCollection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107062316444_LinesCollectionRename.resx">
+      <DependentUpon>202107062316444_LinesCollectionRename.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107081954366_DropSeparateLinesColumns.resx">
+      <DependentUpon>202107081954366_DropSeparateLinesColumns.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

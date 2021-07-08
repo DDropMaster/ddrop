@@ -44,7 +44,7 @@ namespace DDrop.Logic.Plotting
 
         public PlotView CreatePlot(SeriesView series, PlotTypeView plotType, bool dimensionless)
         {
-            var plot = new PlotView()
+            return new PlotView()
             {
                 CurrentUserId = series.CurrentUserId,
                 Name = series.Title,
@@ -53,94 +53,97 @@ namespace DDrop.Logic.Plotting
                 IsDeletable = false,
                 Points = new ObservableCollection<SimplePointView>(),
             };
+        }
 
+        public PlotView AddPoints(PlotView plot, PlotTypeView plotType, SeriesView series, bool dimensionless)
+        {
             switch (plotType)
             {
                 case PlotTypeView.Radius:
-                {
-                    for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                     {
-                        double time = 0.0;
-
-                        if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
+                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
                         {
-                            time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
-                        }
+                            double time = 0.0;
 
-                        var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
-                        if (dropRadiusInMeters != null)
-                        {
-                            plot.Points.Add(new SimplePointView()
+                            if (series.Settings.GeneralSeriesSettings.UseCreationDateTime)
                             {
-                                X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
-                                Y = dropRadiusInMeters.Value
-                            });
-                        }    
-                    }
-
-                    if (dimensionless)
-                    {
-                        if (plot.Points.Count > 0)
-                        {
-                            var initialRadius = plot.Points[0].Y;
-                            var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
-                            for (int j = 0; j < plot.Points.Count; j++)
-                            {
-                                plot.Points[j].X = plot.Points[j].X / wholeEvaporationTime;
-                                plot.Points[j].Y = plot.Points[j].Y / initialRadius;
+                                time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
                             }
-                        }
-                    }
 
-                    return plot;
-                }
-                case PlotTypeView.Temperature:
-                {
-                    double averageAmbientTemperatures = 0;
-
-                    if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
-                    {
-                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
-                        {
-                            averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                        }
-
-                        plot = series.ThermalPlot;
-                        plot.IsEditable = true;
-                    }
-                    else
-                    {
-                        for (var j = 0; j < series.MeasurementsSeries.Count; j++)
-                        {
-                            averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
-                            var time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
-
-                            var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
-                            if (dropTemperature != null)
+                            var dropRadiusInMeters = series.MeasurementsSeries[j].Drop.RadiusInMeters;
+                            if (dropRadiusInMeters != null)
+                            {
                                 plot.Points.Add(new SimplePointView()
                                 {
                                     X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
-                                    Y = dropTemperature.Value
+                                    Y = dropRadiusInMeters.Value
                                 });
-                        }
-                    }
-
-                    if (dimensionless)
-                    {
-                        if (plot.Points.Count > 0)
-                        {
-                            averageAmbientTemperatures = averageAmbientTemperatures / series.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
-                            var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
-                            for (int j = 0; j < plot.Points.Count; j++)
-                            {
-                                plot.Points[j].X = plot.Points[j].X / wholeEvaporationTime;
-                                plot.Points[j].Y = plot.Points[j].Y / averageAmbientTemperatures;
                             }
                         }
-                    }
 
-                    return plot;
-                }
+                        if (dimensionless)
+                        {
+                            if (plot.Points.Count > 0)
+                            {
+                                var initialRadius = plot.Points[0].Y;
+                                var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
+                                for (int j = 0; j < plot.Points.Count; j++)
+                                {
+                                    plot.Points[j].X = plot.Points[j].X / wholeEvaporationTime;
+                                    plot.Points[j].Y = plot.Points[j].Y / initialRadius;
+                                }
+                            }
+                        }
+
+                        return plot;
+                    }
+                case PlotTypeView.Temperature:
+                    {
+                        double averageAmbientTemperatures = 0;
+
+                        if (series.Settings.GeneralSeriesSettings.UseThermalPlot)
+                        {
+                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                            {
+                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
+                            }
+
+                            plot = series.ThermalPlot;
+                            plot.IsEditable = true;
+                        }
+                        else
+                        {
+                            for (var j = 0; j < series.MeasurementsSeries.Count; j++)
+                            {
+                                averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
+                                var time = (series.MeasurementsSeries[j].CreationDateTime - series.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
+
+                                var dropTemperature = series.MeasurementsSeries[j].Drop.Temperature;
+                                if (dropTemperature != null)
+                                    plot.Points.Add(new SimplePointView()
+                                    {
+                                        X = series.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : j * series.IntervalBetweenPhotos,
+                                        Y = dropTemperature.Value
+                                    });
+                            }
+                        }
+
+                        if (dimensionless)
+                        {
+                            if (plot.Points.Count > 0)
+                            {
+                                averageAmbientTemperatures = averageAmbientTemperatures / series.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
+                                var wholeEvaporationTime = plot.Points[plot.Points.Count - 1].X;
+                                for (int j = 0; j < plot.Points.Count; j++)
+                                {
+                                    plot.Points[j].X = plot.Points[j].X / wholeEvaporationTime;
+                                    plot.Points[j].Y = plot.Points[j].Y / averageAmbientTemperatures;
+                                }
+                            }
+                        }
+
+                        return plot;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(plotType), plotType, null);
             }

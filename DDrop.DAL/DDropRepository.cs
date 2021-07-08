@@ -372,7 +372,12 @@ namespace DDrop.DAL
                             x.Comment,
                             x.RegionOfInterest,
                             x.Settings,
-                            x.Substance,
+                            Substance = x.Substance != null ? new
+                            {
+                                CommonName = x.Substance.CommonName,
+                                Id = x.Substance.Id,
+                                SubstanceId = x.Substance.SubstanceId
+                            } : null,
                             MeasurementsSeries = x.MeasurementsSeries.OrderBy(ms => ms.MeasurementOrderInSeries).Select(s => new
                             {
                                 s.Name,
@@ -385,8 +390,7 @@ namespace DDrop.DAL
                                 DropPhotos = s.DropPhotos.OrderBy(dp => dp.PhotoType).Select(p => new
                                 {
                                     p.Name,
-                                    p.VerticalLine,
-                                    p.HorizontalLine,
+                                    p.SimpleLines,
                                     p.PhotoId,
                                     p.AddedDate,
                                     p.PhotoType,
@@ -427,7 +431,6 @@ namespace DDrop.DAL
                             {
                                 z.Name,
                                 z.PixelsInMillimeter,
-                                z.ReferenceLine,
                                 z.PhotoId,
                                 z.AddedDate,
                                 z.CreationDateTime,
@@ -450,7 +453,12 @@ namespace DDrop.DAL
                             CommentId = series.CommentId,
                             RegionOfInterest = series.RegionOfInterest,
                             Settings = series.Settings,
-                            Substance = series.Substance,
+                            Substance = series.Substance != null ? new DbSubstances
+                            { 
+                                CommonName = series.Substance.CommonName,
+                                Id = series.Substance.Id,
+                                SubstanceId = series.Substance.SubstanceId
+                            } : null,
                             Comment = series.Comment,
                             MeasurementsSeries = series.MeasurementsSeries.Select(m => new DbMeasurement
                             {
@@ -485,9 +493,8 @@ namespace DDrop.DAL
                                 } : null,
                                 DropPhotos = m.DropPhotos.Select(p => new DbDropPhoto
                                 {
+                                    SimpleLines = p.SimpleLines,
                                     Name = p.Name,
-                                    VerticalLine = p.VerticalLine,
-                                    HorizontalLine = p.HorizontalLine,
                                     PhotoId = p.PhotoId,
                                     AddedDate = p.AddedDate,
                                     PhotoType = p.PhotoType,
@@ -505,7 +512,6 @@ namespace DDrop.DAL
                             {
                                 Name = z.Name,
                                 PixelsInMillimeter = z.PixelsInMillimeter,
-                                ReferenceLine = z.ReferenceLine,
                                 PhotoId = z.PhotoId,
                                 AddedDate = z.AddedDate,
                                 CreationDateTime = z.CreationDateTime,
@@ -584,6 +590,54 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task<string> GetDropPhotoLines(Guid photoId)
+        {
+            using (var context = new DDropContext())
+            {
+                return (await context.DropPhotos.FirstOrDefaultAsync(x => x.PhotoId == photoId)).SimpleLines;
+            }    
+        }
+
+        public async Task<DbDropPhoto> GetDropPhoto(Guid photoId)
+        {
+            using (var context = new DDropContext())
+            {
+                var dropPhot = await context.DropPhotos
+                    .Select(p => new
+                    {
+                        Name = p.Name,
+                        PhotoId = p.PhotoId,
+                        AddedDate = p.AddedDate,
+                        PhotoType = p.PhotoType,
+                        CreationDateTime = p.CreationDateTime,
+                        XDiameterInPixels = p.XDiameterInPixels,
+                        YDiameterInPixels = p.YDiameterInPixels,
+                        ZDiameterInPixels = p.ZDiameterInPixels,
+                        CommentId = p.CommentId,
+                        ContourId = p.ContourId,
+                        Comment = p.Comment,
+                        MeasurementId = p.MeasurementId
+                    })
+                    .FirstOrDefaultAsync(x => x.PhotoId == photoId);
+
+                return new DbDropPhoto
+                {
+                    Name = dropPhot.Name,
+                    PhotoId = dropPhot.PhotoId,
+                    AddedDate = dropPhot.AddedDate,
+                    PhotoType = dropPhot.PhotoType,
+                    CreationDateTime = dropPhot.CreationDateTime,
+                    XDiameterInPixels = dropPhot.XDiameterInPixels,
+                    YDiameterInPixels = dropPhot.YDiameterInPixels,
+                    ZDiameterInPixels = dropPhot.ZDiameterInPixels,
+                    CommentId = dropPhot.CommentId,
+                    ContourId = dropPhot.ContourId,
+                    Comment = dropPhot.Comment,
+                    MeasurementId = dropPhot.MeasurementId
+                };
+            }
+        }
+
         public async Task<List<DbMeasurement>> GetMeasurements(DbSeries series)
         {
             using (var context = new DDropContext())
@@ -602,8 +656,7 @@ namespace DDrop.DAL
                         DropPhotos = x.DropPhotos.OrderBy(dp => dp.PhotoType).Select(p => new
                         {
                             p.Name,
-                            p.VerticalLine,
-                            p.HorizontalLine,
+                            p.SimpleLines,
                             p.PhotoId,
                             p.AddedDate,
                             p.PhotoType,
@@ -632,8 +685,7 @@ namespace DDrop.DAL
                         DropPhotos = measurement.DropPhotos.Select(p => new DbDropPhoto
                         {
                             Name = p.Name,
-                            VerticalLine = p.VerticalLine,
-                            HorizontalLine = p.HorizontalLine,
+                            SimpleLines = p.SimpleLines,
                             PhotoId = p.PhotoId,
                             AddedDate = p.AddedDate,
                             PhotoType = p.PhotoType,
@@ -699,8 +751,7 @@ namespace DDrop.DAL
                     .Select(p => new
                     {
                         Name = p.Name,
-                        VerticalLine = p.VerticalLine,
-                        HorizontalLine = p.HorizontalLine,
+                        SimpleLines = p.SimpleLines,
                         PhotoId = p.PhotoId,
                         AddedDate = p.AddedDate,
                         PhotoType = p.PhotoType,
@@ -720,8 +771,7 @@ namespace DDrop.DAL
                     resultingDropPhotos.Add(new DbDropPhoto
                     {
                         Name = dbDropPhoto.Name,
-                        VerticalLine = dbDropPhoto.VerticalLine,
-                        HorizontalLine = dbDropPhoto.HorizontalLine,
+                        SimpleLines = dbDropPhoto.SimpleLines,
                         PhotoId = dbDropPhoto.PhotoId,
                         AddedDate = dbDropPhoto.AddedDate,
                         PhotoType = dbDropPhoto.PhotoType,
@@ -817,8 +867,7 @@ namespace DDrop.DAL
                     {
                         x.Name,
                         x.Contour,
-                        x.VerticalLine,
-                        x.HorizontalLine,
+                        x.SimpleLines,
                         x.PhotoId,
                         x.AddedDate,
                         x.PhotoType,
@@ -837,8 +886,7 @@ namespace DDrop.DAL
 
                 var dbDropPhoto = new DbDropPhoto
                 {
-                    VerticalLine = dropPhoto.VerticalLine,
-                    HorizontalLine = dropPhoto.HorizontalLine,
+                    SimpleLines = dropPhoto.SimpleLines,
                     Name = dropPhoto.Name,
                     XDiameterInPixels = dropPhoto.XDiameterInPixels,
                     AddedDate = dropPhoto.AddedDate,
@@ -964,8 +1012,7 @@ namespace DDrop.DAL
                             DropPhotos = x.DropPhotos.OrderBy(dp => dp.PhotoType).Select(p => new
                             {
                                 p.Name,
-                                p.VerticalLine,
-                                p.HorizontalLine,
+                                p.SimpleLines,
                                 p.PhotoId,
                                 p.AddedDate,
                                 p.PhotoType,
@@ -992,8 +1039,7 @@ namespace DDrop.DAL
                             DropPhotos = measurement.DropPhotos.Select(p => new DbDropPhoto
                             {
                                 Name = p.Name,
-                                VerticalLine = p.VerticalLine,
-                                HorizontalLine = p.HorizontalLine,
+                                SimpleLines = p.SimpleLines,
                                 PhotoId = p.PhotoId,
                                 AddedDate = p.AddedDate,
                                 PhotoType = p.PhotoType,

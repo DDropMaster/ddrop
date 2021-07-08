@@ -58,20 +58,20 @@ namespace DDrop.Utility.ExcelOperations
                 mainWorksheet.Cells["D2"].Value = report.UserLastName;
                 mainWorksheet.Cells["D3"].Value = report.UserEmail;
                 mainWorksheet.Cells["D4"].Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-                mainWorksheet.Cells["D5"].Value = report.Demensionless ? "Да" : "Нет";
+                mainWorksheet.Cells["D5"].Value = report.Dimensionless ? "Да" : "Нет";
 
                 var seriesCombinedRadiusChart = mainWorksheet.Drawings.AddChart("seriesCombinedRadiusChart", eChartType.XYScatterLines) as ExcelScatterChart;
                 var seriesCombinedTemperatureChart = mainWorksheet.Drawings.AddChart("seriesCombinedTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
                 seriesCombinedRadiusChart.Title.Text = "Зависимость радиуса капли от времени испарения";
                 seriesCombinedRadiusChart.Legend.Position = eLegendPosition.Right;
-                seriesCombinedRadiusChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                seriesCombinedRadiusChart.YAxis.Title.Text = report.Demensionless ? "Радиус" : "Радиус, м";
+                seriesCombinedRadiusChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                seriesCombinedRadiusChart.YAxis.Title.Text = report.Dimensionless ? "Радиус" : "Радиус, м";
 
                 seriesCombinedTemperatureChart.Title.Text = "Зависимость температуры капли от времени испарения";
                 seriesCombinedTemperatureChart.Legend.Position = eLegendPosition.Right;
-                seriesCombinedTemperatureChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                seriesCombinedTemperatureChart.YAxis.Title.Text = report.Demensionless ? "Температура" : "Температура, градусы Цельсия";
+                seriesCombinedTemperatureChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                seriesCombinedTemperatureChart.YAxis.Title.Text = report.Dimensionless ? "Температура" : "Температура, градусы Цельсия";
 
                 var indexerRadius = 0;
                 var indexerTemperature = 0;
@@ -95,8 +95,8 @@ namespace DDrop.Utility.ExcelOperations
                     {
                         plotToExcelOutput.Add(new PlotToExcel
                         {
-                            X = report.Demensionless ? point.X / plot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
-                            Y = report.Demensionless ? point.Y / plot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                            X = report.Dimensionless ? point.X / plot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
+                            Y = report.Dimensionless ? point.Y / plot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
                         });
                     }
 
@@ -134,8 +134,8 @@ namespace DDrop.Utility.ExcelOperations
                                 indexerTemperature++;
                             }
 
-                            manualPlotChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                            manualPlotChart.YAxis.Title.Text = GetPlotYAxisTitle(plot.PlotType, report.Demensionless);
+                            manualPlotChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                            manualPlotChart.YAxis.Title.Text = GetPlotYAxisTitle(plot.PlotType, report.Dimensionless);
 
                             manualPlotChart.Series[0].Header = plotWorkSheet.Cells["D1"].Value.ToString();
 
@@ -222,7 +222,7 @@ namespace DDrop.Utility.ExcelOperations
                         }
                     }
 
-                    if (report.Demensionless)
+                    if (report.Dimensionless)
                     {
                         if (singleSeriesToExcelOutput.Count > 0)
                         {
@@ -261,8 +261,8 @@ namespace DDrop.Utility.ExcelOperations
                         {
                             singleSeriesPlotToExcelOutput.Add(new PlotToExcel
                             {
-                                X = report.Demensionless ? point.X / currentSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
-                                Y = report.Demensionless ? point.Y / currentSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                                X = report.Dimensionless ? point.X / currentSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
+                                Y = report.Dimensionless ? point.Y / currentSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
                             });
                         }
 
@@ -282,8 +282,8 @@ namespace DDrop.Utility.ExcelOperations
                         seriesRadiusChart.Series.Add(worksheet.Cells[$"F10:F{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
                         seriesCombinedRadiusChart.Series.Add(worksheet.Cells[$"F10:F{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
 
-                        seriesRadiusChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                        seriesRadiusChart.YAxis.Title.Text = report.Demensionless ? "Радиус" : "Радиус, м";
+                        seriesRadiusChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                        seriesRadiusChart.YAxis.Title.Text = report.Dimensionless ? "Радиус" : "Радиус, м";
 
                         if (!currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && singleSeriesToExcelOutput.Any(x => x.Temperature != 0 && !double.IsNaN(x.Temperature)))
                         {
@@ -295,8 +295,8 @@ namespace DDrop.Utility.ExcelOperations
                             seriesTemperatureChart.Series.Add(worksheet.Cells[$"H10:H{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
                             seriesCombinedTemperatureChart.Series.Add(worksheet.Cells[$"H10:H{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
 
-                            seriesTemperatureChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                            seriesTemperatureChart.YAxis.Title.Text = report.Demensionless ? "Температура" : "Температура, градусы Цельсия";
+                            seriesTemperatureChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                            seriesTemperatureChart.YAxis.Title.Text = report.Dimensionless ? "Температура" : "Температура, градусы Цельсия";
 
                             seriesTemperatureChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
                             seriesCombinedTemperatureChart.Series[indexerTemperature].Header = worksheet.Cells["E1"].Value.ToString();
@@ -327,8 +327,8 @@ namespace DDrop.Utility.ExcelOperations
                         seriesTemperatureChart.Series.Add(worksheet.Cells[$"K10:K{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"], worksheet.Cells[$"J10:J{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"]);
                         seriesCombinedTemperatureChart.Series.Add(worksheet.Cells[$"K10:K{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"], worksheet.Cells[$"J10:J{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"]);
 
-                        seriesTemperatureChart.XAxis.Title.Text = report.Demensionless ? "Время" : "Время, с";
-                        seriesTemperatureChart.YAxis.Title.Text = report.Demensionless ? "Температура" : "Температура, градусы Цельсия";
+                        seriesTemperatureChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
+                        seriesTemperatureChart.YAxis.Title.Text = report.Dimensionless ? "Температура" : "Температура, градусы Цельсия";
 
                         seriesTemperatureChart.Series[0].Header = worksheet.Cells["E1"].Value.ToString();
                         seriesCombinedTemperatureChart.Series[indexerTemperature].Header = worksheet.Cells["E1"].Value.ToString();
