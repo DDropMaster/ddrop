@@ -52,6 +52,11 @@ namespace DDrop.Utility.SeriesExporter
             return measurement;
         }
 
+        public static async Task ExportDropPhotoAsync(string fileName, DbDropPhoto dbDropPhoto)
+        {
+            await Task.Run(() => JsonSerializeProvider.SerializeToFileAsync(dbDropPhoto, fileName));
+        }
+
         public static async Task ExportMeasurementAsync(string fileName, DbMeasurement dbMeasurement)
         {
             await Task.Run(() => JsonSerializeProvider.SerializeToFileAsync(dbMeasurement, fileName));

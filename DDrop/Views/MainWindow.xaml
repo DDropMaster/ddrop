@@ -95,17 +95,27 @@
                                     </Style>
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Width="25" IsReadOnly="False"
-                                                            Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                    <DataGridTemplateColumn Width="25" IsReadOnly="False"
                                                             CanUserResize="False">
-                                        <DataGridCheckBoxColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.HeaderTemplate>
                                             <DataTemplate>
-                                                <CheckBox
-                                                    IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedSeries}"
-                                                    x:Name="ChooseAllSeries" Height="15" />
+                                                <CheckBox 
+                                                    Height="15" 
+                                                    x:Name="ChooseAllSeries" 
+                                                    IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedSeries, UpdateSourceTrigger=PropertyChanged}" 
+                                                />
                                             </DataTemplate>
-                                        </DataGridCheckBoxColumn.HeaderTemplate>
-                                    </DataGridCheckBoxColumn>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox 
+                                                    Height="15" 
+                                                    HorizontalAlignment="Center" 
+                                                    IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                                />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridTextColumn IsReadOnly="False" Header="Серия" Binding="{Binding Title}" />
                                     <DataGridTextColumn IsReadOnly="True" Header="Интервал между снимками"
                                                         Binding="{Binding IntervalBetweenPhotos}" />
@@ -129,18 +139,6 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Width="35" IsReadOnly="True" CanUserResize="False">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button Name="DeleteSingleInputPhotoButton" HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top" Width="27" Background="{x:Null}"
-                                                        BorderBrush="{x:Null}" Height="25"
-                                                        Click="DeleteSingleSeriesButton_Click">
-                                                    <ContentControl Content="{StaticResource DeleteIcon}" Height="20" />
-                                                </Button>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
                                     <DataGridCheckBoxColumn Width="85" IsReadOnly="False"
                                                             Binding="{Binding Settings.GeneralSeriesSettings.IsAcoustic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                             CanUserResize="False" Header="Акустическая">
@@ -153,25 +151,44 @@
                                     <DataGridTemplateColumn Width="45" Header="Статус" IsReadOnly="True"
                                                             CanUserResize="False">
                                         <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
+                                            <DataTemplate DataType="models:Series">
                                                 <Grid>
                                                     <TextBlock x:Name="PhotosStatusToolTip"
-                                                               ToolTip="Чтобы построить график, необходимо указать интервал между снимками, рассчитать радиус и(или) температуру для каждой фотографии серии."
+                                                               ToolTip="Серия не загружена."
                                                                Height="25" Width="25" />
                                                     <ContentControl x:Name="PhotosStatus"
-                                                                    ToolTip="Измерения должны быть обработаны, чтобы построить график."
-                                                                    Content="{StaticResource Warning}" Height="25"
+                                                                    ToolTip="Серия не загружена."
+                                                                    Content="{StaticResource Help}" Height="25"
                                                                     Width="25" HorizontalAlignment="Center" />
                                                 </Grid>
                                                 <DataTemplate.Triggers>
-                                                    <DataTrigger Binding="{Binding CanDrawPlot}" Value="true">
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding Path=CanDrawPlot}" Value="false" />
+                                                            <Condition Binding="{Binding Path=Loaded}" Value="true" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Content"
+                                                            Value="{StaticResource Warning}"
+                                                            TargetName="PhotosStatus" />
+                                                        <Setter Property="ToolTip"
+                                                            Value="Измерения должны быть обработаны, чтобы построить график."
+                                                            TargetName="PhotosStatusToolTip" />
+                                                        <Setter Property="ToolTip"
+                                                            Value="Измерения должны быть обработаны, чтобы построить график."
+                                                            TargetName="PhotosStatus" />
+                                                    </MultiDataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding Path=CanDrawPlot}" Value="true" />
+                                                            <Condition Binding="{Binding Path=Loaded}" Value="true" />
+                                                        </MultiDataTrigger.Conditions>
                                                         <Setter Property="Content" Value="{StaticResource Ok}"
                                                                 TargetName="PhotosStatus" />
                                                         <Setter Property="ToolTip" Value="График может быть построен."
                                                                 TargetName="PhotosStatusToolTip" />
                                                         <Setter Property="ToolTip" Value="График может быть построен."
                                                                 TargetName="PhotosStatus" />
-                                                    </DataTrigger>
+                                                    </MultiDataTrigger>
                                                 </DataTemplate.Triggers>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -316,7 +333,7 @@
                                                     VerticalAlignment="Top" Width="27" Background="{x:Null}"
                                                     BorderBrush="{x:Null}" Height="26"
                                                     Click="DeleteInputPhotos_OnClick"
-                                                    ToolTip="Удалить фотографии для серии.">
+                                                    ToolTip="Удалить измерения для серии.">
                                                 <ContentControl Content="{StaticResource DeleteIcon}" Height="21"
                                                                 Width="23" />
                                             </Button>
@@ -560,18 +577,27 @@
                                                     </Style>
                                                 </DataGrid.RowStyle>
                                                 <DataGrid.Columns>
-                                                    <DataGridCheckBoxColumn Width="25" x:Name="PhotosCheckedColumn"
-                                                                        IsReadOnly="False"
-                                                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                                                        CanUserResize="False">
-                                                        <DataGridCheckBoxColumn.HeaderTemplate>
+                                                    <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="PhotosCheckedColumn"
+                                                            CanUserResize="False">
+                                                        <DataGridTemplateColumn.HeaderTemplate>
                                                             <DataTemplate>
-                                                                <CheckBox
-                                                                    IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedPhotos}"
-                                                                    x:Name="ChooseAllSeries" Height="15" />
+                                                                <CheckBox 
+                                                                    Height="15" 
+                                                                    x:Name="ChooseAllSeries" 
+                                                                    IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedPhotos, UpdateSourceTrigger=PropertyChanged}" 
+                                                                />
                                                             </DataTemplate>
-                                                        </DataGridCheckBoxColumn.HeaderTemplate>
-                                                    </DataGridCheckBoxColumn>
+                                                        </DataGridTemplateColumn.HeaderTemplate>
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox 
+                                                                    Height="15" 
+                                                                    HorizontalAlignment="Center" 
+                                                                    IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                                                />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
                                                     <DataGridTextColumn IsReadOnly="False" Header="Измерение"
                                                                     Binding="{Binding Name}" />
                                                     <DataGridTextColumn 
@@ -599,21 +625,6 @@
                                                                     Binding="{Binding AddedDate}" />
                                                     <DataGridTextColumn IsReadOnly="True" Header="Время создания"
                                                                     Binding="{Binding CreationDateTime}" />
-                                                    <DataGridTemplateColumn Width="30" x:Name="DeleteMeasurementColumn"
-                                                                        IsReadOnly="True" CanUserResize="False">
-                                                        <DataGridTemplateColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <Button Name="DeleteSingleInputPhotoButton"
-                                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                                    Width="27" Background="{x:Null}"
-                                                                    BorderBrush="{x:Null}" Height="25"
-                                                                    Click="DeleteSingleMeasurement">
-                                                                    <ContentControl Content="{StaticResource DeleteIcon}"
-                                                                                Height="20" />
-                                                                </Button>
-                                                            </DataTemplate>
-                                                        </DataGridTemplateColumn.CellTemplate>
-                                                    </DataGridTemplateColumn>
                                                     <DataGridTemplateColumn Width="45" Header="Статус" IsReadOnly="True"
                                                                         CanUserResize="False">
                                                         <DataGridTemplateColumn.CellTemplate>
@@ -935,8 +946,7 @@
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
-                                                    <DataGridTemplateColumn Width="45" Header="Статус" IsReadOnly="True"
-                                                                    CanUserResize="False">
+                                                    <DataGridTemplateColumn Width="45" Header="Статус" IsReadOnly="True" CanUserResize="False">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate DataType="models:ThermalPhoto">
                                                                 <Grid>
@@ -1625,26 +1635,27 @@
                                                 </Style>
                                             </DataGrid.RowStyle>
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn 
-                                                    Width="25" 
-                                                    x:Name="PlotsCheckedColumn"
-                                                    IsReadOnly="False"
-                                                    Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                                    CanUserResize="False">
-                                                    <DataGridCheckBoxColumn.HeaderTemplate>
+                                                <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="PlotsCheckedColumn"
+                                                            CanUserResize="False">
+                                                    <DataGridTemplateColumn.HeaderTemplate>
                                                         <DataTemplate>
-                                                            <CheckBox
-                                                                IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedPlots}"
-                                                                x:Name="ChooseAllSeries" Height="15" />
+                                                            <CheckBox 
+                                                                Height="15" 
+                                                                x:Name="ChooseAllSeries" 
+                                                                IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedPlots, UpdateSourceTrigger=PropertyChanged}" 
+                                                            />
                                                         </DataTemplate>
-                                                    </DataGridCheckBoxColumn.HeaderTemplate>
-                                                    <DataGridCheckBoxColumn.CellStyle>
-                                                        <Style>
-                                                            <EventSetter Event="CheckBox.Checked" Handler="OnPlotsChecked"/>
-                                                            <EventSetter Event="CheckBox.Unchecked" Handler="OnPlotsUnchecked"/>
-                                                        </Style>
-                                                    </DataGridCheckBoxColumn.CellStyle>
-                                                </DataGridCheckBoxColumn>
+                                                    </DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox 
+                                                                Height="15" 
+                                                                HorizontalAlignment="Center" 
+                                                                IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                                            />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
                                                 <DataGridTextColumn 
                                                         Header="График" 
                                                         Binding="{Binding Name}">
@@ -1737,27 +1748,27 @@
                                                 </Style>
                                             </DataGrid.RowStyle>
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn 
-                                                    Width="25" 
-                                                    x:Name="TemperaturePlotsCheckedColumn"
-                                                    IsReadOnly="False"
-                                                    Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                                    CanUserResize="False">
-                                                    <DataGridCheckBoxColumn.HeaderTemplate>
+                                                <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="TemperaturePlotsCheckedColumn"
+                                                            CanUserResize="False">
+                                                    <DataGridTemplateColumn.HeaderTemplate>
                                                         <DataTemplate>
-                                                            <CheckBox
-                                                                IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedTemperaturePlots}"
-                                                                x:Name="ChooseAllSeries" Height="15" 
+                                                            <CheckBox 
+                                                                Height="15" 
+                                                                x:Name="ChooseAllSeries" 
+                                                                IsChecked="{Binding ElementName=AppMainWindow, Path=AllSelectedTemperaturePlots, UpdateSourceTrigger=PropertyChanged}" 
                                                             />
                                                         </DataTemplate>
-                                                    </DataGridCheckBoxColumn.HeaderTemplate>
-                                                    <DataGridCheckBoxColumn.CellStyle>
-                                                        <Style>
-                                                            <EventSetter Event="CheckBox.Checked" Handler="OnTemperaturePlotsChecked"/>
-                                                            <EventSetter Event="CheckBox.Unchecked" Handler="OnTemperaturePlotsUnchecked"/>
-                                                        </Style>
-                                                    </DataGridCheckBoxColumn.CellStyle>
-                                                </DataGridCheckBoxColumn>
+                                                    </DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox 
+                                                                Height="15" 
+                                                                HorizontalAlignment="Center" 
+                                                                IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                                            />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
                                                 <DataGridTextColumn 
                                                     Header="График" 
                                                     Binding="{Binding Name}"

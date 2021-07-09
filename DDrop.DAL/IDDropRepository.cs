@@ -15,6 +15,8 @@ namespace DDrop.DAL
         Task UpdateUserAsync(DbUser user);
         Task UpdatePlotName(string text, Guid plotId);
         Task<DbUser> GetUserByLogin(string email);
+        Task<DbSeries> GetSingleSerie(Guid seriesId);
+        Task<List<DbSeries>> GetSeriesByUserIdLight(Guid dbUserId);
         Task<List<DbSeries>> GetSeriesByUserId(Guid dbUserId);
         Task<DbSeries> GetDbSeriesForExportById(Guid seriesId);
         Task CreateSeries(DbSeries series);

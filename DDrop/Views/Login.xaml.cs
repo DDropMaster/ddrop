@@ -208,7 +208,7 @@ namespace DDrop.Views
 
                     try
                     {
-                        var dbSeries = await Task.Run(() => _seriesBl.GetSeriesByUserId(user.UserId));
+                        var dbSeries = await Task.Run(() => _seriesBl.GetSeriesByUserIdLight(user.UserId));
                         
                         UserLogin.UserSeries = _mapper.Map<List<Series>, ObservableCollection<SeriesView>>(dbSeries);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using AutoMapper;
 using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
@@ -76,6 +77,8 @@ namespace DDrop.AutoMapper
                     .ForMember(x =>
                         x.IsChecked, opt => opt.Ignore());
                 cfg.CreateMap<Measurement, DbMeasurement>()
+                    .ForMember(x => 
+                        x.DropPhotos, opt => opt.MapFrom(src => src.DropPhotos.Where(p => p.PhotoId != Guid.Empty)))
                     .ForMember(x =>
                         x.CurrentSeries, opt => opt.Ignore());
                 cfg.CreateMap<DbMeasurement, Measurement>();

@@ -814,8 +814,25 @@ namespace DDrop.Views
             }
         }
 
-        private void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SeriesDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (e.RemovedItems.Count > 0)
+            {
+                var old = e.RemovedItems[0] as SeriesView;
+                old.Loaded = false;
+
+                old.MeasurementsSeries.Clear();
+                old.ReferencePhotoForSeries.Clear();
+
+                foreach (var oldReferencePhotoForSeries in old.ReferencePhotoForSeries)
+                {
+                    if (oldReferencePhotoForSeries?.Content != null)
+                    {
+                        oldReferencePhotoForSeries.Content = null;
+                    }
+                }
+            }
+
             if (sender != e.OriginalSource) return;
 
             if (User.UserSeries.Count > 0 && SeriesDataGrid.SelectedItem != null)
@@ -863,21 +880,15 @@ namespace DDrop.Views
                 ProgressBar.IsIndeterminate = true;
                 SeriesManagerIsLoading(false);
 
-                if (e.RemovedItems.Count > 0)
-                {
-                    var old = e.RemovedItems[0] as SeriesView;
+                var seriesId = User.UserSeries[SeriesDataGrid.SelectedIndex].SeriesId;
 
-                    foreach (var oldReferencePhotoForSeries in old.ReferencePhotoForSeries)
-                    {
-                        if (oldReferencePhotoForSeries?.Content != null)
-                        {
-                            oldReferencePhotoForSeries.Content = null;
-                        }
-                    }
-                }
+                var fullSeries = _mapper.Map<Series, SeriesView>(await Task.Run(() => _seriesBL.GetSingleSerie(seriesId)));
 
                 CurrentSeries = User.UserSeries[SeriesDataGrid.SelectedIndex];
 
+                CurrentSeries.MeasurementsSeries = fullSeries.MeasurementsSeries;
+                CurrentSeries.ReferencePhotoForSeries = fullSeries.ReferencePhotoForSeries;
+                
                 if (CurrentSeries.ReferencePhotoForSeries == null)
                 {
                     CurrentSeries.ReferencePhotoForSeries = new ObservableCollection<ReferencePhotoView>();
@@ -896,6 +907,7 @@ namespace DDrop.Views
                 SeriesManagerLoadingComplete(false);
                 
                 SingleSeries.IsEnabled = true;
+                CurrentSeries.Loaded = true;
                 ProgressBar.IsIndeterminate = false;
             }
             else
@@ -1028,9 +1040,6 @@ namespace DDrop.Views
                                 ClearSeriesView();
                             }
 
-                            await _seriesLogic.DeleteSeries(User.UserSeries[i], CurrentSeries,
-                                MainWindowPixelDrawer.CanDrawing);
-
                             _notifier.ShowSuccess($"Серия {User.UserSeries[i].Title} была удалена.");
 
                             _logger.LogInfo(new LogEntry
@@ -1039,6 +1048,8 @@ namespace DDrop.Views
                                 LogCategory = LogCategory.Series,
                                 Message = $"Серия {User.UserSeries[i].Title} была удалена."
                             });
+
+                            await _seriesLogic.DeleteSeries(User.UserSeries[i], MainWindowPixelDrawer.CanDrawing, User.UserSeries);
 
                             foreach (var line in _lineSeriesPreview)
                             {
@@ -1055,9 +1066,12 @@ namespace DDrop.Views
                                 }
                             }
 
-                            foreach (var line in CurrentDropPhoto?.Lines)
+                            if (CurrentDropPhoto != null)
                             {
-                                ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                                foreach (var line in CurrentDropPhoto.Lines)
+                                {
+                                    ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                                }
                             }
 
                             if (CurrentSeries?.RegionOfInterest != null)
@@ -1067,8 +1081,6 @@ namespace DDrop.Views
                                     ImgCurrent.CanDrawing.Children.Remove(typedRectangle.RegionOfInterest);
                                 }
                             }
-
-                            User.UserSeries.Remove(User.UserSeries[i]);
                         }
                         catch (TimeoutException)
                         {
@@ -1105,85 +1117,6 @@ namespace DDrop.Views
             else
             {
                 _notifier.ShowInformation("Нет серий для удаления.");
-            }
-        }
-
-        private async void DeleteSingleSeriesButton_Click(object sender, RoutedEventArgs e)
-        {
-            var messageBoxResult =
-                MessageBox.Show($"Удалить серию {User.UserSeries[SeriesDataGrid.SelectedIndex].Title}?",
-                    "Подтверждение удаления", MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    SeriesWindowLoading();
-                    SeriesManagerIsLoading();
-
-                    foreach (var line in _lineSeriesPreview)
-                    {
-                        PreviewCanvas.Children.Remove(line.Line);
-                    }
-
-                    PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
-
-                    if (_contourSeriesPreview != null)
-                    {
-                        foreach (var line in _contourSeriesPreview)
-                        {
-                            PreviewCanvas.Children.Remove(line);
-                        }
-                    }
-
-                    foreach (var line in CurrentDropPhoto?.Lines)
-                    {
-                        ImgCurrent.CanDrawing.Children.Remove(line.Line);
-                    }
-
-                    if (CurrentSeries?.RegionOfInterest != null)
-                    {
-                        foreach (var typedRectangle in CurrentSeries.RegionOfInterest)
-                        {
-                            ImgCurrent.CanDrawing.Children.Remove(typedRectangle.RegionOfInterest);
-                        }
-                    }
-
-                    await _seriesLogic.DeleteSeries(User.UserSeries[SeriesDataGrid.SelectedIndex], CurrentSeries,
-                        MainWindowPixelDrawer.CanDrawing);
-
-                    _logger.LogInfo(new LogEntry
-                    {
-                        Username = User.Email,
-                        LogCategory = LogCategory.Series,
-                        Message = $"Серия {User.UserSeries[SeriesDataGrid.SelectedIndex].Title} была удалена."
-                    });
-                    _notifier.ShowSuccess($"Серия {User.UserSeries[SeriesDataGrid.SelectedIndex].Title} была удалена.");
-
-                    User.UserSeries.RemoveAt(SeriesDataGrid.SelectedIndex);
-                    ClearSeriesView();
-                }
-                catch (TimeoutException)
-                {
-                    _notifier.ShowError(
-                        $"Не удалось удалить серию {User.UserSeries[SeriesDataGrid.SelectedIndex].Title}. Не удалось установить подключение. Проверьте интернет соединение.");
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(new LogEntry
-                    {
-                        Exception = exception.ToString(),
-                        LogCategory = LogCategory.Common,
-                        InnerException = exception.InnerException?.Message,
-                        Message = exception.Message,
-                        StackTrace = exception.StackTrace,
-                        Username = User.Email,
-                        Details = exception.TargetSite.Name
-                    });
-                    throw;
-                }
-
-                SeriesManagerLoadingComplete();
-                SeriesWindowLoading();
             }
         }
 
@@ -1788,23 +1721,26 @@ namespace DDrop.Views
                 var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
                     oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
-                foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
+                if (singleOldMeasurement != null)
                 {
-                    dropPhoto.Content = null;
-                    dropPhoto.Contour = null;
-
-                    if (dropPhoto.Lines != null)
+                    foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
                     {
-                        foreach (var line in dropPhoto?.Lines)
+                        dropPhoto.Content = null;
+                        dropPhoto.Contour = null;
+
+                        if (dropPhoto.Lines != null)
                         {
-                            ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                            foreach (var line in dropPhoto?.Lines)
+                            {
+                                ImgCurrent.CanDrawing.Children.Remove(line.Line);
+                            }
                         }
-                    }
 
-                    if (dropPhoto?.Contour != null)
-                    {
-                        foreach (var line in dropPhoto.Contour.Lines)
-                            ImgCurrent.CanDrawing.Children.Remove(line);
+                        if (dropPhoto?.Contour != null)
+                        {
+                            foreach (var line in dropPhoto.Contour.Lines)
+                                ImgCurrent.CanDrawing.Children.Remove(line);
+                        }
                     }
                 }
 
@@ -2736,7 +2672,6 @@ namespace DDrop.Views
         {
             SeriesEditMenu.Visibility = Visibility.Visible;
             EditRegularPhotoColumn.Visibility = Visibility.Visible;
-            DeleteMeasurementColumn.Visibility = Visibility.Visible;
             PhotosCheckedColumn.Visibility = Visibility.Visible;
             PhotosPreviewGridSplitter.IsEnabled = true;
             VisualHelper.SetEnableRowsMove(Photos, false);
@@ -3373,7 +3308,6 @@ namespace DDrop.Views
                 _photoEditModeOn = true;
                 SeriesEditMenu.Visibility = Visibility.Hidden;
                 EditRegularPhotoColumn.Visibility = Visibility.Hidden;
-                DeleteMeasurementColumn.Visibility = Visibility.Hidden;
                 DeleteRegularPhotoColumn.Visibility = Visibility.Hidden;
                 EditThermalPhotoColumn.Visibility = Visibility.Hidden;
                 DeleteThermalPhotoColumn.Visibility = Visibility.Hidden;
@@ -3866,7 +3800,6 @@ namespace DDrop.Views
         {
             SeriesEditMenu.Visibility = Visibility.Visible;
             EditRegularPhotoColumn.Visibility = Visibility.Visible;
-            DeleteMeasurementColumn.Visibility = Visibility.Visible;
             DeleteRegularPhotoColumn.Visibility = Visibility.Visible;
             EditThermalPhotoColumn.Visibility = Visibility.Visible;
             DeleteThermalPhotoColumn.Visibility = Visibility.Visible;
@@ -4696,56 +4629,6 @@ namespace DDrop.Views
                 SingleSeriesLoadingComplete();
                 _appStateBL.HideAdorner(CurrentSeriesPhotoContentLoading);
                 _notifier.ShowSuccess("Новые снимок успешно добавлен.");
-            }
-        }
-
-        private async void DeleteSingleMeasurement(object sender, RoutedEventArgs e)
-        {
-            var messageBoxResult =
-            MessageBox.Show($"Удалить измерение {CurrentMeasurement.Name}?", "Подтверждение удаления", MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                ProgressBar.IsIndeterminate = true;
-                SingleSeriesLoading();
-                _appStateBL.ShowAdorner(CurrentSeriesPhotoContentLoading);
-                try
-                {
-                    await DeleteMeasurement(CurrentSeries.MeasurementsSeries[Photos.SelectedIndex], CurrentMeasurement, ImgCurrent.CanDrawing);
-
-                    _logger.LogInfo(new LogEntry
-                    {
-                        Username = User.Email,
-                        LogCategory = LogCategory.Measurement,
-                        Message = $"Измерение {CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].Name} удалено."
-                    });
-
-                    _notifier.ShowSuccess(
-                        $"Измерение {CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].Name} удалено.");
-                    CurrentSeries.MeasurementsSeries.RemoveAt(Photos.SelectedIndex);
-                }
-                catch (TimeoutException)
-                {
-                    _notifier.ShowError(
-                        $"Не удалось удалить измерение {CurrentSeries.MeasurementsSeries[Photos.SelectedIndex].Name}. Не удалось установить подключение. Проверьте интернет соединение.");
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(new LogEntry
-                    {
-                        Exception = exception.ToString(),
-                        LogCategory = LogCategory.Common,
-                        InnerException = exception.InnerException?.Message,
-                        Message = exception.Message,
-                        StackTrace = exception.StackTrace,
-                        Username = User.Email,
-                        Details = exception.TargetSite.Name
-                    });
-                    throw;
-                }
-
-                ProgressBar.IsIndeterminate = false;
-                _appStateBL.HideAdorner(CurrentSeriesPhotoContentLoading);
-                SingleSeriesLoadingComplete();
             }
         }
 

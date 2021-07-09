@@ -73,17 +73,27 @@
                               SelectionMode="Single" Margin="0,41,0,0" BorderThickness="0" ClipToBounds="True"
                               ItemsSource="{Binding LocalStoredUsers.Users}" Name="StoredUsers">
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn IsReadOnly="False"
-                                                    Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                                    CanUserResize="False">
-                                <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataGridTemplateColumn Width="25" IsReadOnly="False"
+                                                            CanUserResize="False">
+                                <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
-                                        <CheckBox
-                                            IsChecked="{Binding ElementName=AppOptionsWindow, Path=AllSelectedStoredUsers}"
-                                            x:Name="ChooseAllSeries" Height="15" />
+                                        <CheckBox 
+                                            Height="15" 
+                                            x:Name="ChooseAllSeries" 
+                                            IsChecked="{Binding ElementName=AppOptionsWindow, Path=AllSelectedStoredUsers, UpdateSourceTrigger=PropertyChanged}" 
+                                        />
                                     </DataTemplate>
-                                </DataGridCheckBoxColumn.HeaderTemplate>
-                            </DataGridCheckBoxColumn>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox 
+                                            Height="15" 
+                                            HorizontalAlignment="Center" 
+                                            IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                        />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn IsReadOnly="True" Header="Учетная запись" Binding="{Binding Login}" />
                             <DataGridTemplateColumn IsReadOnly="True" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -143,17 +153,27 @@
                                   ItemsSource="{Binding UserAutoCalculationTemplates, ElementName=OptionsWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                                   Name="AutoCalculaionTemplates">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn IsReadOnly="False"
-                                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                                        CanUserResize="False">
-                                    <DataGridCheckBoxColumn.HeaderTemplate>
+                                <DataGridTemplateColumn Width="25" IsReadOnly="False"
+                                                            CanUserResize="False">
+                                    <DataGridTemplateColumn.HeaderTemplate>
                                         <DataTemplate>
-                                            <CheckBox
-                                                IsChecked="{Binding ElementName=AppOptionsWindow, Path=AllSelectedCalculationTemplates, Mode=TwoWay}"
-                                                x:Name="ChooseAllSeries" Height="15" />
+                                            <CheckBox 
+                                            Height="15" 
+                                            x:Name="ChooseAllSeries" 
+                                            IsChecked="{Binding ElementName=AppOptionsWindow, Path=AllSelectedCalculationTemplates, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        />
                                         </DataTemplate>
-                                    </DataGridCheckBoxColumn.HeaderTemplate>
-                                </DataGridCheckBoxColumn>
+                                    </DataGridTemplateColumn.HeaderTemplate>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox 
+                                            Height="15" 
+                                            HorizontalAlignment="Center" 
+                                            IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                        />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn IsReadOnly="False" Header="Название"
                                                     Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <DataGridTemplateColumn Header="Размытие">

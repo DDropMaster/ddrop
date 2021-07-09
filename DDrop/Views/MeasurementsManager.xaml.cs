@@ -644,7 +644,10 @@ namespace DDrop.Views
                             Content = File.ReadAllBytes(FrontDropPhotos[i].FilePath),
                             AddedDate = DateTime.Now,
                             CreationDateTime = File.GetCreationTime(FrontDropPhotos[i].FilePath),
-                            PhotoType = PhotoTypeView.FrontDropPhoto
+                            PhotoType = PhotoTypeView.FrontDropPhoto,
+                            Lines = new ObservableCollection<TypedLineView>(),
+                            SimpleLines = new ObservableCollection<SimpleLineView>(),
+                            MeasurementId = ResultingMeasurements[i].MeasurementId
                         });
                     }
 
@@ -659,7 +662,10 @@ namespace DDrop.Views
                             Content = File.ReadAllBytes(SideDropPhotos[i].FilePath),
                             AddedDate = DateTime.Now,
                             CreationDateTime = File.GetCreationTime(SideDropPhotos[i].FilePath),
-                            PhotoType = PhotoTypeView.SideDropPhoto
+                            PhotoType = PhotoTypeView.SideDropPhoto,
+                            Lines = new ObservableCollection<TypedLineView>(),
+                            SimpleLines = new ObservableCollection<SimpleLineView>(),
+                            MeasurementId = ResultingMeasurements[i].MeasurementId
                         });
                     }
 
@@ -672,7 +678,7 @@ namespace DDrop.Views
                             Content = File.ReadAllBytes(ThermalPhotos[i].FilePath),
                             AddedDate = DateTime.Now,
                             CreationDateTime = File.GetCreationTime(ThermalPhotos[i].FilePath),
-                            PhotoType = PhotoTypeView.ThermalPhoto
+                            PhotoType = PhotoTypeView.ThermalPhoto,
                         };
                     }
 

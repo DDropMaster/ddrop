@@ -126,18 +126,26 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Width="25" x:Name="FrontPhotosCheckedColumn"
-                                        IsReadOnly="False"
-                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                        CanUserResize="False">
-                        <DataGridCheckBoxColumn.HeaderTemplate>
+                    <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="FrontPhotosCheckedColumn" CanUserResize="False">
+                        <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <CheckBox
-                                IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedFrontPhotos}"
-                                x:Name="ChooseAllSeries" Height="15" />
+                                <CheckBox 
+                                    Height="15" 
+                                    x:Name="ChooseAllSeries" 
+                                    IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedFrontPhotos, UpdateSourceTrigger=PropertyChanged}" 
+                                />
                             </DataTemplate>
-                        </DataGridCheckBoxColumn.HeaderTemplate>
-                    </DataGridCheckBoxColumn>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox 
+                                    Height="15" 
+                                    HorizontalAlignment="Center" 
+                                    IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn IsReadOnly="True" Header="Фронтальный снимок"
                                     Binding="{Binding Name}" />
                     <DataGridTextColumn IsReadOnly="True"
@@ -187,18 +195,26 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Width="25" x:Name="SidePhotosCheckedColumn"
-                                            IsReadOnly="False"
-                                            Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                            CanUserResize="False">
-                        <DataGridCheckBoxColumn.HeaderTemplate>
+                    <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="SidePhotosCheckedColumn" CanUserResize="False">
+                        <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <CheckBox
-                                    IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedSidePhotos}"
-                                    x:Name="ChooseAllSeries" Height="15" />
+                                <CheckBox 
+                                    Height="15" 
+                                    x:Name="ChooseAllSeries" 
+                                    IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedSidePhotos, UpdateSourceTrigger=PropertyChanged}" 
+                                />
                             </DataTemplate>
-                        </DataGridCheckBoxColumn.HeaderTemplate>
-                    </DataGridCheckBoxColumn>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox 
+                                    Height="15" 
+                                    HorizontalAlignment="Center" 
+                                    IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn IsReadOnly="True" Header="Боковой снимок"
                                         Binding="{Binding Name}" />
                     <DataGridTextColumn IsReadOnly="True"
@@ -248,18 +264,26 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Width="25" x:Name="ThermalPhotosCheckedColumn"
-                                        IsReadOnly="False"
-                                        Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
-                                        CanUserResize="False">
-                        <DataGridCheckBoxColumn.HeaderTemplate>
+                    <DataGridTemplateColumn Width="25" IsReadOnly="False" x:Name="ThermalPhotosCheckedColumn" CanUserResize="False">
+                        <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <CheckBox
-                                IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedThermalPhotos}"
-                                x:Name="ChooseAllSeries" Height="15" />
+                                <CheckBox 
+                                    Height="15" 
+                                    x:Name="ChooseAllSeries" 
+                                    IsChecked="{Binding ElementName=AppMeasurementManagerWindow, Path=AllSelectedThermalPhotos, UpdateSourceTrigger=PropertyChanged}" 
+                                />
                             </DataTemplate>
-                        </DataGridCheckBoxColumn.HeaderTemplate>
-                    </DataGridCheckBoxColumn>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox 
+                                    Height="15" 
+                                    HorizontalAlignment="Center" 
+                                    IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" 
+                                />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn IsReadOnly="True" Header="Тепловизорный снимок"
                                     Binding="{Binding Name}" />
                     <DataGridTextColumn IsReadOnly="True"

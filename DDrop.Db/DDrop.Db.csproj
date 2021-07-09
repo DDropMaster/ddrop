@@ -346,6 +346,10 @@
     <Compile Include="Migrations\202107081954366_DropSeparateLinesColumns.designer.cs">
       <DependentUpon>202107081954366_DropSeparateLinesColumns.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202107091915178_WillCascadeOnDelete.cs" />
+    <Compile Include="Migrations\202107091915178_WillCascadeOnDelete.designer.cs">
+      <DependentUpon>202107091915178_WillCascadeOnDelete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -566,6 +570,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202107081954366_DropSeparateLinesColumns.resx">
       <DependentUpon>202107081954366_DropSeparateLinesColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107091915178_WillCascadeOnDelete.resx">
+      <DependentUpon>202107091915178_WillCascadeOnDelete.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

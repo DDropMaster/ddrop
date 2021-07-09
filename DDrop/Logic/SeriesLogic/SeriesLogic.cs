@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using AutoMapper;
 using DDrop.BE.Models;
@@ -18,23 +19,23 @@ namespace DDrop.Logic.SeriesLogic
             _mapper = mapper;
         }
 
-        public async Task DeleteSeries(SeriesView series, SeriesView currentSeries, Canvas canvas)
+        public async Task DeleteSeries(SeriesView series, Canvas canvas, ObservableCollection<SeriesView> userSeries)
         {
             var serie = _mapper.Map<SeriesView, Series>(series);
-            var currentSerie = _mapper.Map<SeriesView, Series>(currentSeries);
+            
+            await _seriesBl.DeleteSeries(serie);
 
-            await _seriesBl.DeleteSeries(serie, currentSerie);
-
-            if (series == currentSeries)
+            if (series.ReferencePhotoForSeries != null)
             {
                 foreach (var currentSerieReferencePhotoForSeries in series.ReferencePhotoForSeries)
                 {
                     if (currentSerieReferencePhotoForSeries?.Line != null)
                         canvas.Children.Remove(currentSerieReferencePhotoForSeries?.Line);
                 }
-
-                currentSeries.Title = null;
             }
+
+            userSeries.Remove(series);
+            series.Title = null;
         }
     }
 }

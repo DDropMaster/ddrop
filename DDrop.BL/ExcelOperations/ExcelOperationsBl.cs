@@ -10,6 +10,7 @@ using DDrop.BE.Models;
 using DDrop.BL.CustomPlots;
 using DDrop.BL.ExcelOperations;
 using DDrop.BL.ExcelOperations.Models;
+using DDrop.BL.Series;
 using DDrop.Utility.SeriesLocalStorageOperations;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
@@ -19,10 +20,12 @@ namespace DDrop.Utility.ExcelOperations
     public class ExcelOperationsBl : IExcelOperationsBl
     {
         private readonly ICustomPlotsBl _customPlotsBl;
+        private readonly ISeriesBL _seriesBl;
 
-        public ExcelOperationsBl(ICustomPlotsBl customPlotsBl)
+        public ExcelOperationsBl(ICustomPlotsBl customPlotsBl, ISeriesBL seriesBL)
         {
             _customPlotsBl = customPlotsBl;
+            _seriesBl = seriesBL;
         }
 
         public async Task CreateSingleSeriesExcelFile(ExcelReport report)
@@ -149,7 +152,9 @@ namespace DDrop.Utility.ExcelOperations
 
                 foreach (var currentSeries in report.Series)
                 {
-                    var worksheet = excelPackage.Workbook.Worksheets.Add($"{currentSeries.Title}");
+                    var fullSeries = await _seriesBl.GetSingleSerie(currentSeries.SeriesId);
+
+                    var worksheet = excelPackage.Workbook.Worksheets.Add($"{fullSeries.Title}");
 
                     worksheet.Cells["A1:D1"].Merge = true;
                     worksheet.Cells["A2:D2"].Merge = true;
@@ -181,36 +186,36 @@ namespace DDrop.Utility.ExcelOperations
 
                     worksheet.Cells["A7:H7"].Merge = true;
 
-                    worksheet.Cells["E1"].Value = currentSeries.Title;
-                    worksheet.Cells["E2"].Value = currentSeries.IntervalBetweenPhotos;
-                    worksheet.Cells["E3"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
-                    worksheet.Cells["E4"].Value = currentSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto)?.PixelsInMillimeter ?? 0;
-                    worksheet.Cells["E5"].Value = currentSeries.Substance.CommonName;
-                    worksheet.Cells["E6"].Value = currentSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
+                    worksheet.Cells["E1"].Value = fullSeries.Title;
+                    worksheet.Cells["E2"].Value = fullSeries.IntervalBetweenPhotos;
+                    worksheet.Cells["E3"].Value = fullSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoType.FrontDropPhoto)?.PixelsInMillimeter ?? 0;
+                    worksheet.Cells["E4"].Value = fullSeries.ReferencePhotoForSeries?.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto)?.PixelsInMillimeter ?? 0;
+                    worksheet.Cells["E5"].Value = fullSeries.Substance.CommonName;
+                    worksheet.Cells["E6"].Value = fullSeries.Settings.GeneralSeriesSettings.IsAcoustic ? "Да" : "Нет";
 
                     var singleSeriesToExcelOutput = new ObservableCollection<SeriesToExcel>();
                     var singleSeriesPlotToExcelOutput = new ObservableCollection<PlotToExcel>();
 
                     double averageAmbientTemperatures = 0;
 
-                    for (var i = 0; i < currentSeries.MeasurementsSeries.Count; i++)
+                    for (var i = 0; i < fullSeries.MeasurementsSeries.Count; i++)
                     {
-                        var measurement = currentSeries.MeasurementsSeries[i];
+                        var measurement = fullSeries.MeasurementsSeries[i];
 
                         double time = 0.0;
 
                         averageAmbientTemperatures += measurement.AmbientTemperature ?? 0;
 
-                        if (currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime)
+                        if (fullSeries.Settings.GeneralSeriesSettings.UseCreationDateTime)
                         {
-                            time = (measurement.CreationDateTime - currentSeries.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
+                            time = (measurement.CreationDateTime - fullSeries.MeasurementsSeries[0].CreationDateTime).TotalSeconds;
                         }
 
                         if (measurement.Drop.RadiusInMeters != null)
                         {
                             singleSeriesToExcelOutput.Add(new SeriesToExcel
                             {
-                                Time = currentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : i * currentSeries.IntervalBetweenPhotos,
+                                Time = fullSeries.Settings.GeneralSeriesSettings.UseCreationDateTime ? time : i * fullSeries.IntervalBetweenPhotos,
                                 Name = measurement.Name,
                                 RadiusInMeters = measurement.Drop.RadiusInMeters.Value,
                                 VolumeInCubicalMeters = measurement.Drop.VolumeInCubicalMeters,
@@ -228,7 +233,7 @@ namespace DDrop.Utility.ExcelOperations
                         {
                             var initialRadius = singleSeriesToExcelOutput[0].RadiusInMeters;
                             var wholeEvaporationTime = singleSeriesToExcelOutput[singleSeriesToExcelOutput.Count - 1].Time;
-                            averageAmbientTemperatures = averageAmbientTemperatures / currentSeries.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
+                            averageAmbientTemperatures = averageAmbientTemperatures / fullSeries.MeasurementsSeries.Count(x => x.AmbientTemperature != 0);
 
 
                             for (int j = 0; j < singleSeriesToExcelOutput.Count; j++)
@@ -248,21 +253,21 @@ namespace DDrop.Utility.ExcelOperations
                     worksheet.Cells["A9"].LoadFromCollection(singleSeriesToExcelOutput, true);
                     worksheet.Cells["A9:H9"].Style.Font.Bold = true;
 
-                    if (currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && currentSeries.ThermalPlot != null)
+                    if (fullSeries.Settings.GeneralSeriesSettings.UseThermalPlot && fullSeries.ThermalPlot != null)
                     {
                         worksheet.Cells["J8:Q8"].Merge = true;
                         worksheet.Cells["J8"].Value = "Дополнительный температурный график";
                         worksheet.Cells["J8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         worksheet.Cells["J8"].Style.Font.Bold = true;
 
-                        currentSeries.ThermalPlot.Points = JsonSerializeProvider.DeserializeFromString<List<SimplePoint>>(await _customPlotsBl.GetPlotPoints(currentSeries.ThermalPlot.PlotId));
+                        fullSeries.ThermalPlot.Points = JsonSerializeProvider.DeserializeFromString<List<SimplePoint>>(await _customPlotsBl.GetPlotPoints(currentSeries.ThermalPlot.PlotId));
 
-                        foreach (var point in currentSeries.ThermalPlot.Points)
+                        foreach (var point in fullSeries.ThermalPlot.Points)
                         {
                             singleSeriesPlotToExcelOutput.Add(new PlotToExcel
                             {
-                                X = report.Dimensionless ? point.X / currentSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
-                                Y = report.Dimensionless ? point.Y / currentSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                                X = report.Dimensionless ? point.X / fullSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
+                                Y = report.Dimensionless ? point.Y / fullSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
                             });
                         }
 
@@ -276,7 +281,7 @@ namespace DDrop.Utility.ExcelOperations
                     {
                         var seriesRadiusChart = worksheet.Drawings.AddChart("seriesRadiusChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
-                        seriesRadiusChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                        seriesRadiusChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {fullSeries.Title}";
                         seriesRadiusChart.Legend.Position = eLegendPosition.Right;
 
                         seriesRadiusChart.Series.Add(worksheet.Cells[$"F10:F{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
@@ -285,11 +290,11 @@ namespace DDrop.Utility.ExcelOperations
                         seriesRadiusChart.XAxis.Title.Text = report.Dimensionless ? "Время" : "Время, с";
                         seriesRadiusChart.YAxis.Title.Text = report.Dimensionless ? "Радиус" : "Радиус, м";
 
-                        if (!currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && singleSeriesToExcelOutput.Any(x => x.Temperature != 0 && !double.IsNaN(x.Temperature)))
+                        if (!fullSeries.Settings.GeneralSeriesSettings.UseThermalPlot && singleSeriesToExcelOutput.Any(x => x.Temperature != 0 && !double.IsNaN(x.Temperature)))
                         {
                             var seriesTemperatureChart = worksheet.Drawings.AddChart("seriesTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
                              
-                            seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                            seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {fullSeries.Title}";
                             seriesTemperatureChart.Legend.Position = eLegendPosition.Right;
 
                             seriesTemperatureChart.Series.Add(worksheet.Cells[$"H10:H{10 + (singleSeriesToExcelOutput.Count - 1)}"], worksheet.Cells[$"A10:A{10 + (singleSeriesToExcelOutput.Count - 1)}"]);
@@ -317,11 +322,11 @@ namespace DDrop.Utility.ExcelOperations
                         indexerRadius++;
                     }
 
-                    if (currentSeries.Settings.GeneralSeriesSettings.UseThermalPlot && currentSeries.ThermalPlot != null)
+                    if (fullSeries.Settings.GeneralSeriesSettings.UseThermalPlot && fullSeries.ThermalPlot != null)
                     {
                         var seriesTemperatureChart = worksheet.Drawings.AddChart("seriesTemperatureChart", eChartType.XYScatterLines) as ExcelScatterChart;
 
-                        seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {currentSeries.Title}";
+                        seriesTemperatureChart.Title.Text = $"Зависимость радиуса капли от времени испарения для серии {fullSeries.Title}";
                         seriesTemperatureChart.Legend.Position = eLegendPosition.Right;
 
                         seriesTemperatureChart.Series.Add(worksheet.Cells[$"K10:K{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"], worksheet.Cells[$"J10:J{10 + (singleSeriesPlotToExcelOutput.Count - 1)}"]);

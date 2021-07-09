@@ -29,12 +29,14 @@ namespace DDrop.Db
             modelBuilder.Entity<DbUser>()
                 .HasMany(s => s.UserSeries)
                 .WithRequired(g => g.CurrentUser)
-                .HasForeignKey(s => s.CurrentUserId);
+                .HasForeignKey(s => s.CurrentUserId)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbUser>()
                 .HasMany(s => s.Plots)
                 .WithRequired(g => g.CurrentUser)
-                .HasForeignKey(s => s.CurrentUserId);
+                .HasForeignKey(s => s.CurrentUserId)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbPlot>()
                 .HasOptional(x => x.Series)
@@ -50,15 +52,18 @@ namespace DDrop.Db
             modelBuilder.Entity<DbSeries>()
                 .HasMany(s => s.ReferencePhotoForSeries)
                 .WithRequired(g => g.Series)
-                .HasForeignKey(s => s.CurrentSeriesId);
+                .HasForeignKey(s => s.CurrentSeriesId)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbSeries>()
                 .HasRequired(s => s.Substance)
-                .WithRequiredPrincipal(ad => ad.Series);
+                .WithRequiredPrincipal(ad => ad.Series)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbMeasurement>()
                 .HasRequired(s => s.Drop)
-                .WithRequiredPrincipal(ad => ad.Measurement);
+                .WithRequiredPrincipal(ad => ad.Measurement)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbMeasurement>()
                 .HasMany(s => s.DropPhotos)
@@ -69,12 +74,14 @@ namespace DDrop.Db
             modelBuilder.Entity<DbDropPhoto>()
                 .HasOptional(c => c.Contour)
                 .WithMany()
-                .HasForeignKey(s => s.ContourId);
+                .HasForeignKey(s => s.ContourId)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbThermalPhoto>()
                 .HasOptional(c => c.Contour)
                 .WithMany()
-                .HasForeignKey(s => s.ContourId);
+                .HasForeignKey(s => s.ContourId)
+                .WillCascadeOnDelete();
 
             modelBuilder.Entity<DbMeasurement>()
                 .HasOptional(c => c.Comment)

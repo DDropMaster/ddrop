@@ -18,11 +18,9 @@ namespace DDrop.BL.Series
             _mapper = mapper;
         }
 
-        public async Task DeleteSeries(BE.Models.Series series, BE.Models.Series currentSeries)
+        public async Task DeleteSeries(BE.Models.Series series)
         {
-            var userSeries = series;
-
-            var dbSeriesToDelete = _mapper.Map<BE.Models.Series, DbSeries>(userSeries);
+            var dbSeriesToDelete = _mapper.Map<BE.Models.Series, DbSeries>(series);
 
             await _dDropRepository.DeleteSingleSeries(dbSeriesToDelete);
         }
@@ -67,6 +65,20 @@ namespace DDrop.BL.Series
         public async Task UpdateSeriesSettings(string settings, Guid seriesId)
         {
             await Task.Run(() => _dDropRepository.UpdateSeriesSettings(seriesId, settings));
+        }
+
+        public async Task<List<BE.Models.Series>> GetSeriesByUserIdLight(Guid dbUserId)
+        {
+            var dbSeries = await Task.Run(() => _dDropRepository.GetSeriesByUserIdLight(dbUserId));
+
+            return _mapper.Map<List<DbSeries>, List<BE.Models.Series>>(dbSeries);
+        }
+
+        public async Task<BE.Models.Series> GetSingleSerie(Guid seriesId)
+        {
+            var dbSeries = await Task.Run(() => _dDropRepository.GetSingleSerie(seriesId));
+
+            return _mapper.Map<DbSeries, BE.Models.Series>(dbSeries);
         }
     }
 }

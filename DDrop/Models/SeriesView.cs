@@ -48,6 +48,7 @@ namespace DDrop.Models
             {
                 _measurementsSeries = value;
                 RaisePropertyChanged("MeasurementsSeries");
+                RaisePropertyChanged("CanDrawPlot");
 
                 foreach (var measurementsSeries in _measurementsSeries)
                 {
@@ -147,7 +148,7 @@ namespace DDrop.Models
         {
             get
             {
-                if (_measurementsSeries.Count > 0 && _measurementsSeries.All(x => x.Processed))
+                if (_measurementsSeries?.Count > 0 && _measurementsSeries.All(x => x.Processed))
                     return true;
 
                 return false;
@@ -234,7 +235,7 @@ namespace DDrop.Models
             }
         }
 
-        private bool _loaded = true;
+        private bool _loaded = false;
         public bool Loaded
         {
             get => _loaded;
