@@ -30,7 +30,7 @@ namespace DDrop.DAL
         Task DeleteSingleSeries(DbSeries series);
         Task CreateFullSeries(DbSeries series);
         Task<List<DbReferencePhoto>> GetReferencePhotoById(DbSeries series);
-        Task<List<DbMeasurement>> GetMeasurements(DbSeries series);
+        Task<List<DbMeasurement>> GetMeasurements(Guid seriesId);
         Task UpdateSeriesIntervalBetweenPhotos(double interval, Guid seriesId);
         Task CreateMeasurement(DbMeasurement measurement, Guid seriesId);
         Task<DbMeasurement> GetMeasurement(Guid measurementId);

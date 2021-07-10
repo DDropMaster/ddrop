@@ -1975,8 +1975,15 @@ namespace DDrop.Views
 
                 CurrentMeasurement.DropPhotos = _mapper.Map<List<DropPhoto>, ObservableCollection<DropPhotoView>>(await _dropPhotoBl.GetDropPhotosByMeasurementId(CurrentMeasurement.MeasurementId));
 
-                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
-                CurrentMeasurement.DropPhotos.Add(CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) ?? new DropPhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
+                if (CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto) == null)
+                {
+                    CurrentMeasurement.DropPhotos.Add(new DropPhotoView() { PhotoType = PhotoTypeView.FrontDropPhoto });
+                }
+
+                if (CurrentMeasurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoTypeView.SideDropPhoto) == null)
+                {
+                    CurrentMeasurement.DropPhotos.Add(new DropPhotoView() { PhotoType = PhotoTypeView.SideDropPhoto });
+                }
 
                 PhotosDetails.SelectedItem = CurrentDropPhoto;
                 ImageForEdit = ImageInterpreter.LoadImage(CurrentDropPhoto.Content);
@@ -5022,10 +5029,30 @@ namespace DDrop.Views
             }
 
             if (CurrentDropPhoto.PhotoType == PhotoTypeView.FrontDropPhoto)
-                CurrentDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+            {
+                switch (lineType)
+                {
+                    case LineTypeView.Horizontal:
+                        
+                        break;
+                    case LineTypeView.Vertical:
+                        CurrentDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+                        break; 
+                }
+            }
 
             if (CurrentDropPhoto.PhotoType == PhotoTypeView.SideDropPhoto)
-                CurrentDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+            {
+                switch (lineType)
+                {
+                    case LineTypeView.Horizontal:
+                        CurrentDropPhoto.ZDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+                        break;
+                    case LineTypeView.Vertical:
+                        CurrentDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
+                        break;
+                }
+            }                
         }
 
         private LineTypeView GetLineMode()
@@ -5347,8 +5374,6 @@ namespace DDrop.Views
             {
                 if (userPlot.PlotType == plotType)
                 {
-                    
-
                     userPlot.IsDeletable = true;
                     userPlot.IsEditable = true;
 
@@ -5932,6 +5957,6 @@ namespace DDrop.Views
 
                 await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings), currentSeries.SeriesId));
             }
-        } 
+        }
     }
 }

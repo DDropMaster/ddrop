@@ -1427,7 +1427,7 @@
                                                 </loadingSpinner:AdornedControl.AdornerContent>
                                                 <zoomborder:ZoomBorder x:Name="ReferenceBorder" ClipToBounds="True"
                                                                    Background="Gray">
-                                                    <pixelDrawer:PixelDrawer IsEnabled="False"
+                                                    <pixelDrawer:PixelDrawer 
                                                                          DrawningMode="{Binding DrawningMode, ElementName=AppMainWindow}"
                                                                          DrawnShapes="{Binding DrawnShapes, ElementName=AppMainWindow, Mode=TwoWay}"
                                                                          MouseUp="PixelDrawer_OnMouseUp"

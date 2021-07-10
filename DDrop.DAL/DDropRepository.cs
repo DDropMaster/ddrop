@@ -836,11 +836,11 @@ namespace DDrop.DAL
             }
         }
 
-        public async Task<List<DbMeasurement>> GetMeasurements(DbSeries series)
+        public async Task<List<DbMeasurement>> GetMeasurements(Guid seriesId)
         {
             using (var context = new DDropContext())
             {
-                var measurementForSeries = await context.Measurements.Where(x => x.CurrentSeriesId == series.SeriesId)
+                var measurementForSeries = await context.Measurements.Where(x => x.CurrentSeriesId == seriesId)
                     .Select(x => new
                     {
                         x.Name,
@@ -865,6 +865,7 @@ namespace DDrop.DAL
                             p.CommentId,
                             p.ContourId,
                             p.Comment,
+                            p.MeasurementId,
                         }),
                         x.Drop,
                         x.CommentId
@@ -879,7 +880,6 @@ namespace DDrop.DAL
                     var measurementToAdd = new DbMeasurement
                     {
                         AddedDate = measurement.AddedDate,
-                        CurrentSeries = series,
                         DropPhotos = measurement.DropPhotos.Select(p => new DbDropPhoto
                         {
                             Name = p.Name,
@@ -894,6 +894,7 @@ namespace DDrop.DAL
                             CommentId = p.CommentId,
                             ContourId = p.ContourId,
                             Comment = p.Comment,
+                            MeasurementId = p.MeasurementId
                         }).ToList(),
                         CurrentSeriesId = measurement.CurrentSeriesId,
                         MeasurementId = measurement.MeasurementId,
@@ -914,7 +915,6 @@ namespace DDrop.DAL
                     {
                         measurementToAdd.Drop = new DbDrop
                         {
-                            Measurement = measurementToAdd,
                             DropId = dropToAdd.DropId,
                             RadiusInMeters = dropToAdd.RadiusInMeters,
                             Temperature = dropToAdd.Temperature,

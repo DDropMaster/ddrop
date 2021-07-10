@@ -11,7 +11,7 @@ namespace DDrop.BL.Measurement
         Task UpdateMeasurementName(string text, Guid currentMeasurementId);
         Task UpdateAmbientTemperature(double value, Guid currentMeasurementId);
         Task UpdateMeasurementsOrderInSeries(List<BE.Models.Measurement> measurementsSeries);
-        Task<List<BE.Models.Measurement>> GetMeasurements(BE.Models.Series series);
+        Task<List<BE.Models.Measurement>> GetMeasurements(Guid seriesId);
         Task<BE.Models.Measurement> GetMeasurement(Guid measurementId);
     }
 }

@@ -37,6 +37,7 @@ namespace DDrop.Utility.SeriesExporter
             foreach (var dropPhoto in measurement.DropPhotos)
             {
                 dropPhoto.PhotoId = Guid.NewGuid();
+                dropPhoto.MeasurementId = measurement.MeasurementId;
 
                 if (dropPhoto.Contour != null)
                 {
