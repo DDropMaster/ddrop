@@ -102,6 +102,9 @@ namespace DDrop.Models
         {
             get
             {
+                if (PhotoId == Guid.Empty)
+                    return true;
+
                 if (PhotoType == PhotoTypeView.FrontDropPhoto && _xDiameterInPixels > 0 && _yDiameterInPixels > 0)
                     return true;
 

@@ -5033,7 +5033,7 @@ namespace DDrop.Views
                 switch (lineType)
                 {
                     case LineTypeView.Horizontal:
-                        
+                        CurrentDropPhoto.XDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
                         break;
                     case LineTypeView.Vertical:
                         CurrentDropPhoto.YDiameterInPixels = LineLengthHelper.GetPointsOnLine(point11, point22).Count;
