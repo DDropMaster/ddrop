@@ -30,11 +30,6 @@ namespace DDrop.BL.Series
             await Task.Run(() => _dDropRepository.CreateSeries(_mapper.Map<BE.Models.Series, DbSeries>(seriesToAdd)));
         }
 
-        public async Task<DbSeries> GetDbSeriesForExportById(Guid seriesId)
-        {
-            return await Task.Run(() => _dDropRepository.GetDbSeriesForExportById(seriesId));
-        }
-
         public async Task CreateFullSeries(DbSeries dbSerieForAdd)
         {
             await Task.Run(() => _dDropRepository.CreateFullSeries(dbSerieForAdd));

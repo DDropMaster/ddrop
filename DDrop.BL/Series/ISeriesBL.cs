@@ -9,7 +9,6 @@ namespace DDrop.BL.Series
     {
         Task DeleteSeries(BE.Models.Series series);
         Task CreateSeries(BE.Models.Series seriesToAdd);
-        Task<DbSeries> GetDbSeriesForExportById(Guid seriesId);
         Task CreateFullSeries(DbSeries dbSerieForAdd);
         Task UpdateSeriesName(string text, Guid seriesId);
         Task UpdateSeriesIntervalBetweenPhotos(double intervalBetweenPhotos, Guid seriesId);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using DDrop.BE.Enums.Logger;
+using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
 using DDrop.Enums;
 using DDrop.Enums.Options;
@@ -44,11 +45,8 @@ namespace DDrop.Views
         private readonly ILogger _logger;
         private readonly Notifier _notifier;
         private readonly UserView _user;
-        public bool ShowContourOnPreviewIsChanged;
         public bool DimensionlessPlotsIsChanged;
-        public bool ShowLinesOnPreviewIsChanged;
         public bool UseCacheIsChanged;
-        public bool ShowRegionOfInterest;
         public bool CacheDeletionIsChanged;
 
         public Options(Notifier notifier, ILogger logger, UserView user)
@@ -241,35 +239,14 @@ namespace DDrop.Views
 
         private void InitializePaths()
         {
-            ShowLinesOnPreview.IsChecked = Settings.Default.ShowLinesOnPreview;
-            ShowContourOnPreview.IsChecked = Settings.Default.ShowContourOnPreview;
             DimensionlessPlots.IsChecked = Settings.Default.DimensionlessPlots;
             EnableCache.IsChecked = Settings.Default.UseCache;
-            ShowRegionOfInterestOnPreview.IsChecked = Settings.Default.ShowRegionOfInterest;
         }
 
         private void UpdateOptions(OptionsEnumView option, object value)
         {
             switch (option)
             {
-                case OptionsEnumView.ShowLinesOnPreview:
-                    if ((bool) value != Settings.Default.ShowLinesOnPreview)
-                    {
-                        Settings.Default.ShowLinesOnPreview = (bool)value;
-                        Settings.Default.Save();
-                        ShowLinesOnPreviewIsChanged = true;
-                    }
-
-                    break;
-                case OptionsEnumView.ShowContourOnPreview:
-                    if ((bool) value != Settings.Default.ShowContourOnPreview)
-                    {
-                        Settings.Default.ShowContourOnPreview = (bool)value;
-                        Settings.Default.Save();
-                        ShowContourOnPreviewIsChanged = true;
-                    }
-
-                    break;
                 case OptionsEnumView.DimensionlessPlots:
                     if ((bool) value != Settings.Default.DimensionlessPlots)
                     {
@@ -288,44 +265,10 @@ namespace DDrop.Views
                     }
                     
                     break;
-                case OptionsEnumView.ShowRegionOfInterest:
-                    if ((bool) value != Settings.Default.ShowRegionOfInterest)
-                    {
-                        Settings.Default.ShowRegionOfInterest = (bool) value;
-                        Settings.Default.Save();
-                        ShowRegionOfInterest = true;
-                    }
-
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(option), option, null);
             }
         }
-
-        private void ShowLinesOnPreview_Checked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox) sender;
-            UpdateOptions(OptionsEnumView.ShowLinesOnPreview, checkBox.IsChecked);
-        }
-
-        private void ShowLinesOnPreview_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox) sender;
-            UpdateOptions(OptionsEnumView.ShowLinesOnPreview, checkBox.IsChecked);
-        }
-
-        private void ShowContourOnPreview_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox) sender;
-            UpdateOptions(OptionsEnumView.ShowContourOnPreview, checkBox.IsChecked);
-        }
-
-        private void ShowContourOnPreview_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox) sender;
-            UpdateOptions(OptionsEnumView.ShowContourOnPreview, checkBox.IsChecked);
-        }
-
         private void DimensionlessPlots_OnChecked(object sender, RoutedEventArgs e)
         {
             var checkBox = (CheckBox)sender;
@@ -336,18 +279,6 @@ namespace DDrop.Views
         {
             var checkBox = (CheckBox)sender;
             UpdateOptions(OptionsEnumView.DimensionlessPlots, checkBox.IsChecked);
-        }
-
-        private void ShowRegionOfInterestOnPreview_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox)sender;
-            UpdateOptions(OptionsEnumView.ShowRegionOfInterest, checkBox.IsChecked);
-        }
-
-        private void ShowRegionOfInterestOnPreview_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkBox = (CheckBox)sender;
-            UpdateOptions(OptionsEnumView.ShowRegionOfInterest, checkBox.IsChecked);
         }
 
         private void DeleteLocalUser_Click(object sender, RoutedEventArgs e)
@@ -654,7 +585,7 @@ namespace DDrop.Views
         {
             var combobox = (ComboBox) sender;
 
-            var cacheOption = (CacheDeleteVariantsView) combobox.SelectedValue;
+            var cacheOption = (CacheDeleteVariants) combobox.SelectedValue;
 
             Settings.Default.CacheDeletion = cacheOption;
             Settings.Default.Save();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Windows.Shapes;
 using DDrop.Controls.PixelDrawer;
@@ -14,8 +13,7 @@ namespace DDrop.Logic.GeometryBL
 
         void CreateDiameters(DropPhotoView dropPhoto, Point[] points);
 
-        void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour,
-            bool showContourOnPreview);
+        void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour, bool showContourOnPreview);
 
         ContourView CreateContour(ContourView contour, Point[] points,
             CalculationVariantsView calculationVariant, AutoCalculationParametersView parameters, ContourView currentContour, PixelDrawer imgCurrent);

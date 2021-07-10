@@ -8,7 +8,7 @@ using DDrop.Models;
 
 namespace DDrop.AutoMapper
 {
-    public class DropPhotoHorizontalLineResolver : IValueResolver<DropPhoto, DropPhotoView, ObservableCollection<TypedLineView>>
+    public class DropPhotoLinesResolver : IValueResolver<DropPhoto, DropPhotoView, ObservableCollection<TypedLineView>>
     {
         public ObservableCollection<TypedLineView> Resolve(DropPhoto source, DropPhotoView destination, ObservableCollection<TypedLineView> destMember, ResolutionContext context)
         {

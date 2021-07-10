@@ -17,30 +17,20 @@
         <TabControl>
             <TabItem x:Name="GeneralSettings" Header="Общие">
                 <Grid>
-                    <CheckBox x:Name="ShowLinesOnPreview" Checked="ShowLinesOnPreview_Checked"
-                              Unchecked="ShowLinesOnPreview_Unchecked" Margin="10,10,0,0"
-                              Content="Отображать линии при предпросмотре снимков." Height="15" VerticalAlignment="Top" />
-                    <CheckBox x:Name="ShowContourOnPreview" Checked="ShowContourOnPreview_OnChecked"
-                              Unchecked="ShowContourOnPreview_OnUnchecked" Margin="10,30,0,0"
-                              Content="Отображать контур при предпросмотре снимков." Height="15"
-                              VerticalAlignment="Top" />
-                    <CheckBox x:Name="ShowRegionOfInterestOnPreview" Checked="ShowRegionOfInterestOnPreview_OnChecked"
-                              Unchecked="ShowRegionOfInterestOnPreview_OnUnchecked" Margin="10,50,0,0"
-                              Content="Отображать выделенную область при предпросмотре снимков." Height="15"
-                              VerticalAlignment="Top" />
+
                     <CheckBox x:Name="DimensionlessPlots" Checked="DimensionlessPlots_OnChecked"
-                              Unchecked="DimensionlessPlots_OnUnchecked" Margin="10,70,0,0"
+                              Unchecked="DimensionlessPlots_OnUnchecked" Margin="10,10,0,0"
                               Content="Обезразмерить графики." Height="15"
                               VerticalAlignment="Top" />
                     <CheckBox x:Name="EnableCache" Checked="EnableCache_OnChecked"
-                              Unchecked="EnableCache_OnUnchecked" Margin="21,122,528,0"
+                              Unchecked="EnableCache_OnUnchecked" Margin="21,63,528,0"
                               Content="Использовать кэширование снимков." Height="15"
                               VerticalAlignment="Top" />
-                    <Label Content="Удалять кэш:" Margin="21,98,0,0" FontSize="12" Padding="0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75"/>
+                    <Label Content="Удалять кэш:" Margin="21,39,0,0" FontSize="12" Padding="0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75"/>
                     <ComboBox 
                         Width="120" 
                         Padding="5,0,0,0"
-                        Margin="101,98,0,0"
+                        Margin="101,39,0,0"
                         x:Name="CacheDeleteCombobox"
                         IsEnabled="{Binding Source={x:Static properties:Settings.Default}, Path=UseCache}"
                         ItemsSource="{Binding Source={enum:Enumeration {x:Type options:CacheDeleteVariantsView}}}"
@@ -50,10 +40,10 @@
                         DropDownClosed="CacheDeleteCombobox_OnDropDownClosed" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" />
                     <Button ToolTip="Удалить кэш." Grid.Column="0" Grid.Row="0" x:Name="DeleteCacheButton"
                             BorderBrush="{x:Null}" Background="{x:Null}" Click="DeleteCacheButton_OnClick"
-                            Margin="222,93,0,0" HorizontalAlignment="Left" Width="28" Height="25" VerticalAlignment="Top">
+                            Margin="222,34,0,0" HorizontalAlignment="Left" Width="28" Height="25" VerticalAlignment="Top">
                         <ContentControl Content="{StaticResource DeleteIcon}" Height="22" Width="23" />
                     </Button>
-                    <Rectangle Margin="10,90,0,0" Stroke="#34558b" StrokeDashArray="1 2" HorizontalAlignment="Left" Width="250" Height="54" VerticalAlignment="Top"/>
+                    <Rectangle Margin="10,30,0,0" Stroke="#34558b" StrokeDashArray="1 2" HorizontalAlignment="Left" Width="250" Height="54" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="StoredAccounts" Header="Учетные записи">

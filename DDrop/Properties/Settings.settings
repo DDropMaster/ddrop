@@ -17,9 +17,6 @@
     <Setting Name="PixelsInMillimeter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="ShowLinesOnPreview" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="StoredUsers" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -29,9 +26,6 @@
     <Setting Name="AutoCalculationTemplates" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ShowContourOnPreview" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="DimensionlessPlots" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -39,9 +33,6 @@
       <Value Profile="(Default)">Never</Value>
     </Setting>
     <Setting Name="UseCache" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ShowRegionOfInterest" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

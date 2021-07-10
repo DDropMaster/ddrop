@@ -2,12 +2,9 @@
 {
     public enum OptionsEnumView
     {
-        Interpreter,
-        ScriptToRun,
-        ShowLinesOnPreview,
-        ShowContourOnPreview,
-        DimensionlessPlots,
-        UseCache,
-        ShowRegionOfInterest,
+        Interpreter = 0,
+        ScriptToRun = 1,
+        DimensionlessPlots = 4,
+        UseCache = 5,
     }
 }

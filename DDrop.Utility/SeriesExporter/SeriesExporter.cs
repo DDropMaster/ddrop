@@ -8,13 +8,12 @@ namespace DDrop.Utility.SeriesExporter
 {
     public static class SeriesExporter
     {
-        public static async Task<DbSeries> ImportLocalSeriesAsync(Stream content, DbUser user)
+        public static async Task<DbSeries> ImportLocalSeriesAsync(Stream content, Guid userId)
         {
             var series = await Task.Run(() => JsonSerializeProvider.DeserializeFromStream<DbSeries>(content));
             series.AddedDate = DateTime.Now;
             series.SeriesId = Guid.NewGuid();
-            series.CurrentUser = user;
-            series.CurrentUserId = user.UserId;
+             series.CurrentUserId = userId;
             
             if (series.ReferencePhotoForSeries != null)
             {

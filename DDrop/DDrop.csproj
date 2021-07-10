@@ -227,6 +227,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AutoMapper\AutoMapperExtensions.cs" />
+    <Compile Include="AutoMapper\LineResolver.cs" />
     <Compile Include="AutoMapper\SimpleLineResolver.cs" />
     <Compile Include="Enums\LineTypeView.cs" />
     <Compile Include="Models\TypedLineView.cs" />
@@ -241,7 +242,7 @@
     </Compile>
     <Compile Include="AutoMapper\AutoMapperConfiguration.cs" />
     <Compile Include="AutoMapper\ContourResolver.cs" />
-    <Compile Include="AutoMapper\DropPhotoHorizontalLineResolver.cs" />
+    <Compile Include="AutoMapper\DropPhotoLinesResolver.cs" />
     <Compile Include="AutoMapper\ReferencePhotoResolver.cs" />
     <Compile Include="AutoMapper\SeriesSettingsResolver.cs" />
     <Compile Include="AutoMapper\ThermalPhotoEllipseResolver.cs" />

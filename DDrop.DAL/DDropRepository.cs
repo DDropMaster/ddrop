@@ -940,7 +940,7 @@ namespace DDrop.DAL
             }
         }
 
-        public async Task<List<DbDropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId)
+        public async Task<List<DbDropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId, bool withContent = false)
         {
             using (var context = new DDropContext())
             {
@@ -960,6 +960,7 @@ namespace DDrop.DAL
                         CommentId = p.CommentId,
                         ContourId = p.ContourId,
                         Comment = p.Comment,
+                        Content = withContent ? p.Content : null
                     }).ToListAsync();
 
                 var resultingDropPhotos = new List<DbDropPhoto>();
@@ -980,6 +981,7 @@ namespace DDrop.DAL
                         CommentId = dbDropPhoto.CommentId,
                         ContourId = dbDropPhoto.ContourId,
                         Comment = dbDropPhoto.Comment,
+                        Content = dbDropPhoto.Content
                     });
                 }
 
@@ -1055,62 +1057,6 @@ namespace DDrop.DAL
             }
         }
 
-        private async Task<DbDropPhoto> GetDbDropPhotoById(Guid photoId)
-        {
-            using (var context = new DDropContext())
-            {
-                var dropPhoto = await context.DropPhotos
-                    .Where(x => x.PhotoId == photoId)
-                    .Select(x => new
-                    {
-                        x.Name,
-                        x.Contour,
-                        x.SimpleLines,
-                        x.PhotoId,
-                        x.AddedDate,
-                        x.PhotoType,
-                        x.CreationDateTime,
-                        x.XDiameterInPixels,
-                        x.YDiameterInPixels,
-                        x.ZDiameterInPixels,
-                        x.CommentId,
-                        x.ContourId
-                    }).FirstOrDefaultAsync();
-
-                if (dropPhoto == null)
-                {
-                    return null;
-                }
-
-                var dbDropPhoto = new DbDropPhoto
-                {
-                    SimpleLines = dropPhoto.SimpleLines,
-                    Name = dropPhoto.Name,
-                    XDiameterInPixels = dropPhoto.XDiameterInPixels,
-                    AddedDate = dropPhoto.AddedDate,
-                    CreationDateTime = dropPhoto.CreationDateTime,
-                    PhotoId = dropPhoto.PhotoId,
-                    PhotoType = dropPhoto.PhotoType,
-                    YDiameterInPixels = dropPhoto.YDiameterInPixels,
-                    ZDiameterInPixels = dropPhoto.ZDiameterInPixels,
-                    CommentId = dropPhoto.CommentId,
-                    ContourId = dropPhoto.ContourId
-                };
-
-                if (dbDropPhoto.CommentId != null)
-                {
-                    dbDropPhoto.Comment = await GetCommentById(dbDropPhoto.CommentId.Value);
-                }
-
-                if (dbDropPhoto.ContourId != null)
-                {
-                    dbDropPhoto.Contour = await GetContourById(dbDropPhoto.ContourId.Value);
-                }
-
-                return dbDropPhoto;
-            }
-        }
-
         private async Task<DbThermalPhoto> GetDbThermalPhoto(DbMeasurement measurement)
         {
             using (var context = new DDropContext())
@@ -1152,27 +1098,6 @@ namespace DDrop.DAL
             }
         }
 
-        private async Task<DbContour> GetContourById(Guid contourId)
-        {
-            using (var context = new DDropContext())
-            {
-                var contour = await context.Contours.FirstOrDefaultAsync(x => x.ContourId == contourId);
-
-                if (contour == null)
-                {
-                    return null;
-                }
-
-                return new DbContour
-                {
-                    ConnectedLines = contour.ConnectedLines,
-                    CalculationParameters = contour.CalculationParameters,
-                    CalculationProvider = contour.CalculationProvider,
-                    ContourId = contour.ContourId
-                };
-            }
-        }
-
         public async Task<DbSeries> GetDbSeriesForExportById(Guid seriesId)
         {
             using (var context = new DDropContext())
@@ -1184,7 +1109,12 @@ namespace DDrop.DAL
                         {
                             x.Title,
                             x.IntervalBetweenPhotos,
-                            x.Substance,
+                            Substance = x.Substance != null ? new
+                            {
+                                CommonName = x.Substance.CommonName,
+                                Id = x.Substance.Id,
+                                SubstanceId = x.Substance.SubstanceId
+                            } : null,
                             x.Settings,
                             x.ThermalPlot,
                             x.RegionOfInterest,
@@ -1212,32 +1142,6 @@ namespace DDrop.DAL
                             x.MeasurementId,
                             x.AmbientTemperature,
                             x.Comment,
-                            DropPhotos = x.DropPhotos.OrderBy(dp => dp.PhotoType).Select(p => new
-                            {
-                                p.Name,
-                                p.SimpleLines,
-                                p.PhotoId,
-                                p.AddedDate,
-                                p.PhotoType,
-                                p.CreationDateTime,
-                                p.XDiameterInPixels,
-                                p.YDiameterInPixels,
-                                p.ZDiameterInPixels,
-                                p.CommentId,
-                                p.ContourId,
-                                p.Comment,
-                            }),
-                            ThermalPhoto = x.ThermalPhoto != null ? new
-                            {
-                                x.ThermalPhoto.Name,
-                                x.ThermalPhoto.PhotoId,
-                                x.ThermalPhoto.AddedDate,
-                                x.ThermalPhoto.PhotoType,
-                                x.ThermalPhoto.CreationDateTime,
-                                x.ThermalPhoto.EllipseCoordinate,
-                                x.ThermalPhoto.CommentId,
-                                x.ThermalPhoto.Comment,
-                            } : null,
                         }).ToList();
 
                     var dbMeasurementForAdd = new List<DbMeasurement>();
@@ -1251,31 +1155,7 @@ namespace DDrop.DAL
                             MeasurementOrderInSeries = measurement.MeasurementOrderInSeries,
                             AmbientTemperature = measurement.AmbientTemperature,
                             Comment = measurement.Comment,
-                            ThermalPhoto = measurement.ThermalPhoto != null ? new DbThermalPhoto
-                            {
-                                Name = measurement.ThermalPhoto.Name,
-                                PhotoId = measurement.ThermalPhoto.PhotoId,
-                                AddedDate = measurement.ThermalPhoto.AddedDate,
-                                PhotoType = measurement.ThermalPhoto.PhotoType,
-                                CreationDateTime = measurement.ThermalPhoto.CreationDateTime,
-                                EllipseCoordinate = measurement.ThermalPhoto.EllipseCoordinate,
-                                CommentId = measurement.ThermalPhoto.CommentId
-                            } : null,
-                            DropPhotos = measurement.DropPhotos.Select(p => new DbDropPhoto
-                            {
-                                Name = p.Name,
-                                SimpleLines = p.SimpleLines,
-                                PhotoId = p.PhotoId,
-                                AddedDate = p.AddedDate,
-                                PhotoType = p.PhotoType,
-                                CreationDateTime = p.CreationDateTime,
-                                XDiameterInPixels = p.XDiameterInPixels,
-                                YDiameterInPixels = p.YDiameterInPixels,
-                                ZDiameterInPixels = p.ZDiameterInPixels,
-                                CommentId = p.CommentId,
-                                ContourId = p.ContourId,
-                                Comment = p.Comment,
-                            }).ToList(),
+                            MeasurementId = measurement.MeasurementId
                         };
 
                         var drop = await context.Drops.FirstOrDefaultAsync(x => x.Measurement.MeasurementId == measurement.MeasurementId);
@@ -1311,7 +1191,12 @@ namespace DDrop.DAL
                         Comment = series.Comment,
                         RegionOfInterest = series.RegionOfInterest,
                         Settings = series.Settings,
-                        Substance = series.Substance,
+                        Substance = series.Substance != null ? new DbSubstances
+                        {
+                            CommonName = series.Substance.CommonName,
+                            Id = series.Substance.Id,
+                            SubstanceId = series.Substance.SubstanceId
+                        } : null,
                         ThermalPlot = series.ThermalPlot,
                     };
                 }
@@ -1328,7 +1213,7 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.Users.Attach(series.CurrentUser);
+                    //context.Users.Attach(series.CurrentUser);
                     context.Series.Add(series);
 
                     await context.SaveChangesAsync();
@@ -1972,6 +1857,45 @@ namespace DDrop.DAL
                 {
                     throw new TimeoutException(e.Message, e);
                 }
+            }
+        }
+
+        public async Task<DbThermalPhoto> GetThermalPhotoByMeasurementId(Guid measurementId, bool withContent = false)
+        {
+            using (var context = new DDropContext())
+            {
+                var thermalPhoto = await context.ThermalPhotos.Select(x => new
+                {
+
+                    x.Name,
+                    x.PhotoId,
+                    x.AddedDate,
+                    x.PhotoType,
+                    x.CreationDateTime,
+                    x.EllipseCoordinate,
+                    x.Comment,
+                    x.Contour,
+                    Content = withContent ? x.Content : null
+                })
+                .FirstOrDefaultAsync(x => x.PhotoId == measurementId);
+
+                if (thermalPhoto == null)
+                {
+                    return null;
+                }    
+
+                return new DbThermalPhoto
+                {
+                    Name = thermalPhoto.Name,
+                    PhotoId = thermalPhoto.PhotoId,
+                    AddedDate = thermalPhoto.AddedDate,
+                    PhotoType = thermalPhoto.PhotoType,
+                    CreationDateTime = thermalPhoto.CreationDateTime,
+                    EllipseCoordinate = thermalPhoto.EllipseCoordinate,
+                    Comment = thermalPhoto.Comment,
+                    Contour = thermalPhoto.Contour,
+                    Content = thermalPhoto.Content
+                };
             }
         }
 

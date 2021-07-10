@@ -27,12 +27,8 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Border x:Name="SeriesManagerMenuBar" Grid.Column="0" Grid.Row="0" Background="Gainsboro"
@@ -226,65 +222,6 @@
                             </DataGrid>
                         </loadingSpinner:AdornedControl>
                     </Border>
-                    <GridSplitter HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Center"
-                                  Grid.Column="0"
-                                  Grid.Row="1" ResizeBehavior="PreviousAndNext"
-                                  Height="5" />
-
-                    <DataGrid ColumnWidth="*" AutoGenerateColumns="False" IsReadOnly="True" Grid.Column="0"
-                              Grid.Row="2" Margin="10" ItemsSource="{Binding User.UserSeries.PhotoSeries}"
-                              Name="SeriesPreviewDataGrid" SelectionChanged="SeriesPreviewDataGrid_SelectionChanged" CanUserSortColumns="False">
-                        <DataGrid.RowStyle>
-                            <Style TargetType="DataGridRow">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver"
-                                             Value="True">
-                                        <Setter Property="Background"
-                                                Value="#dde0eb" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.RowStyle>
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Измерение" Binding="{Binding Name}" />
-                            <DataGridTextColumn 
-                                IsReadOnly="True" Header="Радиус, м"
-                                Binding="{Binding Drop.RadiusInMeters}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn 
-                                IsReadOnly="True" Header="Объем, м³"
-                                Binding="{Binding Drop.VolumeInCubicalMeters}"/>
-                            <DataGridTextColumn 
-                                IsReadOnly="True" Header="Температура, °С"
-                                Binding="{Binding Drop.Temperature}"/>
-                            <DataGridTextColumn 
-                                IsReadOnly="True" Header="Температура ОС, °С"
-                                Binding="{Binding AmbientTemperature}"/>
-                            <DataGridTextColumn Header="Время добавления" Binding="{Binding AddedDate}" />
-                            <DataGridTextColumn Header="Время создания" Binding="{Binding CreationDateTime}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GridSplitter HorizontalAlignment="Center"
-                                  VerticalAlignment="Stretch"
-                                  Grid.Column="1"
-                                  Grid.Row="0"
-                                  Grid.RowSpan="3" ResizeBehavior="PreviousAndNext"
-                                  Width="5" />
-                    <loadingSpinner:AdornedControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Name="PreviewLoading">
-                        <loadingSpinner:AdornedControl.AdornerContent>
-                            <simpleSample:LoadingWait />
-                        </loadingSpinner:AdornedControl.AdornerContent>
-                        <zoomborder:ZoomBorder HorizontalAlignment="Stretch" x:Name="CgsImagePreviewViewer"
-                                               ClipToBounds="True" Background="Gray" Margin="10" Grid.RowSpan="3">
-                            <Canvas x:Name="PreviewCanvas">
-                                <Image x:Name="ImgPreview" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       Width="{Binding Source.PixelWidth,RelativeSource={RelativeSource Self}}"
-                                       Height="{Binding Source.PixelHeight,RelativeSource={RelativeSource Self}}"
-                                       Stretch="Uniform" />
-                            </Canvas>
-                        </zoomborder:ZoomBorder>
-                    </loadingSpinner:AdornedControl>
                 </Grid>
             </TabItem>
             <TabItem Name="SingleSeries" IsEnabled="False">

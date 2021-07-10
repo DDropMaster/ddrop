@@ -95,8 +95,7 @@ namespace DDrop.Logic.GeometryBL
             verticalLine.Line.Stroke = Brushes.DeepPink;
         }
 
-        public void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour,
-            bool showContourOnPreview)
+        public void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour, bool showContourOnPreview)
         {
             if (selectedPhoto.Contour?.Lines != null && showContourOnPreview)
             {

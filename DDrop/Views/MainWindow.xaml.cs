@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,6 +18,7 @@ using AutoMapper;
 using AutoMapper.Internal;
 using DDrop.BE.Enums;
 using DDrop.BE.Enums.Logger;
+using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
 using DDrop.BE.Models.Thermal;
 using DDrop.BL.AppStateBL;
@@ -52,7 +52,6 @@ using DDrop.Properties;
 using DDrop.Utility.Animation;
 using DDrop.Utility.Calculation;
 using DDrop.Utility.DataGrid;
-using DDrop.Utility.ExcelOperations;
 using DDrop.Utility.FileOperations;
 using DDrop.Utility.ImageOperations;
 using DDrop.Utility.ImageOperations.ImageValidator;
@@ -70,7 +69,6 @@ using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
 using IGeometryBL = DDrop.Logic.GeometryBL.IGeometryBL;
-using Path = System.IO.Path;
 using pbu = RFM.RFM_WPFProgressBarUpdate;
 using Point = System.Drawing.Point;
 using Series = DDrop.BE.Models.Series;
@@ -96,7 +94,7 @@ namespace DDrop.Views
             FileOperations.ClearDirectory("Temp");
             FileOperations.CreateDirectory("Cache");
 
-            if (Settings.Default.CacheDeletion == CacheDeleteVariantsView.OnLaunch)
+            if (Settings.Default.CacheDeletion == CacheDeleteVariants.OnLaunch)
             {
                 FileOperations.ClearDirectory("Cache");
             }
@@ -138,9 +136,6 @@ namespace DDrop.Views
             YAxesCollection = new AxesCollection();
             AvailableTemperaturePlots = new ObservableCollection<PlotView>();
             AvailableRadiusPlots = new ObservableCollection<PlotView>();
-            _lineSeriesPreview = new ObservableCollection<TypedLineView>();
-
-            _typedRectangleSeriesPreview = new TypedRectangleView();
         }
 
         #region Variable Declaration
@@ -153,14 +148,9 @@ namespace DDrop.Views
         private bool? _allSelectedPlots = false;
         private bool _allSelectedTemperaturePlotsChanging;
         private bool? _allSelectedTemperaturePlots = false;
-        private ObservableCollection<TypedLineView> _lineSeriesPreview;
-
-        private TypedRectangleView _typedRectangleSeriesPreview;
 
         public bool DrawingHorizontalLine { get; set; }
         public bool DrawingVerticalLine { get; set; }
-
-        private ObservableCollection<Line> _contourSeriesPreview;
 
         private readonly ISeriesBL _seriesBL;
         private readonly IDropPhotoBL _dropPhotoBl;
@@ -192,8 +182,6 @@ namespace DDrop.Views
             new ObservableCollection<AutoCalculationTemplate>();
 
         private AutoCalculationTemplate _currentPhotoAutoCalculationTemplate;
-
-        private MeasurementView _currentSeriesPreviewMeasurement = new MeasurementView();
 
         private int _initialXDiameterInPixels;
         private int _initialYDiameterInPixels;
@@ -267,9 +255,6 @@ namespace DDrop.Views
 
         public static readonly DependencyProperty CurrentDropPhotoProperty =
             DependencyProperty.Register("CurrentDropPhoto", typeof(DropPhotoView), typeof(MainWindow));
-
-        public static readonly DependencyProperty CurrentPreviewMeasurementProperty =
-            DependencyProperty.Register("CurrentPreviewMeasurement", typeof(MeasurementView), typeof(MainWindow));
 
         public static readonly DependencyProperty ReferenceImageProperty =
             DependencyProperty.Register("ReferenceImage", typeof(ImageSource), typeof(MainWindow));
@@ -451,12 +436,6 @@ namespace DDrop.Views
         {
             get => (DropPhotoView)GetValue(CurrentDropPhotoProperty);
             set => SetValue(CurrentDropPhotoProperty, value);
-        }
-
-        public MeasurementView CurrentPreviewMeasurement
-        {
-            get => (MeasurementView) GetValue(CurrentPreviewMeasurementProperty);
-            set => SetValue(CurrentPreviewMeasurementProperty, value);
         }
 
         public SeriesView CurrentSeries
@@ -837,20 +816,6 @@ namespace DDrop.Views
 
             if (User.UserSeries.Count > 0 && SeriesDataGrid.SelectedItem != null)
             {
-                foreach (var line in _lineSeriesPreview)
-                {
-                    PreviewCanvas.Children.Remove(line.Line);
-                }
-
-                PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
-                if (_contourSeriesPreview != null)
-                {
-                    foreach (var line in _contourSeriesPreview)
-                    {
-                        PreviewCanvas.Children.Remove(line);
-                    }
-                }
-
                 if (CurrentDropPhoto != null)
                 {
                     foreach (var line in CurrentDropPhoto?.Lines)
@@ -931,49 +896,6 @@ namespace DDrop.Views
 
         private CancellationTokenSource _tokenSource;
 
-        private void SeriesPreviewDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedMeasurement = (MeasurementView) SeriesPreviewDataGrid.SelectedItem;
-            if (selectedMeasurement != null)
-            {
-                _currentSeriesPreviewMeasurement = selectedMeasurement;
-                CurrentPreviewMeasurement = selectedMeasurement;
-
-                try
-                {
-                    LoadSeriesPreviewPhoto(_currentSeriesPreviewMeasurement);
-                }
-                catch (OperationCanceledException)
-                {
-                }
-                catch (TimeoutException)
-                {
-                    _notifier.ShowError(
-                        $"Не удалось загрузить снимок {_currentSeriesPreviewMeasurement.Name}. Не удалось установить подключение. Проверьте интернет соединение.");
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(new LogEntry
-                    {
-                        Exception = exception.ToString(),
-                        LogCategory = LogCategory.Common,
-                        InnerException = exception.InnerException?.Message,
-                        Message = exception.Message,
-                        StackTrace = exception.StackTrace,
-                        Username = User.Email,
-                        Details = exception.TargetSite.Name
-                    });
-                    throw;
-                }
-
-
-            }
-            else
-            {
-                ImgPreview.Source = null;
-            }
-        }
-
         private async void ExportSeriesButton_Click(object sender, RoutedEventArgs e)
         {
             if (User.UserSeries.Any(x => x.IsChecked))
@@ -1051,21 +973,6 @@ namespace DDrop.Views
 
                             await _seriesLogic.DeleteSeries(User.UserSeries[i], MainWindowPixelDrawer.CanDrawing, User.UserSeries);
 
-                            foreach (var line in _lineSeriesPreview)
-                            {
-                                PreviewCanvas.Children.Remove(line.Line);
-                            }
-
-                            PreviewCanvas.Children.Remove(_typedRectangleSeriesPreview.RegionOfInterest);
-
-                            if (_contourSeriesPreview != null)
-                            {
-                                foreach (var line in _contourSeriesPreview)
-                                {
-                                    PreviewCanvas.Children.Remove(line);
-                                }
-                            }
-
                             if (CurrentDropPhoto != null)
                             {
                                 foreach (var line in CurrentDropPhoto.Lines)
@@ -1105,8 +1012,6 @@ namespace DDrop.Views
                         pbu.CurValue[pbuHandle1] += 1;
                     }
 
-                    SeriesPreviewDataGrid.SelectedIndex = -1;
-
                     pbu.ResetValue(pbuHandle1);
                     pbu.Remove(pbuHandle1);
 
@@ -1123,9 +1028,6 @@ namespace DDrop.Views
         private void ClearSeriesView()
         {
             Photos.ItemsSource = null;
-            ImgPreview.Source = null;
-            SeriesPreviewDataGrid.ItemsSource = null;
-            SeriesPreviewDataGrid.SelectedIndex = -1;
         }
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1139,11 +1041,6 @@ namespace DDrop.Views
                     if (item.Name == "SingleSeries")
                     {
                         Photos.ItemsSource = CurrentSeries.MeasurementsSeries;
-                    }
-                    else if (item.Name == "SeriesManager")
-                    {
-                        if (SeriesDataGrid.SelectedItems.Count > 0 && CurrentSeries?.MeasurementsSeries != null)
-                            SeriesPreviewDataGrid.ItemsSource = CurrentSeries.MeasurementsSeries;
                     }
                     else if (item.Name == "CombinedSeriesPlot")
                     {
@@ -1179,51 +1076,7 @@ namespace DDrop.Views
 
                         try
                         {
-                            var fullDbSeries = await _seriesBL.GetDbSeriesForExportById(series.SeriesId);
-
-                            var fileNames = new List<string>();
-
-                            foreach (var measurement in fullDbSeries.MeasurementsSeries)
-                            {
-                                foreach (var dropPhoto in measurement.DropPhotos)
-                                {
-                                    dropPhoto.Content = await _dropPhotoBl.GetDropPhotoContent(dropPhoto.PhotoId, CancellationToken.None, Settings.Default.UseCache);
-
-                                    if (dropPhoto.ContourId.HasValue)
-                                    {
-                                        dropPhoto.Contour = _mapper.Map<Contour, DbContour>(await _dropPhotoBl.GetDropPhotoContour(dropPhoto.ContourId.Value));
-                                    }
-                                }
-
-                                await Task.Run(() => SeriesExporter.ExportMeasurementAsync($"{saveFileDialog.SelectedPath}\\{measurement.Name}.dmes", measurement));
-
-                                foreach (var dropPhoto in measurement.DropPhotos)
-                                {
-                                    dropPhoto.Content = null;
-                                    dropPhoto.Contour = null;
-                                    dropPhoto.PhotoId = Guid.Empty;
-                                }
-
-                                fileNames.Add($"{saveFileDialog.SelectedPath}\\{measurement.Name}.dmes");
-                            }
-
-                            fullDbSeries.MeasurementsSeries = null;
-
-                            await Task.Run(() => SeriesExporter.ExportSeriesLocalAsync(
-                                $"{saveFileDialog.SelectedPath}\\{series.Title}.dser", fullDbSeries));
-
-                            fileNames.Add($"{saveFileDialog.SelectedPath}\\{series.Title}.dser");
-
-                            var zipFile = $"{saveFileDialog.SelectedPath}\\{series.Title}.ddrops";
-
-                            using (var archive = ZipFile.Open(zipFile, ZipArchiveMode.Create))
-                            {
-                                foreach (var fPath in fileNames)
-                                {
-                                    archive.CreateEntryFromFile(fPath, Path.GetFileName(fPath), CompressionLevel.NoCompression);
-                                    File.Delete(fPath);
-                                }
-                            }
+                            await _exportBl.ExportLocalSeriesAsync(series.SeriesId, saveFileDialog.SelectedPath);
 
                             _logger.LogInfo(new LogEntry
                             {
@@ -1290,8 +1143,6 @@ namespace DDrop.Views
                 var userEmail = User.Email;
                 try
                 {
-                    var dbUser = await _userBl.GetUserByLogin(userEmail);
-
                     foreach (var fileName in openFileDialog.FileNames)
                     {
                         try
@@ -1308,7 +1159,7 @@ namespace DDrop.Views
 
                                 using (var zipEntryStream = serie.Open())
                                 {
-                                    dbSerieForAdd = await _exportBl.ImportLocalSeriesAsync(zipEntryStream, dbUser);
+                                    dbSerieForAdd = await _exportBl.ImportLocalSeriesAsync(zipEntryStream, User.UserId);
 
                                     await _seriesBL.CreateFullSeries(dbSerieForAdd);
     
@@ -1478,75 +1329,6 @@ namespace DDrop.Views
 
             SeriesWindowLoading(false);
             SeriesManagerLoadingComplete();
-        }
-
-        private async void LoadSeriesPreviewPhoto(MeasurementView measurement)
-        {
-            PreviewCanvas.Children.Clear();
-
-            ProgressBar.IsIndeterminate = true;
-            ImgPreview.Source = null;
-            _appStateBL.ShowAdorner(PreviewLoading);
-
-            if (_tokenSource != null) _tokenSource.Cancel();
-
-            _tokenSource = new CancellationTokenSource();
-
-            var previewPhoto = _currentSeriesPreviewMeasurement.DropPhotos?.FirstOrDefault(x => x.PhotoId != Guid.Empty);
-
-            if (previewPhoto != null)
-            {
-                previewPhoto.Content = await Task.Run(() => _dropPhotoBl.GetDropPhotoContent(previewPhoto.PhotoId, _tokenSource.Token, Settings.Default.UseCache));
-
-                if (previewPhoto.ContourId.HasValue)
-                {
-                    previewPhoto.Contour = _mapper.Map<Contour, ContourView>(await _dropPhotoBl.GetDropPhotoContour(previewPhoto.ContourId.Value));
-                }
-
-                ImgPreview.Source = ImageInterpreter.LoadImage(previewPhoto.Content);
-
-                _geometryBL.PrepareLines(previewPhoto, out _lineSeriesPreview, Settings.Default.ShowLinesOnPreview);
-                _geometryBL.PrepareContour(previewPhoto, out _contourSeriesPreview, Settings.Default.ShowContourOnPreview);
-
-                if (CurrentSeries?.RegionOfInterest?.FirstOrDefault(x =>
-                    x.PhotoType == PhotoTypeView.FrontDropPhoto)?.RegionOfInterest != null && Settings.Default.ShowRegionOfInterest)
-                {
-                    _typedRectangleSeriesPreview.RegionOfInterest = CurrentSeries.RegionOfInterest
-                        .FirstOrDefault(x => x.PhotoType == PhotoTypeView.FrontDropPhoto).RegionOfInterest;
-                }
-                
-                PreviewCanvas.Children.Clear();
-                if (ImgPreview != null)
-                    PreviewCanvas.Children.Add(ImgPreview);
-
-                foreach (var line in _lineSeriesPreview)
-                {
-                    PreviewCanvas.Children.Add(line.Line);
-                }
-
-                if (_contourSeriesPreview != null)
-                    foreach (var line in _contourSeriesPreview)
-                        PreviewCanvas.Children.Add(line);
-                if (_typedRectangleSeriesPreview.RegionOfInterest != null)
-                {
-                    PreviewCanvas.Children.Add(_typedRectangleSeriesPreview.RegionOfInterest);
-                }
-            }
-            else if (_currentSeriesPreviewMeasurement.ThermalPhoto != null && _currentSeriesPreviewMeasurement.ThermalPhoto.PhotoId != Guid.Empty)
-            {
-                _currentSeriesPreviewMeasurement.ThermalPhoto.Content = await Task.Run(() =>
-                    _thermalPhotoBl.GetThermalPhotoContent(_currentSeriesPreviewMeasurement.ThermalPhoto.PhotoId,
-                        _tokenSource.Token, Settings.Default.UseCache));
-
-                ImgPreview.Source = ImageInterpreter.LoadImage(_currentSeriesPreviewMeasurement.ThermalPhoto.Content);
-
-                PreviewCanvas.Children.Clear();
-                if (ImgPreview != null)
-                    PreviewCanvas.Children.Add(ImgPreview);
-            }
-
-            ProgressBar.IsIndeterminate = false;
-            _appStateBL.HideAdorner(PreviewLoading);
         }
 
         private void EditIntervalBetweenPhotos_Click(object sender, RoutedEventArgs e)
@@ -1728,18 +1510,9 @@ namespace DDrop.Views
                         dropPhoto.Content = null;
                         dropPhoto.Contour = null;
 
-                        if (dropPhoto.Lines != null)
+                        for (int i = ImgCurrent.CanDrawing.Children.Count; i-- > 1;)
                         {
-                            foreach (var line in dropPhoto?.Lines)
-                            {
-                                ImgCurrent.CanDrawing.Children.Remove(line.Line);
-                            }
-                        }
-
-                        if (dropPhoto?.Contour != null)
-                        {
-                            foreach (var line in dropPhoto.Contour.Lines)
-                                ImgCurrent.CanDrawing.Children.Remove(line);
+                            ImgCurrent.CanDrawing.Children.RemoveAt(i);
                         }
                     }
                 }
@@ -1792,8 +1565,7 @@ namespace DDrop.Views
                     foreach (var line in contour.Lines)
                         canvas.Children.Remove(line);
 
-                if (contour != null && Settings.Default.ShowContourOnPreview ||
-                    contour != null && _autoCalculationModeOn)
+                if (contour != null && _autoCalculationModeOn)
                     foreach (var line in contour.Lines)
                         canvas.Children.Add(line);
 
@@ -1849,7 +1621,7 @@ namespace DDrop.Views
                     }
                 }
 
-                if (Settings.Default.ShowLinesOnPreview || _photoEditModeOn)
+                if (_photoEditModeOn)
                 {
                     if (dropPhoto.Lines != null)
                     {
@@ -1860,8 +1632,7 @@ namespace DDrop.Views
                     }
                 }
 
-                if (dropPhoto.Contour != null && Settings.Default.ShowContourOnPreview ||
-                    dropPhoto.Contour != null && _autoCalculationModeOn)
+                if (dropPhoto.Contour != null && _autoCalculationModeOn)
                     foreach (var line in dropPhoto.Contour.Lines)
                         canvas.Children.Add(line);
                 if (CurrentSeries?.RegionOfInterest != null)
@@ -4141,14 +3912,6 @@ namespace DDrop.Views
             var options = new Options(_notifier, _logger, User);
             options.ShowDialog();
 
-            if (options.ShowLinesOnPreviewIsChanged || options.ShowContourOnPreviewIsChanged || options.ShowRegionOfInterest)
-            {
-                if (CurrentSeries != null && CurrentMeasurement != null)
-                    ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
-
-                if (_currentSeriesPreviewMeasurement != null) LoadSeriesPreviewPhoto(_currentSeriesPreviewMeasurement);
-            }
-
             if (options.DimensionlessPlotsIsChanged)
             {
                 UpdatePlots(true);
@@ -4391,6 +4154,13 @@ namespace DDrop.Views
                         if (CurrentDropPhoto.ContourId.HasValue)
                         {
                             CurrentDropPhoto.Contour = _mapper.Map<Contour, ContourView>(await _dropPhotoBl.GetDropPhotoContour(CurrentDropPhoto.ContourId.Value));
+                        }
+
+                        CurrentDropPhoto.SimpleLines = _mapper.Map<List<SimpleLine>,ObservableCollection<SimpleLineView>>(await _dropPhotoBl.GetDropPhotoLines(CurrentDropPhoto.PhotoId));
+
+                        if (CurrentDropPhoto.SimpleLines != null)
+                        {
+                            CurrentDropPhoto.Lines = _mapper.Map<ObservableCollection<SimpleLineView>, ObservableCollection<TypedLineView>>(CurrentDropPhoto.SimpleLines);
                         }
                     }
 

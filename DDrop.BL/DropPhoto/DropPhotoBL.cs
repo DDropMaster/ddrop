@@ -8,6 +8,7 @@ using DDrop.BE.Models;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
 using DDrop.Utility.ImageOperations;
+using DDrop.Utility.SeriesLocalStorageOperations;
 
 namespace DDrop.BL.Measurement
 {
@@ -97,14 +98,14 @@ namespace DDrop.BL.Measurement
             await Task.Run(() => _dDropRepository.CreateDropPhoto(_mapper.Map<DropPhoto, DbDropPhoto>(dropPhoto), _mapper.Map<BE.Models.Measurement, DbMeasurement>(owningMeasurement)));
         }
 
-        public async Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId)
+        public async Task<List<DropPhoto>> GetDropPhotosByMeasurementId(Guid measurementId, bool withContent =  false)
         {
             return _mapper.Map<List<DbDropPhoto>, List<DropPhoto>>(await Task.Run(() => _dDropRepository.GetDropPhotosByMeasurementId(measurementId)));
         }
     
-        public async Task<string> GetDropPhotoLines(Guid photoId)
+        public async Task<List<SimpleLine>> GetDropPhotoLines(Guid photoId)
         {
-            return await _dDropRepository.GetDropPhotoLines(photoId);
+            return JsonSerializeProvider.DeserializeFromString<List<SimpleLine>>(await _dDropRepository.GetDropPhotoLines(photoId));
         }
 
         public async Task<DropPhoto> GetDropPhoto(Guid photoId)

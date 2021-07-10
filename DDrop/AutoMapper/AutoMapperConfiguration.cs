@@ -110,8 +110,11 @@ namespace DDrop.AutoMapper
                     .ForMember(x =>
                         x.Processed, opt => opt.Ignore())
                     .ForMember(x =>
-                        x.Lines, opt => opt.MapFrom<DropPhotoHorizontalLineResolver>());
+                        x.Lines, opt => opt.MapFrom<DropPhotoLinesResolver>());
                 cfg.CreateMap<DropPhotoView, DropPhoto>();
+                cfg.CreateMap<SimpleLineView, TypedLineView>()
+                    .ForMember(x =>
+                        x.Line, opt => opt.MapFrom<LineResolver>());
                 cfg.CreateMap<DropPhoto, DbDropPhoto>()
                     .ForMember(x => x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>

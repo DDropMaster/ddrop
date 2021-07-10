@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Enums\CommentableEntityType.cs" />
     <Compile Include="Enums\LineType.cs" />
+    <Compile Include="Enums\Options\CacheDeleteVariants.cs" />
     <Compile Include="Enums\PlotBuildingMode.cs" />
     <Compile Include="Enums\PlotType.cs" />
     <Compile Include="Enums\TemperatureDetectingMode.cs" />
