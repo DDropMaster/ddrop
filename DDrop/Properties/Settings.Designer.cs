@@ -154,5 +154,41 @@ namespace DDrop.Properties {
                 this["UseCache"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowLinesOnPreview {
+            get {
+                return ((bool)(this["ShowLinesOnPreview"]));
+            }
+            set {
+                this["ShowLinesOnPreview"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowContourOnPreview {
+            get {
+                return ((bool)(this["ShowContourOnPreview"]));
+            }
+            set {
+                this["ShowContourOnPreview"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowRegionOfInterest {
+            get {
+                return ((bool)(this["ShowRegionOfInterest"]));
+            }
+            set {
+                this["ShowRegionOfInterest"] = value;
+            }
+        }
     }
 }

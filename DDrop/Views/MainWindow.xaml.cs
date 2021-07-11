@@ -1565,7 +1565,7 @@ namespace DDrop.Views
                     foreach (var line in contour.Lines)
                         canvas.Children.Remove(line);
 
-                if (contour != null && _autoCalculationModeOn)
+                if (contour != null && Settings.Default.ShowContourOnPreview || contour != null && _autoCalculationModeOn)
                     foreach (var line in contour.Lines)
                         canvas.Children.Add(line);
 
@@ -1621,7 +1621,7 @@ namespace DDrop.Views
                     }
                 }
 
-                if (_photoEditModeOn)
+                if (Settings.Default.ShowLinesOnPreview || _photoEditModeOn)
                 {
                     if (dropPhoto.Lines != null)
                     {
@@ -1632,7 +1632,7 @@ namespace DDrop.Views
                     }
                 }
 
-                if (dropPhoto.Contour != null && _autoCalculationModeOn)
+                if (dropPhoto.Contour != null && Settings.Default.ShowContourOnPreview || dropPhoto.Contour != null && _autoCalculationModeOn)
                     foreach (var line in dropPhoto.Contour.Lines)
                         canvas.Children.Add(line);
                 if (CurrentSeries?.RegionOfInterest != null)
@@ -3918,6 +3918,12 @@ namespace DDrop.Views
         {
             var options = new Options(_notifier, _logger, User);
             options.ShowDialog();
+
+            if (options.ShowLinesOnPreviewIsChanged || options.ShowContourOnPreviewIsChanged || options.ShowRegionOfInterest)
+            {
+                if (CurrentSeries != null && CurrentMeasurement != null)
+                    ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
+            }
 
             if (options.DimensionlessPlotsIsChanged)
             {
