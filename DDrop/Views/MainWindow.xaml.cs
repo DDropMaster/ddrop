@@ -5417,20 +5417,50 @@ namespace DDrop.Views
             return plots;
         }
 
-        private void OnPlotsChecked(object sender, RoutedEventArgs e)
+        private async void OnPlotsChecked(object sender, RoutedEventArgs e)
         {
+            ProgressBar.IsIndeterminate = true;
             CreateAxes();
 
-            foreach (var plot in AvailableRadiusPlots)
+            var plots = new ObservableCollection<PlotView>();
+
+            switch(_currentPlotType)
+            {
+                case PlotTypeView.Radius:
+                {
+                    plots = AvailableRadiusPlots;
+                    break;
+                }
+                case PlotTypeView.Temperature:
+                {
+                    plots = AvailableTemperaturePlots;
+                    break;
+                }
+            }
+
+            foreach (var plot in plots)
             {
                 var notAddedYet = SeriesCollectionToPlot.OfType<LineSeriesId>()
                     .FirstOrDefault(x => x.Id == plot.PlotId);
 
                 if (notAddedYet == null && plot.IsChecked)
                 {
+                    if (plot.SeriesId == Guid.Empty)
+                    {
+                        plot.Points =_mapper.Map<List<SimplePoint>, ObservableCollection<SimplePointView>>(await _customPlotsBl.GetPlotPoints(plot.PlotId, plot.Settings.DimensionlessSettings.XDimensionlessDivider, plot.Settings.DimensionlessSettings.YDimensionlessDivider, Settings.Default.DimensionlessPlots));
+                    }
+                    else
+                    {
+                        var series = _mapper.Map<Series, SeriesView>(await _seriesBL.GetSingleSerie(plot.SeriesId));
+
+                        plot.Points = _plotBl.AddPoints(_currentPlotType, series, Settings.Default.DimensionlessPlots);
+                    }
+
                     SeriesCollectionToPlot.Add(_plotBl.CreatePlot(plot, YAxesCollection.Count == 2));
                 }
             }
+
+            ProgressBar.IsIndeterminate = false;
         }
 
         private void ReCalculatePlots()
@@ -5447,7 +5477,7 @@ namespace DDrop.Views
 
                         if (series != null)
                         {
-                            _plotBl.AddPoints(availableRadiusPlot, PlotTypeView.Radius, series, Settings.Default.DimensionlessPlots);
+                            availableRadiusPlot.Points = _plotBl.AddPoints(PlotTypeView.Radius, series, Settings.Default.DimensionlessPlots);
                             SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
                         }
                     }
@@ -5472,7 +5502,23 @@ namespace DDrop.Views
         {
             CreateAxes();
 
-            foreach (var availableRadiusPlot in AvailableRadiusPlots)
+            var plots = new ObservableCollection<PlotView>();
+
+            switch (_currentPlotType)
+            {
+                case PlotTypeView.Radius:
+                {
+                    plots = AvailableRadiusPlots;
+                    break;
+                }
+                case PlotTypeView.Temperature:
+                {
+                    plots = AvailableTemperaturePlots;
+                    break;
+                }
+            }
+
+            foreach (var availableRadiusPlot in plots)
             {
                 var toRemove = SeriesCollectionToPlot.OfType<LineSeriesId>().FirstOrDefault(x => x.Id == availableRadiusPlot.PlotId);
 
@@ -5564,44 +5610,6 @@ namespace DDrop.Views
 
             _appStateBL.HideAdorner(PlotToolboxLoading);
             ProgressBar.IsIndeterminate = false;
-        }
-
-        private void OnTemperaturePlotsChecked(object sender, RoutedEventArgs e)
-        {
-            CreateAxes();
-
-            foreach (var plot in AvailableTemperaturePlots)
-            {
-                var notAddedYet = SeriesCollectionToPlot.OfType<LineSeriesId>().FirstOrDefault(x => x.Id == plot.PlotId);
-
-                if (notAddedYet == null && plot.IsChecked)
-                {
-                    SeriesCollectionToPlot.Add(_plotBl.CreatePlot(plot, YAxesCollection.Count == 2));
-                }
-            }
-        }
-
-        private void OnTemperaturePlotsUnchecked(object sender, RoutedEventArgs e)
-        {
-            CreateAxes();
-
-            foreach (var availableTemperaturePlot in AvailableTemperaturePlots)
-            {
-                var toRemove = SeriesCollectionToPlot.OfType<LineSeriesId>().FirstOrDefault(x => x.Id == availableTemperaturePlot.PlotId);
-
-                if (toRemove != null && !availableTemperaturePlot.IsChecked)
-                {
-                    SeriesCollectionToPlot.Remove(toRemove);
-                }
-            }
-
-            if (YAxesCollection.Count == 1)
-            {
-                foreach (var s in SeriesCollectionToPlot)
-                {
-                    s.ScalesYAt = 0;
-                }
-            }
         }
 
         private void PlotToolBoxTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -92,14 +92,14 @@ namespace DDrop.Utility.ExcelOperations
 
                     var plotToExcelOutput = new ObservableCollection<PlotToExcel>();
 
-                    plot.Points = JsonSerializeProvider.DeserializeFromString<List<SimplePoint>>(await _customPlotsBl.GetPlotPoints(plot.PlotId));
+                    plot.Points = await _customPlotsBl.GetPlotPoints(plot.PlotId, plot.Settings.DimensionlessSettings.XDimensionlessDivider, plot.Settings.DimensionlessSettings.YDimensionlessDivider, report.Dimensionless);
 
                     foreach (var point in plot.Points)
                     {
                         plotToExcelOutput.Add(new PlotToExcel
                         {
-                            X = report.Dimensionless ? point.X / plot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
-                            Y = report.Dimensionless ? point.Y / plot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                            X = point.X,
+                            Y = point.Y
                         });
                     }
 
@@ -260,14 +260,14 @@ namespace DDrop.Utility.ExcelOperations
                         worksheet.Cells["J8"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         worksheet.Cells["J8"].Style.Font.Bold = true;
 
-                        fullSeries.ThermalPlot.Points = JsonSerializeProvider.DeserializeFromString<List<SimplePoint>>(await _customPlotsBl.GetPlotPoints(currentSeries.ThermalPlot.PlotId));
+                        fullSeries.ThermalPlot.Points = await _customPlotsBl.GetPlotPoints(currentSeries.ThermalPlot.PlotId, fullSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider, fullSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider, report.Dimensionless);
 
                         foreach (var point in fullSeries.ThermalPlot.Points)
                         {
                             singleSeriesPlotToExcelOutput.Add(new PlotToExcel
                             {
-                                X = report.Dimensionless ? point.X / fullSeries.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider : point.X,
-                                Y = report.Dimensionless ? point.Y / fullSeries.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider : point.Y
+                                X = point.X,
+                                Y = point.Y
                             });
                         }
 

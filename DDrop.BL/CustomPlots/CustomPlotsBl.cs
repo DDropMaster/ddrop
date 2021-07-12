@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using DDrop.BE.Models;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
+using DDrop.Utility.SeriesLocalStorageOperations;
 
 namespace DDrop.BL.CustomPlots
 {
@@ -45,9 +47,20 @@ namespace DDrop.BL.CustomPlots
             return _mapper.Map<DbPlot, Plot>(await Task.Run(() => _dDropRepository.GetPlot(plotId)));
         }
 
-        public async Task<string> GetPlotPoints(Guid plotId)
+        public async Task<List<SimplePoint>> GetPlotPoints(Guid plotId, double xDimensionlessDivider, double yDimensionlessDivider, bool dimensionless = false)
         {
-            return await _dDropRepository.GetPlotPoints(plotId);
+            var points = JsonSerializeProvider.DeserializeFromString<List<SimplePoint>>(await _dDropRepository.GetPlotPoints(plotId));
+
+            if (dimensionless)
+            {
+                foreach (var point in points)
+                {
+                    point.X = point.X / xDimensionlessDivider;
+                    point.Y = point.Y / yDimensionlessDivider;
+                }
+            }
+
+            return points;
         }
     }
 }
