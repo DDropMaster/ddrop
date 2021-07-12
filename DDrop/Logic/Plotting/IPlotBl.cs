@@ -6,6 +6,7 @@ namespace DDrop.Logic.Plotting
     public interface IPlotBl
     {
         LineSeriesId CreatePlot(PlotView plot, bool combined);
-        PlotView CreatePlot(SeriesView series, PlotTypeView plotType, bool dimensionless);
+        void AddPoints(PlotView plot, PlotTypeView plotType, SeriesView series, bool dimensionless);
+        PlotView CreateBlankPlot(SeriesView series, PlotTypeView plotType, bool dimensionless);
     }
 }

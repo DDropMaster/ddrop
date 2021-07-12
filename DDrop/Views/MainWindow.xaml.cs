@@ -5353,7 +5353,7 @@ namespace DDrop.Views
         {
             foreach (var series in User.UserSeries)
             {
-                var plot = _plotBl.CreatePlot(series, plotType, Settings.Default.DimensionlessPlots);
+                var plot = _plotBl.CreateBlankPlot(series, plotType, Settings.Default.DimensionlessPlots);
                 
                 if (plot != null)
                 {
@@ -5443,7 +5443,13 @@ namespace DDrop.Views
 
                     if (added != null)
                     {
-                        SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
+                        var series = User.UserSeries.FirstOrDefault(x => x.SeriesId == availableRadiusPlot.SeriesId);
+
+                        if (series != null)
+                        {
+                            _plotBl.AddPoints(availableRadiusPlot, PlotTypeView.Radius, series, Settings.Default.DimensionlessPlots);
+                            SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
+                        }
                     }
                 }
             }

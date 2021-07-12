@@ -80,13 +80,37 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    var users = await context.Users
-                        .IncludeFilter(x => x.Plots.Where(z => z.Series == null)
-                        .Select(p => new { PlotId = p.PlotId, Name = p.Name, PlotType = p.PlotType, CurrentUserId = p.CurrentUserId, Settings = p.Settings }))
-                        .FirstOrDefaultAsync(x => x.Email == email);
+                    var users = await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+                    var plots = await context.Plots
+                        .Where(x => x.Series == null && x.CurrentUserId == users.UserId)
+                        .Select(p => new 
+                        { 
+                            PlotId = p.PlotId, 
+                            Name = p.Name, 
+                            PlotType = p.PlotType, 
+                            CurrentUserId = p.CurrentUserId, 
+                            Settings = p.Settings 
+                        })
+                        .ToListAsync();
+
+                    var dbPlots = new List<DbPlot>();
+
+                    foreach (var plot in plots)
+                    {
+                        dbPlots.Add(new DbPlot
+                        {
+                            CurrentUserId = plot.CurrentUserId,
+                            Name = plot.Name,
+                            PlotId = plot.PlotId,
+                            PlotType = plot.PlotType,
+                            Settings = plot.Settings,
+                        });
+                    }
 
                     if (users != null)
                     {
+                        users.Plots = dbPlots;
                         users.UserSeries = null;
                     }
 
