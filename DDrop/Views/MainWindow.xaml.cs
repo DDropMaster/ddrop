@@ -5445,7 +5445,7 @@ namespace DDrop.Views
 
                 if (notAddedYet == null && plot.IsChecked)
                 {
-                    await GetPoints(plot);
+                    await GetPoints(plot, _currentPlotType);
 
                     SeriesCollectionToPlot.Add(_plotBl.CreatePlot(plot, YAxesCollection.Count == 2));
                 }
@@ -5454,7 +5454,7 @@ namespace DDrop.Views
             ProgressBar.IsIndeterminate = false;
         }
 
-        private async Task GetPoints(PlotView plot)
+        private async Task GetPoints(PlotView plot, PlotTypeView plotType)
         {
             if (plot.SeriesId == Guid.Empty)
             {
@@ -5464,7 +5464,7 @@ namespace DDrop.Views
             {
                 var series = _mapper.Map<Series, SeriesView>(await _seriesBL.GetSingleSerie(plot.SeriesId));
 
-                plot.Points = await _plotBl.AddPoints(_currentPlotType, series, Settings.Default.DimensionlessPlots);
+                plot.Points = await _plotBl.AddPoints(plotType, series, Settings.Default.DimensionlessPlots);
             }
         }
 
@@ -5479,7 +5479,7 @@ namespace DDrop.Views
 
                     if (added != null)
                     {
-                        await GetPoints(availableRadiusPlot);
+                        await GetPoints(availableRadiusPlot, PlotTypeView.Radius);
                         SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
                     }
                 }
@@ -5493,7 +5493,7 @@ namespace DDrop.Views
 
                     if (added != null)
                     {
-                        await GetPoints(availableTemperaturePlot);
+                        await GetPoints(availableTemperaturePlot, PlotTypeView.Temperature);
                         SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableTemperaturePlot, YAxesCollection.Count == 2);
                     }
                 }
@@ -5522,11 +5522,11 @@ namespace DDrop.Views
                 }
             }
 
-            foreach (var availableRadiusPlot in plots)
+            foreach (var plot in plots)
             {
-                var toRemove = SeriesCollectionToPlot.OfType<LineSeriesId>().FirstOrDefault(x => x.Id == availableRadiusPlot.PlotId);
+                var toRemove = SeriesCollectionToPlot.OfType<LineSeriesId>().FirstOrDefault(x => x.Id == plot.PlotId && x.plotType == _currentPlotType);
 
-                if (toRemove != null && !availableRadiusPlot.IsChecked)
+                if (toRemove != null && !plot.IsChecked)
                 {
                     SeriesCollectionToPlot.Remove(toRemove);
                 }

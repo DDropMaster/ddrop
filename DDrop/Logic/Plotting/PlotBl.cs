@@ -52,7 +52,8 @@ namespace DDrop.Logic.Plotting
                 LineSmoothness = 0,
                 Fill = System.Windows.Media.Brushes.Transparent,
                 ScalesYAt = scale,
-                PointGeometry = null
+                PointGeometry = null,
+                plotType = plot.PlotType
             };
         }
 
