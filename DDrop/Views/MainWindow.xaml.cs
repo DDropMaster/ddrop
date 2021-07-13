@@ -5445,16 +5445,7 @@ namespace DDrop.Views
 
                 if (notAddedYet == null && plot.IsChecked)
                 {
-                    if (plot.SeriesId == Guid.Empty)
-                    {
-                        plot.Points =_mapper.Map<List<SimplePoint>, ObservableCollection<SimplePointView>>(await _customPlotsBl.GetPlotPoints(plot.PlotId, plot.Settings.DimensionlessSettings.XDimensionlessDivider, plot.Settings.DimensionlessSettings.YDimensionlessDivider, Settings.Default.DimensionlessPlots));
-                    }
-                    else
-                    {
-                        var series = _mapper.Map<Series, SeriesView>(await _seriesBL.GetSingleSerie(plot.SeriesId));
-
-                        plot.Points = _plotBl.AddPoints(_currentPlotType, series, Settings.Default.DimensionlessPlots);
-                    }
+                    await GetPoints(plot);
 
                     SeriesCollectionToPlot.Add(_plotBl.CreatePlot(plot, YAxesCollection.Count == 2));
                 }
@@ -5463,8 +5454,23 @@ namespace DDrop.Views
             ProgressBar.IsIndeterminate = false;
         }
 
-        private void ReCalculatePlots()
+        private async Task GetPoints(PlotView plot)
         {
+            if (plot.SeriesId == Guid.Empty)
+            {
+                plot.Points = _mapper.Map<List<SimplePoint>, ObservableCollection<SimplePointView>>(await _customPlotsBl.GetPlotPoints(plot.PlotId, plot.Settings.DimensionlessSettings.XDimensionlessDivider, plot.Settings.DimensionlessSettings.YDimensionlessDivider, Settings.Default.DimensionlessPlots));
+            }
+            else
+            {
+                var series = _mapper.Map<Series, SeriesView>(await _seriesBL.GetSingleSerie(plot.SeriesId));
+
+                plot.Points = await _plotBl.AddPoints(_currentPlotType, series, Settings.Default.DimensionlessPlots);
+            }
+        }
+
+        private async void ReCalculatePlots()
+        {
+            ProgressBar.IsIndeterminate = true;
             foreach (var availableRadiusPlot in AvailableRadiusPlots)
             {
                 if (availableRadiusPlot.IsChecked)
@@ -5473,13 +5479,8 @@ namespace DDrop.Views
 
                     if (added != null)
                     {
-                        var series = User.UserSeries.FirstOrDefault(x => x.SeriesId == availableRadiusPlot.SeriesId);
-
-                        if (series != null)
-                        {
-                            availableRadiusPlot.Points = _plotBl.AddPoints(PlotTypeView.Radius, series, Settings.Default.DimensionlessPlots);
-                            SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
-                        }
+                        await GetPoints(availableRadiusPlot);
+                        SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableRadiusPlot, YAxesCollection.Count == 2);
                     }
                 }
             }
@@ -5492,10 +5493,13 @@ namespace DDrop.Views
 
                     if (added != null)
                     {
+                        await GetPoints(availableTemperaturePlot);
                         SeriesCollectionToPlot[SeriesCollectionToPlot.IndexOf(added)] = _plotBl.CreatePlot(availableTemperaturePlot, YAxesCollection.Count == 2);
                     }
                 }
             }
+
+            ProgressBar.IsIndeterminate = false;
         }
 
         private void OnPlotsUnchecked(object sender, RoutedEventArgs e)

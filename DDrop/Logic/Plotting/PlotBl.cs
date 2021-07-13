@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using DDrop.BE.Models;
+using DDrop.BL.CustomPlots;
 using DDrop.Enums;
 using DDrop.Models;
 using LiveCharts;
@@ -10,6 +15,15 @@ namespace DDrop.Logic.Plotting
 {
     public class PlotBl : IPlotBl
     {
+        private readonly ICustomPlotsBl _customPlotsBl;
+        private readonly IMapper _mapper;
+        
+        public PlotBl(ICustomPlotsBl customPlotsBl, IMapper mapper)
+        {
+            _customPlotsBl = customPlotsBl;
+            _mapper = mapper;
+        }
+
         public LineSeriesId CreatePlot(PlotView plot, bool combined)
         {
             var temp = new ChartValues<ObservablePoint>();
@@ -49,14 +63,15 @@ namespace DDrop.Logic.Plotting
                 CurrentUserId = series.CurrentUserId,
                 Name = series.Title,
                 PlotId = series.SeriesId,
-                IsEditable = false,
+                IsEditable = plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot ? true : false,
                 IsDeletable = false,
                 Points = new ObservableCollection<SimplePointView>(),
-                SeriesId = series.SeriesId
+                SeriesId = series.SeriesId,
+                PlotType = plotType
             };
         }
 
-        public ObservableCollection<SimplePointView> AddPoints(PlotTypeView plotType, SeriesView series, bool dimensionless)
+        public async Task<ObservableCollection<SimplePointView>> AddPoints(PlotTypeView plotType, SeriesView series, bool dimensionless)
         {
             switch (plotType)
             {
@@ -111,7 +126,7 @@ namespace DDrop.Logic.Plotting
                             averageAmbientTemperatures += series.MeasurementsSeries[j].AmbientTemperature ?? 0;
                         }
 
-                        points = series.ThermalPlot.Points;
+                        return _mapper.Map<List<SimplePoint>, ObservableCollection<SimplePointView>>( await _customPlotsBl.GetPlotPoints(series.ThermalPlot.PlotId, series.ThermalPlot.Settings.DimensionlessSettings.XDimensionlessDivider, series.ThermalPlot.Settings.DimensionlessSettings.YDimensionlessDivider, dimensionless));
                     }
                     else
                     {
