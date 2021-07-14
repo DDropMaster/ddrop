@@ -2438,7 +2438,8 @@ namespace DDrop.Views
             PhotosPreviewGridSplitter.IsEnabled = false;
             VisualHelper.SetEnableRowsMove(Photos, true);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, false, 300, 0, 0, 0, 200);
-            await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, false, 90, 0, 0, 0, 200);
+            await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, false, 100, 0, 0, 0, 200);
+            await AnimationHelper.AnimateGridRowExpandCollapse(ThermalPhotoRow, false, 62, 0, 0, 0, 200);
             SavePhotoOrderMenu.Visibility = Visibility.Visible;
 
             _overrideLoadingBehaviour = true;
@@ -2455,6 +2456,7 @@ namespace DDrop.Views
             VisualHelper.SetEnableRowsMove(Photos, false);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, true, 300, 0, 0, 0, 200);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, true, 100, 0, 0, 0, 200);
+            await AnimationHelper.AnimateGridRowExpandCollapse(ThermalPhotoRow, true, 62, 0, 0, 0, 200);
             SavePhotoOrderMenu.Visibility = Visibility.Hidden;
 
             _overrideLoadingBehaviour = false;
@@ -3951,7 +3953,7 @@ namespace DDrop.Views
 
         private void Information_Click(object sender, RoutedEventArgs e)
         {
-            var information = new Information();
+            var information = new Info();
             information.ShowDialog();
         }
 
@@ -5905,6 +5907,13 @@ namespace DDrop.Views
                 CurrentReferencePhoto = CurrentReferencePhotos[ReferencePhotoDataGrid.SelectedIndex];
 
                 CurrentReferencePhoto.Content = await _referenceBl.GetReferencePhotoContent(CurrentReferencePhoto.PhotoId);
+
+                CurrentReferencePhoto.SimpleLine = _mapper.Map<SimpleLine, SimpleLineView>(await _referenceBl.GetReferencePhotoLine(CurrentReferencePhoto.PhotoId));
+
+                if (CurrentReferencePhoto.SimpleLine != null)
+                {
+                    CurrentReferencePhoto.Line = _mapper.Map<SimpleLineView, Line>(CurrentReferencePhoto.SimpleLine);
+                }
 
                 CurrentReferencePhotoType = CurrentReferencePhoto.PhotoType;
             }

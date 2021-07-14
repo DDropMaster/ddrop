@@ -52,6 +52,7 @@ namespace DDrop.DAL
         void UpdateContour(DbContour contour);
         Task DeleteContour(Guid contourId);
         Task<DbContour> GetDbContour(Guid contourId);
+        Task<string> GetReferencePhotoLine(Guid photoId);
         Task<byte[]> GetReferencePhotoContent(Guid referencePhotoId);
         Task<byte[]> GetThermalPhotoContent(Guid photoId, CancellationToken cancellationToken);
         Task SaveLogEntry(DbLogEntry dbLogEntry);

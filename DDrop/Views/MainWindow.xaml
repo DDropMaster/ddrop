@@ -278,7 +278,7 @@
                                                     HorizontalAlignment="Left" Margin="75,6,0,0"
                                                     VerticalAlignment="Top" Width="27" Background="{x:Null}"
                                                     BorderBrush="{x:Null}" Height="27" Click="EditPhotosOrder_OnClick"
-                                                    ToolTip="Редактировать порядок фотографий.">
+                                                    ToolTip="Редактировать порядок измерений.">
                                                 <ContentControl Content="{StaticResource EditTable}" Height="21" />
                                             </Button>
                                             <Button Grid.Row="0" Grid.Column="0" Name="ReCalculate"

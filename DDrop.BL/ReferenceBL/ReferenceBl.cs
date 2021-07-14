@@ -5,6 +5,7 @@ using AutoMapper;
 using DDrop.BE.Models;
 using DDrop.DAL;
 using DDrop.Db.DbEntities;
+using DDrop.Utility.SeriesLocalStorageOperations;
 
 namespace DDrop.BL.ReferenceBL
 {
@@ -19,7 +20,10 @@ namespace DDrop.BL.ReferenceBL
             _mapper = mapper;
         }
 
-
+        public async Task<SimpleLine> GetReferencePhotoLine(Guid photoId)
+        {
+            return JsonSerializeProvider.DeserializeFromString<SimpleLine>(await _dDropRepository.GetReferencePhotoLine(photoId));
+        }
 
         public async Task<byte[]> GetReferencePhotoContent(Guid referencePhotoId)
         {

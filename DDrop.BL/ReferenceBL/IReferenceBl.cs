@@ -11,5 +11,6 @@ namespace DDrop.BL.ReferenceBL
         Task UpdateReferencePhoto(ReferencePhoto referencePhoto);
         Task DeleteReferencePhoto(Guid referencePhotoId);
         Task<List<ReferencePhoto>> GetReferencePhotoById(BE.Models.Series series);
+        Task<SimpleLine> GetReferencePhotoLine(Guid photoId);
     }
 }

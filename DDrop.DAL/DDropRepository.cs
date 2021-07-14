@@ -820,6 +820,14 @@ namespace DDrop.DAL
             }    
         }
 
+        public async Task<string> GetReferencePhotoLine(Guid photoId)
+        {
+            using (var context = new DDropContext())
+            {
+                return (await context.ReferencePhotos.FirstOrDefaultAsync(x => x.PhotoId == photoId)).ReferenceLine;
+            }
+        }
+
         public async Task<DbDropPhoto> GetDropPhoto(Guid photoId)
         {
             using (var context = new DDropContext())

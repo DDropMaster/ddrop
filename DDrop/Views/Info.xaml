@@ -1,0 +1,57 @@
+﻿<Window x:Class="DDrop.Views.Info"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:rtf="clr-namespace:DDrop.Utility.Helpers;assembly=DDrop.Utility"
+        mc:Ignorable="d" x:Name="InfoWindow"
+        Title="Информация" MinHeight="450" MinWidth="800" Icon="../Resources/Icons/MainIcon.png"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" Width="791">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TreeView Grid.Column="0">
+            <TreeViewItem x:Name="About" Header="О программе" Selected="About_Selected"></TreeViewItem>
+            <TreeViewItem  Header="Разработка">
+                <TreeViewItem x:Name="Development" Header="Разработчики" Selected="Development_Selected" />
+                <TreeViewItem x:Name="Testers" Header="Тестировщики" Selected="Testers_Selected" />
+            </TreeViewItem>
+            <TreeViewItem Header="Справка" IsExpanded="True">
+                <TreeViewItem Header="Интерфейс">
+                    <TreeViewItem x:Name="InterfaceMenu" Header="Меню" Selected="InterfaceMenu_Selected">
+                        <TreeViewItem x:Name="InterfaceOptions" Header="Опции">
+                            <TreeViewItem x:Name="InterfaceCommonOptions" Header="Общие" Selected="InterfaceCommonOptions_Selected"/>
+                            <TreeViewItem x:Name="InterfaceLocalStoredUsers" Header="Сохраненные пользователи" Selected="InterfaceLocalStoredUsers_Selected"/>
+                            <TreeViewItem x:Name="InterfaceAutoCalculationTemplates" Header="Шаблоны авторасчета" Selected="InterfaceAutoCalculationTemplates_Selected"/>
+                        </TreeViewItem>
+                        <TreeViewItem x:Name="InterfaceAccount" Header="Учетная запись" Selected="InterfaceAccount_Selected"/>
+                        <TreeViewItem x:Name="InterfaceInformation" Header="Информация" Selected="InterfaceInformation_Selected"/>
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="InterfaceSeriesManager" Header="Менеджер серий" Selected="InterfaceSeriesManager_Selected"/>
+                    <TreeViewItem Header="Серия">
+                        <TreeViewItem x:Name="InterfaceCommonSeriesInformation" Header="Общее" Selected="InterfaceCommonSeriesInformation_Selected"/>
+                        <TreeViewItem x:Name="InterfaceAutoCalculation" Header="Автоматический расчет" Selected="InterfaceAutoCalculation_Selected" />
+                        <TreeViewItem Header="Ручное редактирование" />
+                        <TreeViewItem x:Name="InterfaceReOrdering" Header="Изменение порядка измерений" Selected="InterfaceReOrdering_Selected"/>
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="InterfacePlot" Header="График" Selected="InterfacePlot_Selected"/>
+                </TreeViewItem>
+                <TreeViewItem Header="Как работать">
+                    <TreeViewItem Header="Общие механики" />
+                </TreeViewItem>
+            </TreeViewItem>
+        </TreeView>
+        <GridSplitter
+            IsEnabled="True"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            Grid.Row="0" Grid.Column="1" ResizeBehavior="PreviousAndNext"
+            Width="5" 
+        />
+        <RichTextBox Grid.Column="2" rtf:RichTextBoxHelper.DocumentRtf="{Binding ElementName=InfoWindow, Path=Document, UpdateSourceTrigger=PropertyChanged}" />
+        <Image x:Name="Logo" Visibility="Hidden" Grid.Column="2" Source="../Resources/Icons/MainIcon_vectorized.png" Margin="282,190,283,40" />
+    </Grid>
+</Window>

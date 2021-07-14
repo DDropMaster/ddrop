@@ -120,6 +120,7 @@
     <Compile Include="Extensions\IsSelectTextExtension.cs" />
     <Compile Include="Extensions\StoryboardExtensions.cs" />
     <Compile Include="FileOperations\FileOperations.cs" />
+    <Compile Include="Helpers\RichTextBoxHelper .cs" />
     <Compile Include="ImageOperations\ImageInterpreter.cs" />
     <Compile Include="ImageOperations\ImageValidator\ImageValidator.cs" />
     <Compile Include="ImageOperations\ImageValidator\ImageFormat.cs" />

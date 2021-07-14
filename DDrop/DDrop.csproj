@@ -229,6 +229,7 @@
     <Compile Include="AutoMapper\AutoMapperExtensions.cs" />
     <Compile Include="AutoMapper\LineResolver.cs" />
     <Compile Include="AutoMapper\SimpleLineResolver.cs" />
+    <Compile Include="AutoMapper\SimpleLineViewToLineConverter.cs" />
     <Compile Include="Enums\LineTypeView.cs" />
     <Compile Include="Models\TypedLineView.cs" />
     <Compile Include="Models\DimensionlessSettingsView.cs" />
@@ -262,6 +263,9 @@
     <Compile Include="Enums\TemperatureDetectingModeView.cs" />
     <Compile Include="Enums\TempUnit.cs" />
     <Compile Include="Enums\ThermalAutoCalculationSettingsView.cs" />
+    <Compile Include="Views\Info.xaml.cs">
+      <DependentUpon>Info.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Information.xaml.cs">
       <DependentUpon>Information.xaml</DependentUpon>
     </Compile>
@@ -324,6 +328,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CropPhoto.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Info.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -397,62 +405,40 @@
     <None Include="Resources\PythonScripts\GetContourWithSystemIO.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Texts\InformationAboutApp\About\About.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Development\Developers\Developers.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Development\Testers\Testers.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\CalculationModel\CalculationModel.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\CommonSeriesPlot\CommonSeriesPlot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\CalculationModel\CalculationModel.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\CommonSeriesPlot\CommonSeriesPlot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Account\Account.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Calculation\Calculation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Menu\AutoCalculationTemplates.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Menu\CommonOptions.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Menu\Information.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Menu\LocalStoredUsers.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Menu\Menu\Menu.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\SeriesManager\AutoCalculation\AutoCalculation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\SeriesManager\ManualEdit\ManualEdit.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\SeriesManager\ReOrdering\ReOrdering.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\SeriesManager\SeriesManager.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\AutoCalculation\AutoCalculation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\CommonInformation\CommonSeriesInformation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\CommonSeriesInformation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\ManualEdit\ManualEdit.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\Photos\Photos.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\Plot\Plot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\Reference\Reference.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Interface\Series\ReOrdering\ReOrdering.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Menu\Account\Account.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Menu\Calculation\Calculation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Menu\Menu\Menu.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\CommonOperations.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\CommonOperations\CommonOperations.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\CommonSeriesPlotOp.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Menu\Options\AutoCalculationTemplates.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Menu\Options\AutoCalculationTemplatesOp.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Menu\Options\CommonOptions.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Menu\Options\CommonOptionsOp.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Menu\Options\LocalStoredUsersOp.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Plot\Plot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\SeriesManager\AddSeries.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\SeriesManager\AutoExcelReport.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\SeriesManager\ImportExport.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\AutoCalculation\AutoCalcAddTemplate.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\AutoCalculation\AutoCalcPython.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\AutoCalculation\AutoCalculationCommon.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\PhotosAdd.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\PhotosEdit.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\PhotosReCalculate.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Photos\PhotosReOrder.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Plot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Reference\ReferenceAdd.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Operations\Series\Reference\ReferenceEdit.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\SeriesManager\SeriesManager.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Series\CommonInformation\CommonSeriesInformation.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Series\Photos\Photos.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Series\Plot\Plot.rtf" />
-    <None Include="Resources\Texts\InformationAboutApp\Help\Series\Reference\Reference.rtf" />
+    <None Include="Resources\Texts\Info\About.rtf" />
+    <None Include="Resources\Texts\Info\CalculationModel.rtf" />
+    <None Include="Resources\Texts\Info\Developers.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceAccount.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceAutoCalculation.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceAutoCalculationTemplates.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceCommonOptions.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceCommonSeriesInformation.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceInformation.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceLocalStoredUsers.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceManualEdit.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceMenu.rtf" />
+    <None Include="Resources\Texts\Info\InterfacePlot.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceReOrdering.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceSeriesManager.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAddSeries.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAutoCalcAddTemplate.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAutoCalcPython.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAutoCalculationCommon.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAutoCalculationTemplatesOp.rtf" />
+    <None Include="Resources\Texts\Info\OperationsAutoExcelReport.rtf" />
+    <None Include="Resources\Texts\Info\OperationsCommonOperations.rtf" />
+    <None Include="Resources\Texts\Info\OperationsCommonOptionsOp.rtf" />
+    <None Include="Resources\Texts\Info\OperationsImportExport.rtf" />
+    <None Include="Resources\Texts\Info\OperationsLocalStoredUsersOp.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPhotosAdd.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPhotosEdit.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPhotosReCalculate.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPhotosReOrder.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPlot.rtf" />
+    <None Include="Resources\Texts\Info\OperationsPlotOperations.rtf" />
+    <None Include="Resources\Texts\Info\OperationsReferenceAdd.rtf" />
+    <None Include="Resources\Texts\Info\OperationsReferenceEdit.rtf" />
+    <None Include="Resources\Texts\Info\Testers.rtf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

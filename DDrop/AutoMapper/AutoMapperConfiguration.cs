@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Shapes;
 using AutoMapper;
 using DDrop.BE.Enums.Options;
 using DDrop.BE.Models;
@@ -115,6 +116,8 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<SimpleLineView, TypedLineView>()
                     .ForMember(x =>
                         x.Line, opt => opt.MapFrom<LineResolver>());
+                cfg.CreateMap<SimpleLineView, Line>()
+                    .ConvertUsing(new SimpleLineViewToLineConverter());
                 cfg.CreateMap<DropPhoto, DbDropPhoto>()
                     .ForMember(x => x.Measurement, opt => opt.Ignore())
                     .ForMember(x =>
@@ -282,7 +285,7 @@ namespace DDrop.AutoMapper
 
             IMapper mapper = config.CreateMapper();
             
-            //config.AssertConfigurationIsValid();
+            config.AssertConfigurationIsValid();
 
             return mapper;
         }
