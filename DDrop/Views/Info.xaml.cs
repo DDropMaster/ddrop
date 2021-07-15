@@ -124,7 +124,21 @@ namespace DDrop.Views
 
         private void InterfaceReOrdering_Selected(object sender, RoutedEventArgs e)
         {
-            Document = Properties.Resources.InterfaceCommonOptions;
+            Document = Properties.Resources.OperationsPhotosReOrder;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void CalculationModel_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.CalculationModel;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsCommonOperations_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsCommonOperations;
             Logo.Visibility = Visibility.Hidden;
             e.Handled = true;
         }
