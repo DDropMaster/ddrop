@@ -41,18 +41,39 @@
                 </TreeViewItem>
                 <TreeViewItem Header="Как работать">
                     <TreeViewItem x:Name="OperationsCommonOperations" Header="Общие механики" Selected="OperationsCommonOperations_Selected"/>
-                    <TreeViewItem Header="Добавление"/>
-                    <TreeViewItem Header="Импорт и экспорт"/>
-                    <TreeViewItem Header="Автоматический Excel отчет"/>
-                </TreeViewItem>
-                <TreeViewItem Header="Меню">
-                    <TreeViewItem Header="Опции">
-                        <TreeViewItem Header="Общие настройки"/>
-                        <TreeViewItem Header="Сохраненные пользователи"/>
-                        <TreeViewItem Header="Шаблоны авторасчета"/>
+                    <TreeViewItem Header="Менеджер серий">
+                        <TreeViewItem Header="Добавление"/>
+                        <TreeViewItem Header="Импорт и экспорт"/>
+                        <TreeViewItem Header="Автоматический Excel отчет"/>
                     </TreeViewItem>
+                    <TreeViewItem Header="Серия">
+                        <TreeViewItem Header="Измерения">
+                            <TreeViewItem Header="Добавление" />
+                            <TreeViewItem Header="Снимки"></TreeViewItem>
+                            <TreeViewItem Header="Тепловые снимки"></TreeViewItem>
+                            <TreeViewItem Header="Авторасчет" >
+                                <TreeViewItem Header="Общее"/>
+                                <TreeViewItem Header="Добавление шаблонов"/>
+                                <TreeViewItem Header="Настройка Python обработчика"/>
+                            </TreeViewItem>
+                            <TreeViewItem Header="Изменение порядка" />
+                            <TreeViewItem Header="Перерасчет" />
+                        </TreeViewItem>
+                        <TreeViewItem Header="Референс">
+                            <TreeViewItem Header="Добавление"/>
+                            <TreeViewItem Header="Редактирование"/>
+                        </TreeViewItem>
+                    </TreeViewItem>
+                    <TreeViewItem Header="Меню">
+                        <TreeViewItem Header="Опции">
+                            <TreeViewItem Header="Общие настройки"/>
+                            <TreeViewItem Header="Сохраненные пользователи"/>
+                            <TreeViewItem Header="Шаблоны авторасчета"/>
+                        </TreeViewItem>
+                    </TreeViewItem>
+                    <TreeViewItem Header="График"/>
                 </TreeViewItem>
-                <TreeViewItem Header="График"/>
+                
                 <TreeViewItem x:Name="CalculationModel" Header="Расчетная модель" Selected="CalculationModel_Selected"/>
             </TreeViewItem>
         </TreeView>

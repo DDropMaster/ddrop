@@ -266,9 +266,6 @@
     <Compile Include="Views\Info.xaml.cs">
       <DependentUpon>Info.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Information.xaml.cs">
-      <DependentUpon>Information.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Logic\GeometryBL\GeometryBL.cs" />
     <Compile Include="Logic\GeometryBL\IGeometryBL.cs" />
     <Compile Include="Logic\Plotting\IPlotBl.cs" />
@@ -332,10 +329,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Info.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Information.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
