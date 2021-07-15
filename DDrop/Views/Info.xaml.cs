@@ -129,6 +129,20 @@ namespace DDrop.Views
             e.Handled = true;
         }
 
+        private void InterfaceManualPhotoEdit_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.InterfaceManualEdit;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void InterfaceManualThermalPhotoEdit_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.InterfaceManualThermalEdit;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
         private void CalculationModel_Selected(object sender, RoutedEventArgs e)
         {
             Document = Properties.Resources.CalculationModel;
@@ -139,6 +153,41 @@ namespace DDrop.Views
         private void OperationsCommonOperations_Selected(object sender, RoutedEventArgs e)
         {
             Document = Properties.Resources.OperationsCommonOperations;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsAutoCalcAddTemplate_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsAutoCalcAddTemplate;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsAutoCalcPython_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsAutoCalcPython;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsAutoCalculationCommon_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsAutoCalculationCommon;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsLocalStoredUsers_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsLocalStoredUsersOp;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsAutoCalculationTemplatesOp_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsAutoCalculationTemplatesOp;
             Logo.Visibility = Visibility.Hidden;
             e.Handled = true;
         }

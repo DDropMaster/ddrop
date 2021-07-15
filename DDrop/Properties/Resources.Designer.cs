@@ -117,12 +117,8 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;cc\&apos;e5\&apos;ed\&apos;e5\&apos;e4\&apos;e6\&apos;e5\&apos;f0 \&apos;f1\&apos;e5\&apos;f0\&apos;e8\&apos;e9\b0\f1\lang1033\par
-        ///
-        ///\pard\li710\qj\f0\fs21\lang1049\&apos;ce\&apos;e4\&apos;ed\&apos;ee\&apos;e9 \&apos;e8\&apos;e7 \&apos;e8\&apos;ed\&apos;f2\&apos;e5\&apos;f0\&apos;e5\&apos;f1\&apos;ed\&apos;fb\&apos;f5 \&apos;f4\&apos;e8\&apos;f7 \&apos;ef\&apos;f0\&apos;ee\&apos;e3\&apos;f0\&apos;e0\&apos;ec\&apos;ec\&apos;fb \&apos;ff\&apos;e2\&apos;eb\&apos;ff\&apos;e5\&apos; [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff31507\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi31507\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 00000000000000000000}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
+        ///{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 020b0502040204020203}Segoe U [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceAutoCalculation {
             get {
@@ -156,12 +152,8 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}{\f3\fnil\fcharset2 Symbol;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;ce\&apos;e1\&apos;f9\&apos;e0\&apos;ff \&apos;e8\&apos;ed\&apos;f4\&apos;ee\&apos;f0\&apos;ec\&apos;e0\&apos;f6\&apos;e8\&apos;ff\b0\f1\lang1033\par
-        ///
-        ///\pard\fi375\qj\f0\fs21\lang1049\&apos;cd\&apos;e0 \&apos;fd\&apos;f2\&apos;ee\&apos;e9 \&apos;e2\&apos;ea\&apos;eb\&apos;e0\&apos;e4\&apos;ea\&apos;e5 \&apos;ef\&apos;f0\&apos;ee\&apos;e8\&apos;f1\&apos;f5\&apos;ee\&apos;e4\&apos;e8\&apos;f2 \&apos;f0\&apos;e0\&apos;e [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f3\fbidi \froman\fcharset2\fprq2{\*\panose 05050102010706020507}Symbol;}
+        ///{\f34\fbidi \froman\fcharset204\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fb [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceCommonSeriesInformation {
             get {
@@ -170,12 +162,8 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;c8\&apos;ed\&apos;f4\&apos;ee\&apos;f0\&apos;ec\&apos;e0\&apos;f6\&apos;e8\&apos;ff\b0\f1\lang1033\par
-        ///
-        ///\pard\fi284\qj\f0\fs21\lang1049\&apos;c2 \&apos;ee\&apos;ea\&apos;ed\&apos;e5 &quot;\&apos;c8\&apos;ed\&apos;f4\&apos;ee\&apos;f0\&apos;ec\&apos;e0\&apos;f6\&apos;e8\&apos;ff&quot; \&apos;e2\&apos;fb \&apos;ec\&apos;ee\&apos;e6\&apos;e5\&apos;f2\&apos;e5 \&apos;ed\&apos;e0\&apos;e9\&apos;f2\&apos;e8 \&apos;e2\&apos;f1\&apos;fe \&apos;ed\&apos;e5\&apos;ee\&apos;e1\&apos;f5\&apos;e [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff31507\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi31507\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
+        ///{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 020b0502040204020203}Segoe U [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceInformation {
             get {
@@ -198,16 +186,24 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;d0\&apos;f3\&apos;f7\&apos;ed\&apos;ee\&apos;e5 \&apos;f0\&apos;e5\&apos;e4\&apos;e0\&apos;ea\&apos;f2\&apos;e8\&apos;f0\&apos;ee\&apos;e2\&apos;e0\&apos;ed\&apos;e8\&apos;e5 \&apos;f4\&apos;ee\&apos;f2\&apos;ee\&apos;e3\&apos;f0\&apos;e0\&apos;f4\&apos;e8\&apos;e9\b0\f1\lang1033\par
-        ///
-        ///\pard\qj\f0\fs21\lang1049\&apos;cf\&apos;f0\&apos;e8 \&apos;ed\&apos;e0\&apos;e6\&apos;e0\&apos;f2\&apos;e8\&apos;e8 \&apos;ed\&apos;e0 \&apos;e8\&apos;ea\&apos;ee\&apos;ed\&apos;ea\&apos;f3 \&apos;ea [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+        ///{\f34\fbidi \froman\fcharset204\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 00000000000000000000}Segoe UI;}
+        ///{ [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceManualEdit {
             get {
                 return ResourceManager.GetString("InterfaceManualEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+        ///{\f34\fbidi \froman\fcharset204\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 020b0502040204020203}Segoe UI;}
+        ///{ [остаток строки не уместился]&quot;;.
+        /// </summary>
+        public static string InterfaceManualThermalEdit {
+            get {
+                return ResourceManager.GetString("InterfaceManualThermalEdit", resourceCulture);
             }
         }
         
@@ -222,12 +218,9 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;ce\&apos;e1\&apos;f9\&apos;e8\&apos;e9 \&apos;e3\&apos;f0\&apos;e0\&apos;f4\&apos;e8\&apos;ea \&apos;f1\&apos;e5\&apos;f0\&apos;e8\&apos;e9\b0\f1\lang1033\par
-        ///
-        ///\pard\fi375\qj\f0\fs21\lang1049\&apos;dd\&apos;f2\&apos;e0 \&apos;f1\&apos;e5\&apos;ea\&apos;f6\&apos;e8\&apos;ff \&apos;f1\&apos;eb\&apos;f3\&apos;e6\&apos;e8\&apos;f2 \&apos;e4\&apos;eb\&apos;ff \&apos;ee\&apos;f2\&apos;ee\&apos;e1\&apos;f0\&apos;e0\&apos;e6\&apos;e5\&apos;ed\&apos;e8\&apos;ff \&apos;e2\&apos;fb\ [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+        ///{\f34\fbidi \froman\fcharset204\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 00000000000000000000}Segoe UI;}
+        ///{ [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfacePlot {
             get {
@@ -236,12 +229,8 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;c8\&apos;e7\&apos;ec\&apos;e5\&apos;ed\&apos;e5\&apos;ed\&apos;e8\&apos;e5 \&apos;ef\&apos;ee\&apos;f0\&apos;ff\&apos;e4\&apos;ea\&apos;e0 \&apos;f4\&apos;ee\&apos;f2\&apos;ee\&apos;e3\&apos;f0\&apos;e0\&apos;f4\&apos;e8\&apos;e9\b0\f1\lang1033\par
-        ///
-        ///\pard\qj\f0\fs21\lang1049\&apos;cf\&apos;f0\&apos;e8 \&apos;ed\&apos;e0\&apos;e6\&apos;e0\&apos;f2\&apos;e8\&apos;e8 \&apos;ed\&apos;e0 \&apos;e8\&apos;ea\&apos;ee\&apos;ed\&apos;ea\&apos;f3 &quot;\&apos;c8\&apos;e7\&apos;ec\&apos;e5\&apos;e [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff31507\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi31507\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
+        ///{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 020b0502040204020203}Segoe U [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceReOrdering {
             get {
@@ -250,12 +239,9 @@ namespace DDrop.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil\fcharset204 Segoe UI;}{\f1\fnil\fcharset0 Segoe UI;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;}
-        ///{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
-        ///\pard\qc\cf1\b\f0\fs33\&apos;cc\&apos;e5\&apos;ed\&apos;e5\&apos;e4\&apos;e6\&apos;e5\&apos;f0 \&apos;f1\&apos;e5\&apos;f0\&apos;e8\&apos;e9\b0\f1\lang1033\par
-        ///
-        ///\pard\fi375\qj\f0\fs21\lang1049\&apos;cc\&apos;e5\&apos;ed\&apos;e5\&apos;e4\&apos;e6\&apos;e5\&apos;f0 \&apos;f1\&apos;e5\&apos;f0\&apos;e8\&apos;e9 \&apos;f1\&apos;ee\&apos;f1\&apos;f2\&apos;ee\&apos;e8\&apos;f2 \&apos;e8\&apos;e7 \&apos;f7\&apos;e5\&apos;f2\&apos;fb\&apos;f0\&apos;e5\&apos;f5 \&apos;e7\&apos;ee\&apos;ed:\f1\lang1 [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на {\rtf1\adeflang1025\ansi\ansicpg1251\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1049\deflangfe1049\themelang1049\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset204\fprq2{\*\panose 02020603050405020304}Times New Roman;}
+        ///{\f34\fbidi \froman\fcharset204\fprq2{\*\panose 02040503050406030204}Cambria Math;}{\f37\fbidi \fswiss\fcharset204\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\fbidi \fswiss\fcharset204\fprq2{\*\panose 00000000000000000000}Segoe UI;}
+        ///{ [остаток строки не уместился]&quot;;.
         /// </summary>
         public static string InterfaceSeriesManager {
             get {

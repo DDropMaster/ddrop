@@ -409,6 +409,7 @@
     <None Include="Resources\Texts\Info\InterfaceInformation.rtf" />
     <None Include="Resources\Texts\Info\InterfaceLocalStoredUsers.rtf" />
     <None Include="Resources\Texts\Info\InterfaceManualEdit.rtf" />
+    <None Include="Resources\Texts\Info\InterfaceManualThermalEdit.rtf" />
     <None Include="Resources\Texts\Info\InterfaceMenu.rtf" />
     <None Include="Resources\Texts\Info\InterfacePlot.rtf" />
     <None Include="Resources\Texts\Info\InterfaceReOrdering.rtf" />

@@ -34,7 +34,8 @@
                     <TreeViewItem Header="Серия">
                         <TreeViewItem x:Name="InterfaceCommonSeriesInformation" Header="Общее" Selected="InterfaceCommonSeriesInformation_Selected"/>
                         <TreeViewItem x:Name="InterfaceAutoCalculation" Header="Автоматический расчет" Selected="InterfaceAutoCalculation_Selected" />
-                        <TreeViewItem Header="Ручное редактирование" />
+                        <TreeViewItem x:Name="InterfaceManualPhotoEdit" Header="Редактирование снимков" Selected="InterfaceManualPhotoEdit_Selected"/>
+                        <TreeViewItem x:Name="InterfaceManualThermalPhotoEdit" Header="Редактирование термических снимков" Selected="InterfaceManualThermalPhotoEdit_Selected"/>
                         <TreeViewItem x:Name="InterfaceReOrdering" Header="Изменение порядка измерений" Selected="InterfaceReOrdering_Selected"/>
                     </TreeViewItem>
                     <TreeViewItem x:Name="InterfacePlot" Header="График" Selected="InterfacePlot_Selected"/>
@@ -52,9 +53,9 @@
                             <TreeViewItem Header="Снимки"></TreeViewItem>
                             <TreeViewItem Header="Тепловые снимки"></TreeViewItem>
                             <TreeViewItem Header="Авторасчет" >
-                                <TreeViewItem Header="Общее"/>
-                                <TreeViewItem Header="Добавление шаблонов"/>
-                                <TreeViewItem Header="Настройка Python обработчика"/>
+                                <TreeViewItem x:Name="OperationsAutoCalculationCommon" Header="Общее" Selected="OperationsAutoCalculationCommon_Selected"/>
+                                <TreeViewItem x:Name="OperationsAutoCalcAddTemplate" Header="Добавление шаблонов" Selected="OperationsAutoCalcAddTemplate_Selected"/>
+                                <TreeViewItem x:Name="OperationsAutoCalcPython" Header="Настройка Python обработчика" Selected="OperationsAutoCalcPython_Selected"/>
                             </TreeViewItem>
                             <TreeViewItem Header="Изменение порядка" />
                             <TreeViewItem Header="Перерасчет" />
@@ -67,8 +68,8 @@
                     <TreeViewItem Header="Меню">
                         <TreeViewItem Header="Опции">
                             <TreeViewItem Header="Общие настройки"/>
-                            <TreeViewItem Header="Сохраненные пользователи"/>
-                            <TreeViewItem Header="Шаблоны авторасчета"/>
+                            <TreeViewItem x:Name="OperationsLocalStoredUsers" Header="Сохраненные пользователи" Selected="OperationsLocalStoredUsers_Selected"/>
+                            <TreeViewItem x:Name="OperationsAutoCalculationTemplatesOp" Header="Шаблоны авторасчета" Selected="OperationsAutoCalculationTemplatesOp_Selected"/>
                         </TreeViewItem>
                     </TreeViewItem>
                     <TreeViewItem Header="График"/>

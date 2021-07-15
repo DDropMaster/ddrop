@@ -151,6 +151,9 @@
   <data name="InterfaceManualEdit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Texts\Info\InterfaceManualEdit.rtf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
+  <data name="InterfaceManualThermalEdit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Texts\Info\InterfaceManualThermalEdit.rtf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
   <data name="InterfaceMenu" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Texts\Info\InterfaceMenu.rtf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
