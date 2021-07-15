@@ -191,5 +191,19 @@ namespace DDrop.Views
             Logo.Visibility = Visibility.Hidden;
             e.Handled = true;
         }
+
+        private void OperationsAutoExcelReport_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsAutoExcelReport;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
+
+        private void OperationsImportExport_Selected(object sender, RoutedEventArgs e)
+        {
+            Document = Properties.Resources.OperationsImportExport;
+            Logo.Visibility = Visibility.Hidden;
+            e.Handled = true;
+        }
     }
 }

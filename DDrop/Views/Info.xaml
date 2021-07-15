@@ -44,8 +44,8 @@
                     <TreeViewItem x:Name="OperationsCommonOperations" Header="Общие механики" Selected="OperationsCommonOperations_Selected"/>
                     <TreeViewItem Header="Менеджер серий">
                         <TreeViewItem Header="Добавление"/>
-                        <TreeViewItem Header="Импорт и экспорт"/>
-                        <TreeViewItem Header="Автоматический Excel отчет"/>
+                        <TreeViewItem x:Name="OperationsImportExport" Header="Импорт и экспорт" Selected="OperationsImportExport_Selected"/>
+                        <TreeViewItem x:Name="OperationsAutoExcelReport" Header="Автоматический Excel отчет" Selected="OperationsAutoExcelReport_Selected"/>
                     </TreeViewItem>
                     <TreeViewItem Header="Серия">
                         <TreeViewItem Header="Измерения">

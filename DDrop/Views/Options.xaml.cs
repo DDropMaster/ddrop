@@ -313,15 +313,6 @@ namespace DDrop.Views
             UpdateOptions(OptionsEnumView.DimensionlessPlots, checkBox.IsChecked);
         }
 
-        private void DeleteLocalUser_Click(object sender, RoutedEventArgs e)
-        {
-            LocalStoredUsers.Users.RemoveAt(StoredUsers.SelectedIndex);
-
-            Settings.Default.StoredUsers = JsonSerializeProvider.SerializeToString(LocalStoredUsers);
-
-            Settings.Default.Save();
-        }
-
         private void DeleteAllStoredUsers_OnClick(object sender, RoutedEventArgs e)
         {
             var checkedCount = 0;
@@ -368,16 +359,6 @@ namespace DDrop.Views
             {
                 _notifier.ShowInformation("Введите название шаблона.");
             }
-        }
-
-        private void DeleteSingleTemplate_OnClick(object sender, RoutedEventArgs e)
-        {
-            UserAutoCalculationTemplates.RemoveAt(AutoCalculaionTemplates.SelectedIndex);
-
-            Settings.Default.AutoCalculationTemplates =
-                JsonSerializeProvider.SerializeToString(UserAutoCalculationTemplates);
-
-            Settings.Default.Save();
         }
 
         private void DeleteTemplateButton_OnClick(object sender, RoutedEventArgs e)
