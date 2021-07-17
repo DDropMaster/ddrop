@@ -133,6 +133,7 @@
     <Compile Include="Models\Plot.cs" />
     <Compile Include="Models\PlotSettings.cs" />
     <Compile Include="Models\ReferencePhoto.cs" />
+    <Compile Include="Models\MeasuringDevice.cs" />
     <Compile Include="Models\SeriesSettings.cs" />
     <Compile Include="Models\SimpleLine.cs" />
     <Compile Include="Models\Series.cs" />

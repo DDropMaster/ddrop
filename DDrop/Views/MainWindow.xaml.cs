@@ -1027,7 +1027,7 @@ namespace DDrop.Views
 
         private void ClearSeriesView()
         {
-            Photos.ItemsSource = null;
+            Measurements.ItemsSource = null;
         }
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1040,7 +1040,7 @@ namespace DDrop.Views
                 {
                     if (item.Name == "SingleSeries")
                     {
-                        Photos.ItemsSource = CurrentSeries.MeasurementsSeries;
+                        Measurements.ItemsSource = CurrentSeries.MeasurementsSeries;
                     }
                     else if (item.Name == "CombinedSeriesPlot")
                     {
@@ -1521,10 +1521,10 @@ namespace DDrop.Views
                     singleOldMeasurement.ThermalPhoto.Content = null;
             }
 
-            var photosSelectedItem = (MeasurementView) Photos.SelectedItem;
+            var photosSelectedItem = (MeasurementView) Measurements.SelectedItem;
             if (photosSelectedItem != null)
             {
-                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Photos.SelectedIndex];
+                CurrentMeasurement = CurrentSeries.MeasurementsSeries[Measurements.SelectedIndex];
 
                 CurrentThermalPhotos = new ObservableCollection<ThermalPhotoView>();
 
@@ -1859,7 +1859,7 @@ namespace DDrop.Views
             DeleteThermalPhotoColumn.Visibility = Visibility.Hidden;
             DeleteRegularPhotoColumn.Visibility = Visibility.Hidden;
             SeriesEditMenu.Visibility = Visibility.Hidden;
-            Photos.Visibility = Visibility.Collapsed;
+            Measurements.Visibility = Visibility.Collapsed;
             PhotosCheckedColumn.Visibility = Visibility.Hidden;
             ImgCurrent.DrawningIsEnabled = true;
 
@@ -1931,12 +1931,12 @@ namespace DDrop.Views
 
         private async Task DropPhotoModeUiOn()
         {
-            VisualHelper.SetEnableRowsMove(Photos, true);
+            VisualHelper.SetEnableRowsMove(Measurements, true);
             if (Application.Current.MainWindow != null)
             {
                 if (PhotosPreviewRow.ActualHeight > PhotosGrid.ActualHeight * 0.6)
                 {
-                    VisualHelper.SetEnableRowsMove(Photos, false);
+                    VisualHelper.SetEnableRowsMove(Measurements, false);
                     await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, false, PhotosPreviewRow.ActualHeight,
                         PhotosGrid.ActualHeight - 140, 0, 0, 200);
                 }
@@ -1959,12 +1959,12 @@ namespace DDrop.Views
             EditThermalPhotoColumn.Visibility = Visibility.Visible;
             DeleteThermalPhotoColumn.Visibility = Visibility.Visible;
             SeriesEditMenu.Visibility = Visibility.Visible;
-            Photos.Visibility = Visibility.Visible;
+            Measurements.Visibility = Visibility.Visible;
             PhotosDetails.Visibility = Visibility.Visible;
             PhotosCheckedColumn.Visibility = Visibility.Visible;
             ImgCurrent.DrawningIsEnabled = false;
 
-            VisualHelper.SetEnableRowsMove(Photos, false);
+            VisualHelper.SetEnableRowsMove(Measurements, false);
 
             if (photoType == PhotoTypeView.SideDropPhoto || photoType == PhotoTypeView.FrontDropPhoto)
             {
@@ -2007,7 +2007,7 @@ namespace DDrop.Views
 
             if (PhotosPreviewRow.ActualHeight > PhotosGrid.ActualHeight * 0.5)
             {
-                VisualHelper.SetEnableRowsMove(Photos, false);
+                VisualHelper.SetEnableRowsMove(Measurements, false);
                 await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, false, PhotosPreviewRow.ActualHeight, PhotosGrid.ActualHeight * 0.5, 0, 0, 200);
             }
             else
@@ -2023,7 +2023,7 @@ namespace DDrop.Views
             SingleSeriesLoadingComplete();
             _loadPhotosContent = true;
 
-            Photos.ScrollIntoView(Photos.SelectedItem);
+            Measurements.ScrollIntoView(Measurements.SelectedItem);
         }
 
         private void VerticalRulerToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -2153,7 +2153,7 @@ namespace DDrop.Views
             ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
         }
 
-        private async void Photos_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        private async void Measurements_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             SingleSeriesLoading();
 
@@ -2168,7 +2168,7 @@ namespace DDrop.Views
                         var currentMeasurementId = CurrentMeasurement.MeasurementId;
 
 
-                        switch (Photos.CurrentCell.Column.Header)
+                        switch (Measurements.CurrentCell.Column.Header)
                         {
                             case "Измерение":
                             {
@@ -2179,9 +2179,9 @@ namespace DDrop.Views
                                 {
                                     Username = User.Email,
                                     LogCategory = LogCategory.Measurement,
-                                    Message = "Название снимка изменено успешно."
+                                    Message = "Название измерения изменено успешно."
                                 });
-                                _notifier.ShowSuccess("Название снимка изменено успешно.");
+                                _notifier.ShowSuccess("Название измерения изменено успешно.");
 
                                 break;
                             }
@@ -2253,7 +2253,7 @@ namespace DDrop.Views
                     {
                         _notifier.ShowInformation("Поле не может быть пустым.");
 
-                        switch (Photos.CurrentCell.Column.Header)
+                        switch (Measurements.CurrentCell.Column.Header)
                         {
                             case "Измерение":
                             {
@@ -2436,7 +2436,7 @@ namespace DDrop.Views
             DeleteRegularPhotoColumn.Visibility = Visibility.Hidden;
             PhotosCheckedColumn.Visibility = Visibility.Hidden;
             PhotosPreviewGridSplitter.IsEnabled = false;
-            VisualHelper.SetEnableRowsMove(Photos, true);
+            VisualHelper.SetEnableRowsMove(Measurements, true);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, false, 300, 0, 0, 0, 200);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, false, 100, 0, 0, 0, 200);
             await AnimationHelper.AnimateGridRowExpandCollapse(ThermalPhotoRow, false, 62, 0, 0, 0, 200);
@@ -2453,7 +2453,7 @@ namespace DDrop.Views
             EditRegularPhotoColumn.Visibility = Visibility.Visible;
             PhotosCheckedColumn.Visibility = Visibility.Visible;
             PhotosPreviewGridSplitter.IsEnabled = true;
-            VisualHelper.SetEnableRowsMove(Photos, false);
+            VisualHelper.SetEnableRowsMove(Measurements, false);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, true, 300, 0, 0, 0, 200);
             await AnimationHelper.AnimateGridRowExpandCollapse(PhotosDetailsRow, true, 100, 0, 0, 0, 200);
             await AnimationHelper.AnimateGridRowExpandCollapse(ThermalPhotoRow, true, 62, 0, 0, 0, 200);
@@ -3255,7 +3255,7 @@ namespace DDrop.Views
                 await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, true, 300, 0,
                     AutoCalculationColumn.MinWidth, 0, 200);
                 _appStateBL.HideAdorner(CurrentSeriesPhotoContentLoading);
-                Photos.IsEnabled = true;
+                Measurements.IsEnabled = true;
                 AutoCalculationMenu.IsEnabled = true;
                 _appStateBL.HideAdorner(CurrentSeriesImageLoading);
             }
@@ -3994,7 +3994,7 @@ namespace DDrop.Views
             if (CurrentSeries != null)
                 CurrentSeries.Loaded = false;
             if (disablePhotos)
-                Photos.IsEnabled = false;
+                Measurements.IsEnabled = false;
             PhotosTab.IsEnabled = false;
             SeriesManager.IsEnabled = false;
             ReferenceTab.IsEnabled = false;
@@ -4024,14 +4024,14 @@ namespace DDrop.Views
         {
             if (_overrideLoadingBehaviour)
             {
-                Photos.IsEnabled = true;
+                Measurements.IsEnabled = true;
                 return;
             }
 
             if (CurrentSeries != null)
                 CurrentSeries.Loaded = true;
             if (disablePhotos)
-                Photos.IsEnabled = true;
+                Measurements.IsEnabled = true;
             PhotosTab.IsEnabled = true;
             SeriesManager.IsEnabled = true;
             ReferenceTab.IsEnabled = true;
@@ -4073,7 +4073,7 @@ namespace DDrop.Views
                 {
                     if (PhotosPreviewRow.ActualHeight > PhotosGrid.ActualHeight * 0.6)
                     {
-                        VisualHelper.SetEnableRowsMove(Photos, false);
+                        VisualHelper.SetEnableRowsMove(Measurements, false);
                         await AnimationHelper.AnimateGridRowExpandCollapse(PhotosPreviewRow, false, PhotosPreviewRow.ActualHeight, PhotosGrid.ActualHeight * 0.6, 0, 0, 200);
                     }
                     else
@@ -5990,6 +5990,114 @@ namespace DDrop.Views
 
                 await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings), currentSeries.SeriesId));
             }
+        }
+
+        private async void ReferencePhotoDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            SingleSeriesLoading();
+
+            var editingElement = e.EditingElement as TextBox;
+            try
+            {
+                if (editingElement != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(editingElement.Text))
+                    {
+                        ProgressBar.IsIndeterminate = true;
+                        var currentReferencePhotoId = CurrentReferencePhoto.PhotoId;
+
+
+                        switch (ReferencePhotoDataGrid.CurrentCell.Column.Header)
+                        {
+                            case "Название":
+                            {
+                                var text = editingElement.Text;
+                                await _referenceBl.UpdateReferencePhotoName(text, currentReferencePhotoId);
+
+                                _logger.LogInfo(new LogEntry
+                                {
+                                    Username = User.Email,
+                                    LogCategory = LogCategory.Measurement,
+                                    Message = "Название референсного снимка изменено успешно."
+                                });
+                                _notifier.ShowSuccess("Название референсного снимка изменено успешно.");
+
+                                break;
+                            }
+
+                            case "Цена деления":
+                            {
+                                var text = editingElement.Text;
+
+                                double value;
+
+                                if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+                                {
+                                    await _dropBl.UpdateDropTemperature(value, CurrentMeasurement.Drop.DropId);
+                                }
+                                else
+                                {
+                                    _notifier.ShowInformation("Поле имеет некорректный формат.");
+                                    editingElement.Text = CurrentMeasurement.AmbientTemperature.ToString();
+                                }
+
+                                _logger.LogInfo(new LogEntry
+                                {
+                                    Username = User.Email,
+                                    LogCategory = LogCategory.Measurement,
+                                    Message = "Температура калпи успешно изменена."
+                                });
+                                _notifier.ShowSuccess("Температура калпи успешно изменена.");
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _notifier.ShowInformation("Поле не может быть пустым.");
+
+                        switch (Measurements.CurrentCell.Column.Header)
+                        {
+                            case "Название":
+                            {
+                                editingElement.Text = CurrentReferencePhoto.Name;
+
+                                break;
+                            }
+
+                            case "Цена деления":
+                            {
+                                editingElement.Text = CurrentReferencePhoto.MeasuringDevice.ValueOfDivision.ToString();
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (TimeoutException)
+            {
+                _notifier.ShowError(
+                    "Не удалось изменить название снимка. Не удалось установить подключение. Проверьте интернет соединение.");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(new LogEntry
+                {
+                    Exception = exception.ToString(),
+                    LogCategory = LogCategory.Common,
+                    InnerException = exception.InnerException?.Message,
+                    Message = exception.Message,
+                    StackTrace = exception.StackTrace,
+                    Username = User.Email,
+                    Details = exception.TargetSite.Name
+                });
+                throw;
+            }
+
+            SingleSeriesLoadingComplete();
+            ProgressBar.IsIndeterminate = false;
         }
     }
 }

@@ -231,6 +231,7 @@
     <Compile Include="AutoMapper\SimpleLineResolver.cs" />
     <Compile Include="AutoMapper\SimpleLineViewToLineConverter.cs" />
     <Compile Include="Enums\LineTypeView.cs" />
+    <Compile Include="Models\MeasuringDeviceView.cs" />
     <Compile Include="Models\TypedLineView.cs" />
     <Compile Include="Models\DimensionlessSettingsView.cs" />
     <Compile Include="Models\GeneralSeriesSettingsView.cs" />

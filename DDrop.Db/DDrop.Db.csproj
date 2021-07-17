@@ -350,6 +350,10 @@
     <Compile Include="Migrations\202107091915178_WillCascadeOnDelete.designer.cs">
       <DependentUpon>202107091915178_WillCascadeOnDelete.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202107171430598_MeasuringDevice.cs" />
+    <Compile Include="Migrations\202107171430598_MeasuringDevice.designer.cs">
+      <DependentUpon>202107171430598_MeasuringDevice.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -573,6 +577,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202107091915178_WillCascadeOnDelete.resx">
       <DependentUpon>202107091915178_WillCascadeOnDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202107171430598_MeasuringDevice.resx">
+      <DependentUpon>202107171430598_MeasuringDevice.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

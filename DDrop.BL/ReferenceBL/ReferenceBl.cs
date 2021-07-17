@@ -25,6 +25,11 @@ namespace DDrop.BL.ReferenceBL
             return JsonSerializeProvider.DeserializeFromString<SimpleLine>(await _dDropRepository.GetReferencePhotoLine(photoId));
         }
 
+        public async Task UpdateReferencePhotoName(string text, Guid editedPhotoId)
+        {
+            await Task.Run(() => _dDropRepository.UpdateReferencePhotoName(text, editedPhotoId));
+        }
+
         public async Task<byte[]> GetReferencePhotoContent(Guid referencePhotoId)
         {
             return await Task.Run(() => _dDropRepository.GetReferencePhotoContent(referencePhotoId));

@@ -95,8 +95,15 @@ namespace DDrop.AutoMapper
                         x.Series, opt => opt.Ignore())
                     .ForMember(dest =>
                         dest.ReferenceLine, opt =>
-                        opt.MapFrom(src => JsonSerializeProvider.SerializeToString(src.SimpleLine)));
+                        opt.MapFrom(src => JsonSerializeProvider.SerializeToString(src.SimpleLine)))
+                    .ForMember(dest =>
+                        dest.MeasuringDevice, opt =>
+                        opt.MapFrom(src => JsonSerializeProvider.SerializeToString(src.MeasuringDevice))); 
                 cfg.CreateMap<DbReferencePhoto, ReferencePhoto>()
+                    .ForMember(dest =>
+                        dest.MeasuringDevice, opt =>
+                        opt.MapFrom(src => src.MeasuringDevice != null ?
+                            JsonSerializeProvider.DeserializeFromString<MeasuringDevice>(src.ReferenceLine) : null))
                     .ForMember(dest =>
                         dest.SimpleLine, opt =>
                         opt.MapFrom(src => src.ReferenceLine != null ? 

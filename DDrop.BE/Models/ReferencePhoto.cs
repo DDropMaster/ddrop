@@ -7,6 +7,8 @@ namespace DDrop.BE.Models
         public Guid CurrentSeriesId { get; set; }
         public SimpleLine SimpleLine { get; set; }
 
+        public MeasuringDevice MeasuringDevice { get; set; }
+
         public int PixelsInMillimeter { get; set; }
     }
 }

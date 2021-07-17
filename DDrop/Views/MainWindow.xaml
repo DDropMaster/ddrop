@@ -496,9 +496,9 @@
                                                 <RowDefinition Height="8" x:Name="ThermalRowSplitter"/>
                                             </Grid.RowDefinitions>
                                             <DataGrid Grid.Row="0" ColumnWidth="*" dataGrid:VisualHelper.EnableRowsMove="False"
-                                                      CellEditEnding="Photos_CellEditEnding" CanUserSortColumns="False"
+                                                      CellEditEnding="Measurements_CellEditEnding" CanUserSortColumns="False"
                                                       CanUserAddRows="false" AutoGenerateColumns="false"
-                                                      HorizontalAlignment="Stretch" Name="Photos" Margin="10,0,10,5"
+                                                      HorizontalAlignment="Stretch" Name="Measurements" Margin="10,0,10,5"
                                                       SelectionMode="Single" SelectionChanged="Photos_SelectionChanged"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding CurrentSeries.MeasurementsSeries, ElementName=AppMainWindow,Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}">
@@ -535,8 +535,7 @@
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
-                                                    <DataGridTextColumn IsReadOnly="False" Header="Измерение"
-                                                                    Binding="{Binding Name}" />
+                                                    <DataGridTextColumn IsReadOnly="False" Header="Измерение" Binding="{Binding Name}" />
                                                     <DataGridTextColumn 
                                                         IsReadOnly="True" Header="X диаметр, м"
                                                         Binding="{Binding Drop.XDiameterInMeters}" />
@@ -1353,10 +1352,10 @@
                                         IsReadOnly="False"
                                         Grid.Row="0"
                                         RowHeight="28"
+                                        CellEditEnding="ReferencePhotoDataGrid_CellEditEnding"
                                     >
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Width="30" x:Name="ChooseReferenceButton"
-                                                                IsReadOnly="True" CanUserResize="False">
+                                            <DataGridTemplateColumn Width="30" x:Name="ChooseReferenceButton" IsReadOnly="True" CanUserResize="False">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <Button Name="AddReferencePhoto"
@@ -1371,6 +1370,7 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTextColumn Header="Название" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <DataGridTextColumn Header="Цена деления" Binding="{Binding MeasuringDevice.ValueOfDivision, UpdateSourceTrigger=PropertyChanged}"/>
                                             <DataGridTextColumn IsReadOnly="True" Header="Пикселей в миллиметре" Binding="{Binding PixelsInMillimeter, UpdateSourceTrigger=PropertyChanged}"/>
                                             <DataGridTextColumn IsReadOnly="True" Header="Тип">
                                                 <DataGridTextColumn.Binding>

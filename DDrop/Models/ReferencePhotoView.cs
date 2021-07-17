@@ -49,6 +49,17 @@ namespace DDrop.Models
             }
         }
 
+        public MeasuringDeviceView _measuringDevice;
+        public MeasuringDeviceView MeasuringDevice
+        {
+            get => _measuringDevice;
+            set
+            {
+                _measuringDevice = value;
+                RaisePropertyChanged("MeasuringDevice");
+            }
+        }
+
         public bool Editable
         {
             get

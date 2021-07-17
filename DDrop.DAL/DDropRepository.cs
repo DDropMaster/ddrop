@@ -1546,6 +1546,25 @@ namespace DDrop.DAL
             }
         }
 
+        public async Task UpdateReferencePhotoName(string newName, Guid photoId)
+        {
+            using (var context = new DDropContext())
+            {
+                try
+                {
+                    var referencePhoto = await context.ReferencePhotos.FirstOrDefaultAsync(x => x.PhotoId == photoId);
+
+                    if (referencePhoto != null) referencePhoto.Name = newName;
+
+                    await context.SaveChangesAsync();
+                }
+                catch (SqlException e)
+                {
+                    throw new TimeoutException(e.Message, e);
+                }
+            }
+        }
+
         public async Task DeleteMeasurement(DbMeasurement measurement)
         {
             using (var context = new DDropContext())

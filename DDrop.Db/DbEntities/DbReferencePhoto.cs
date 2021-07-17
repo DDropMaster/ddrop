@@ -9,6 +9,7 @@ namespace DDrop.Db.DbEntities
         public int PixelsInMillimeter { get; set; }
         public string ReferenceLine { get; set; }
         public Guid CurrentSeriesId { get; set; }
+        public string MeasuringDevice { get; set; }
         public DbSeries Series { get; set; }
     }
 }
