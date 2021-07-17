@@ -296,49 +296,22 @@
                                                     ToolTip="Начать автоматический расчет.">
                                                 <ContentControl Content="{StaticResource Play}" Height="22" />
                                             </Button>
-                                            <TextBox IsEnabled="False" x:Name="IntervalBetweenPhotos"
-                                                     Text="{Binding ElementName=AppMainWindow, Path=CurrentSeries.IntervalBetweenPhotos}"
-                                                     Height="20" Margin="0,0,42,0" TextWrapping="Wrap"
-                                                     VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" />
-                                            <Label Content="Интервал между снимками (c):" Margin="0,-4,162,0"
-                                                   VerticalAlignment="Top" Height="27" Background="{x:Null}"
-                                                   HorizontalAlignment="Right" Width="180" />
-                                            <CheckBox Name="CreationTimeCheckBox"
-                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                                      Checked="CreationTimeCheckBox_Checked"
-                                                      Unchecked="CreationTimeCheckBox_Unchecked"
-                                                      Content="Использовать время создания снимка" Margin="0,21,347,0"
-                                                      HorizontalAlignment="Right" Width="245" />
-                                            <CheckBox Name="UseThermalPlotCheckBox"
-                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                                      Checked="UseThermalPlotCheckBox_OnChecked"
-                                                      Unchecked="UseThermalPlotCheckBox_OnUnchecked"
-                                                      Content="Использовать температурный график" Margin="0,2,347,19"
-                                                      HorizontalAlignment="Right" Width="245" />
-                                            <Button Grid.Row="0" Grid.Column="0" Name="EditIntervalBetweenPhotos"
-                                                    HorizontalAlignment="Right" Margin="0,-4,10,0"
-                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
+                                            <Button Grid.Row="0" Grid.Column="0" Name="SeriesSettingsButton" Margin="0,6,10,0"
+                                                    VerticalAlignment="Top" Background="{x:Null}"
+                                                    BorderBrush="{x:Null}" Height="27"
+                                                    Click="SeriesSettingsButton_Click"
+                                                    ToolTip="Настройки серии." HorizontalAlignment="Right" Width="27">
+                                                <ContentControl Content="{StaticResource SettingsIcon}" Height="22" />
+                                            </Button>
+                                            <Button Grid.Row="0" Grid.Column="0" Name="CloseSeriesSettingsButton" Margin="0,6,10,0"
+                                                    VerticalAlignment="Top" Background="{x:Null}"
                                                     BorderBrush="{x:Null}" Height="26"
-                                                    Click="EditIntervalBetweenPhotos_Click"
-                                                    ToolTip="Редактировать интервал между снимками.">
-                                                <ContentControl Content="{StaticResource EditIcon}" Height="21"
+                                                    Click="CloseSeriesSettingsButton_Click"
+                                                    Visibility="Hidden"
+                                                    ToolTip="Закрыть настройки серии" HorizontalAlignment="Right" Width="27">
+                                                <ContentControl Content="{StaticResource Cancel}" Height="22"
                                                                 Width="23" />
                                             </Button>
-                                            <Button Visibility="Hidden" Grid.Row="0" Grid.Column="0"
-                                                    Name="SaveIntervalBetweenPhotos" HorizontalAlignment="Right"
-                                                    Margin="0,6,10,0" VerticalAlignment="Top" Width="27"
-                                                    Background="{x:Null}" BorderBrush="{x:Null}" Height="26"
-                                                    Click="SaveIntervalBetweenPhotos_Click"
-                                                    ToolTip="Сохранить интервал между снимками.">
-                                                <ContentControl Content="{StaticResource SaveIcon}" Height="21"
-                                                                Width="23" />
-                                            </Button>
-                                            <Label Content="Количество измерений:" Margin="0,15,162,-2"
-                                                VerticalAlignment="Top" Height="27" Background="{x:Null}"
-                                                HorizontalAlignment="Right" Width="180" HorizontalContentAlignment="Right" />
-                                            <Label Content="{Binding MeasurementsSeries.Count}" Margin="0,15,10,-2"
-                                                   VerticalAlignment="Top" Height="27" Background="{x:Null}"
-                                                   HorizontalAlignment="Right" Width="152" />
                                         </Grid>
                                         <Grid x:Name="AutoCalculationMenu" Visibility="Hidden">
                                             <Button Grid.Row="0" Grid.Column="0" Name="AutoCalculate"
@@ -989,7 +962,7 @@
                                     Grid.RowSpan="3" ResizeBehavior="PreviousAndNext"
                                     Width="5"
                                     IsEnabled="False" />
-                                <Grid x:Name="ToolBox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+                                <Grid Visibility="Collapsed" x:Name="ToolBox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
                                     <TabControl MinWidth="200">
                                         <TabItem Header="Общие">
                                             <Grid>
@@ -1306,6 +1279,58 @@
                                             </Grid>
                                         </TabItem>
                                     </TabControl>
+                                </Grid>
+                                <Grid Visibility="Visible" x:Name="SeriesSettings" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+                                    <Label Content="Общие:" Margin="10,10,0,0"
+                                                   VerticalAlignment="Top" Height="26" Background="{x:Null}"
+                                                   HorizontalAlignment="Left" Width="180"
+                                                   FontWeight="Bold"
+                                    />
+                                    <Label Content="Интервал между снимками (c):" Margin="10,40,0,0"
+                                                   VerticalAlignment="Top" Height="26" Background="{x:Null}"
+                                                   HorizontalAlignment="Left" Width="180" />
+                                    <TextBox IsEnabled="False" x:Name="IntervalBetweenPhotos"
+                                                     Text="{Binding ElementName=AppMainWindow, Path=CurrentSeries.IntervalBetweenPhotos}"
+                                                     Height="19" Margin="190,44,0,0" TextWrapping="Wrap"
+                                                     VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" />
+                                    <Button Grid.Row="0" Grid.Column="0" Name="EditIntervalBetweenPhotos"
+                                                    HorizontalAlignment="Left" Margin="250,40,0,0"
+                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
+                                                    BorderBrush="{x:Null}" Height="26"
+                                                    Click="EditIntervalBetweenPhotos_Click"
+                                                    ToolTip="Редактировать интервал между снимками.">
+                                        <ContentControl Content="{StaticResource EditIcon}" Height="21"
+                                                                Width="23" />
+                                    </Button>
+                                    <Button Visibility="Hidden" Grid.Row="0" Grid.Column="0"
+                                                    Name="SaveIntervalBetweenPhotos" HorizontalAlignment="Left"
+                                                    Margin="250,10,0,0" VerticalAlignment="Top" Width="27"
+                                                    Background="{x:Null}" BorderBrush="{x:Null}" Height="26"
+                                                    Click="SaveIntervalBetweenPhotos_Click"
+                                                    ToolTip="Сохранить интервал между снимками.">
+                                        <ContentControl Content="{StaticResource SaveIcon}" Height="21"
+                                                                Width="23" />
+                                    </Button>
+                                    <CheckBox Name="CreationTimeCheckBox"
+                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseCreationDateTime, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                      Checked="CreationTimeCheckBox_Checked"
+                                                      Unchecked="CreationTimeCheckBox_Unchecked"
+                                                      Content="Использовать время создания снимка" Margin="15,70,0,0"
+                                                      HorizontalAlignment="Left" Width="245" />
+                                    <CheckBox Name="UseThermalPlotCheckBox"
+                                                      IsChecked="{Binding CurrentSeries.Settings.GeneralSeriesSettings.UseThermalPlot, ElementName=AppMainWindow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                                      Checked="UseThermalPlotCheckBox_OnChecked"
+                                                      Unchecked="UseThermalPlotCheckBox_OnUnchecked"
+                                                      Content="Использовать температурный график" Margin="15,95,0,0"
+                                                      HorizontalAlignment="Left" Width="245" />
+
+
+                                    <Label Content="Количество измерений:" Margin="10,115,0,0"
+                                                VerticalAlignment="Top" Height="27" Background="{x:Null}"
+                                                HorizontalAlignment="Left" Width="180" HorizontalContentAlignment="Left" />
+                                    <Label Content="{Binding ElementName=AppMainWindow, Path=CurrentSeries.MeasurementsSeries.Count}" Margin="145,115,0,0"
+                                                   VerticalAlignment="Top" Height="27" Background="{x:Null}"
+                                                   HorizontalAlignment="Left" Width="152" />
                                 </Grid>
                             </Grid>
                         </TabItem>

@@ -3092,6 +3092,8 @@ namespace DDrop.Views
                 EditThermalPhotoColumn.Visibility = Visibility.Hidden;
                 DeleteThermalPhotoColumn.Visibility = Visibility.Hidden;
                 AutoCalculationGridSplitter.IsEnabled = true;
+                ToolBox.Visibility = Visibility.Visible;
+                SeriesSettings.Visibility = Visibility.Collapsed;
                 
                 if (CurrentDropPhoto != null)
                     ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
@@ -3584,6 +3586,7 @@ namespace DDrop.Views
             EditThermalPhotoColumn.Visibility = Visibility.Visible;
             DeleteThermalPhotoColumn.Visibility = Visibility.Visible;
             AutoCalculationGridSplitter.IsEnabled = false;
+            ToolBox.Visibility = Visibility.Hidden;
 
             AutoCalculationMenu.Visibility = Visibility.Hidden;
 
@@ -6113,6 +6116,27 @@ namespace DDrop.Views
 
             SingleSeriesLoadingComplete();
             ProgressBar.IsIndeterminate = false;
+        }
+
+        private async void SeriesSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToolBox.Visibility = Visibility.Collapsed;
+            SeriesSettings.Visibility = Visibility.Visible;
+
+            SeriesSettingsButton.Visibility = Visibility.Hidden;
+            CloseSeriesSettingsButton.Visibility = Visibility.Visible;
+
+            await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, true, 300, 0, AutoCalculationColumn.MinWidth, 0, 200);
+        }
+
+        private async void CloseSeriesSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            CloseSeriesSettingsButton.Visibility = Visibility.Hidden;
+            SeriesSettingsButton.Visibility = Visibility.Visible;
+
+            await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, false, 300, 0, AutoCalculationColumn.MinWidth, 0, 200);
+
+            SeriesSettings.Visibility = Visibility.Hidden;
         }
     }
 }
