@@ -2,7 +2,7 @@
 {
     public class MeasuringDeviceView : BindableObject
     {
-        private double _valueOfDivision;
+        public double _valueOfDivision;
         public double ValueOfDivision
         {
             get => _valueOfDivision;

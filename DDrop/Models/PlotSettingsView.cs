@@ -12,5 +12,16 @@
                 RaisePropertyChanged("DimensionlessSettings");
             }
         }
+
+        private double _error;
+        public double Error
+        {
+            get => _error;
+            set
+            {
+                _error = value;
+                RaisePropertyChanged("Error");
+            }
+        }
     }
 }

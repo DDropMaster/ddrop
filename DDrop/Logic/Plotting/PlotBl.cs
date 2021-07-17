@@ -68,7 +68,8 @@ namespace DDrop.Logic.Plotting
                 IsDeletable = false,
                 Points = new ObservableCollection<SimplePointView>(),
                 SeriesId = series.SeriesId,
-                PlotType = plotType
+                PlotType = plotType,
+                Settings = plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot && series.ThermalPlot != null ? series.ThermalPlot.Settings : null
             };
         }
 

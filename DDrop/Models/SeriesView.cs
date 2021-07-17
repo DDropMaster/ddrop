@@ -286,7 +286,7 @@ namespace DDrop.Models
             set
             {
                 _settings = value;
-                RaisePropertyChanged("MeasuringDevice");
+                RaisePropertyChanged("Settings");
             }
         }
 
@@ -302,7 +302,6 @@ namespace DDrop.Models
         }
 
         private PlotView _thermalPlot;
-
         public PlotView ThermalPlot
         {
             get => _thermalPlot;

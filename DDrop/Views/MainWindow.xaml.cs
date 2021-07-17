@@ -5129,6 +5129,8 @@ namespace DDrop.Views
             XDimensionlessDividerTextBox.Visibility = Visibility.Visible;
             YDimensionlessDividerLabel.Visibility = Visibility.Visible;
             YDimensionlessDividerTextBox.Visibility = Visibility.Visible;
+            ErrorLabel.Visibility = Visibility.Visible;
+            ErrorTextBox.Visibility = Visibility.Visible;
 
             switch (_currentPlotType)
             {
@@ -5164,6 +5166,8 @@ namespace DDrop.Views
                     throw new ArgumentOutOfRangeException();
             }
 
+            await GetPoints(CurrentPlot, CurrentPlot.PlotType);
+
             if (CurrentPlot.Points != null)
             {
                 _plotBackUp = new PlotView()
@@ -5197,6 +5201,8 @@ namespace DDrop.Views
             XDimensionlessDividerTextBox.Visibility = Visibility.Hidden;
             YDimensionlessDividerLabel.Visibility = Visibility.Hidden;
             YDimensionlessDividerTextBox.Visibility = Visibility.Hidden;
+            ErrorLabel.Visibility = Visibility.Hidden;
+            ErrorTextBox.Visibility = Visibility.Hidden;
 
             await AnimationHelper.AnimateGridColumnExpandCollapseAsync(CustomPlotsColumn, true, 300, 0,
                 CustomPlotsColumn.MinWidth, 0, 200);
@@ -5905,6 +5911,15 @@ namespace DDrop.Views
                 _appStateBL.ShowAdorner(ReferenceImageLoading);
 
                 CurrentReferencePhoto = CurrentReferencePhotos[ReferencePhotoDataGrid.SelectedIndex];
+
+                if (CurrentReferencePhoto.PhotoId == Guid.Empty)
+                {
+                    ReferenceImage = null;
+                    SeriesDrawerSwap();
+                    _appStateBL.HideAdorner(ReferenceImageLoading);
+
+                    return;
+                }
 
                 CurrentReferencePhoto.Content = await _referenceBl.GetReferencePhotoContent(CurrentReferencePhoto.PhotoId);
 

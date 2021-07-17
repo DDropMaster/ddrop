@@ -285,6 +285,7 @@ namespace DDrop.AutoMapper
                 cfg.CreateMap<AutoCalculationSettingsView, AutoCalculationSettings>();
                 cfg.CreateMap<AutoCalculationSettings, AutoCalculationSettingsView>();
                 cfg.CreateMap<GeneralSeriesSettingsView, GeneralSeriesSettings>().ReverseMap();
+                cfg.CreateMap<MeasuringDeviceView, MeasuringDevice>().ReverseMap();
                 cfg.CreateMap<TypedRectangleView, TypedRectangle>().ReverseMap();
                 cfg.CreateMap<PlotSettingsView, PlotSettings>().ReverseMap();
                 cfg.CreateMap<DimensionlessSettingsView, DimensionlessSettings>().ReverseMap();

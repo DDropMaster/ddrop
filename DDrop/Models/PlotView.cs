@@ -91,7 +91,7 @@ namespace DDrop.Models
             set
             {
                 _settings = value;
-                RaisePropertyChanged("MeasuringDevice");
+                RaisePropertyChanged("Settings");
             }
         }
 
