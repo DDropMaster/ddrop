@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using AutoMapper;
 using DDrop.BE.Models;
 using DDrop.BL.CustomPlots;
@@ -22,6 +23,64 @@ namespace DDrop.Logic.Plotting
         {
             _customPlotsBl = customPlotsBl;
             _mapper = mapper;
+        }
+
+        public ObservableCollection<LineSeriesId> CreateErrorPlots(PlotView plot, bool combined)
+        {
+            var tempUpper = new ChartValues<ObservablePoint>();
+            var tempLower = new ChartValues<ObservablePoint>();
+
+            foreach (var point in plot.Points)
+            {
+                tempUpper.Add(new ObservablePoint()
+                {
+                    X = point.X,
+                    Y = point.Y + plot.Settings.Error
+                });
+
+                tempLower.Add(new ObservablePoint()
+                {
+                    X = point.X,
+                    Y = point.Y - plot.Settings.Error
+                });
+            }
+
+            var scale = 0;
+
+            if (combined && plot.PlotType == PlotTypeView.Temperature)
+            {
+                scale = 1;
+            }
+
+            return new ObservableCollection<LineSeriesId>()
+            {
+                new LineSeriesId()
+                {
+                    Id = plot.PlotId,
+                    Title = plot.Name,
+                    Values = tempUpper,
+                    LineSmoothness = 0,
+                    Fill = Brushes.Transparent,
+                    ScalesYAt = scale,
+                    PointGeometry = null,
+                    plotType = plot.PlotType,
+                    Stroke = Brushes.Gray,
+                    StrokeDashArray = new DoubleCollection { 2 }
+                },
+                new LineSeriesId()
+                {
+                    Id = plot.PlotId,
+                    Title = plot.Name,
+                    Values = tempLower,
+                    LineSmoothness = 0,
+                    Fill = Brushes.Transparent,
+                    ScalesYAt = scale,
+                    PointGeometry = null,
+                    plotType = plot.PlotType,
+                    Stroke = Brushes.Gray,
+                    StrokeDashArray = new DoubleCollection { 2 }
+                },
+            };
         }
 
         public LineSeriesId CreatePlot(PlotView plot, bool combined)
@@ -63,13 +122,26 @@ namespace DDrop.Logic.Plotting
             {
                 CurrentUserId = series.CurrentUserId,
                 Name = series.Title,
-                PlotId = series.SeriesId,
+                PlotId = plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot && series.ThermalPlot != null ? series.ThermalPlot.PlotId : series.SeriesId,
                 IsEditable = plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot ? true : false,
                 IsDeletable = false,
                 Points = new ObservableCollection<SimplePointView>(),
                 SeriesId = series.SeriesId,
                 PlotType = plotType,
-                Settings = plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot && series.ThermalPlot != null ? series.ThermalPlot.Settings : null
+                Settings = GetSettings(series, plotType)
+            };
+        }
+
+        private PlotSettingsView GetSettings(SeriesView series, PlotTypeView plotType)
+        {
+            if (plotType == PlotTypeView.Temperature && series.Settings.GeneralSeriesSettings.UseThermalPlot && series.ThermalPlot != null)
+            {
+                return series.ThermalPlot.Settings;
+            }
+
+            return new PlotSettingsView
+            {
+                Error = plotType == PlotTypeView.Radius ? series.Settings.ErrorSettings.FullRadiusError : series.Settings.ErrorSettings.FullTemperatureError
             };
         }
 

@@ -5433,6 +5433,7 @@ namespace DDrop.Views
         private async void OnPlotsChecked(object sender, RoutedEventArgs e)
         {
             ProgressBar.IsIndeterminate = true;
+            _appStateBL.ShowAdorner(PlotToolboxLoading);
             CreateAxes();
 
             var plots = new ObservableCollection<PlotView>();
@@ -5461,10 +5462,12 @@ namespace DDrop.Views
                     await GetPoints(plot, _currentPlotType);
 
                     SeriesCollectionToPlot.Add(_plotBl.CreatePlot(plot, YAxesCollection.Count == 2));
+                    //SeriesCollectionToPlot.AddRange(_plotBl.CreateErrorPlots(plot, YAxesCollection.Count == 2));
                 }
             }
 
             ProgressBar.IsIndeterminate = false;
+            _appStateBL.HideAdorner(PlotToolboxLoading);
         }
 
         private async Task GetPoints(PlotView plot, PlotTypeView plotType)
@@ -5518,6 +5521,7 @@ namespace DDrop.Views
         private void OnPlotsUnchecked(object sender, RoutedEventArgs e)
         {
             CreateAxes();
+            _appStateBL.ShowAdorner(PlotToolboxLoading);
 
             var plots = new ObservableCollection<PlotView>();
 
@@ -5552,6 +5556,8 @@ namespace DDrop.Views
                     s.ScalesYAt = 0;
                 }
             }
+
+            _appStateBL.HideAdorner(PlotToolboxLoading);
         }
 
         private void UpdatePlots(bool dimensionlessChanged = false)
