@@ -17,8 +17,9 @@ namespace DDrop.AutoMapper
                 {
                     return new SeriesSettings()
                     {
-                        AutoCalculationSettings = GetAutoCalculationSettings(seriesSettings, destination),
-                        GeneralSeriesSettings = GetGeneralSeriesSettings(seriesSettings, destination)
+                        AutoCalculationSettings = GetAutoCalculationSettings(seriesSettings),
+                        GeneralSeriesSettings = GetGeneralSeriesSettings(seriesSettings),
+                        ErrorSettings = GetErrorSettings(seriesSettings)
                     };
                 }
             }
@@ -30,7 +31,7 @@ namespace DDrop.AutoMapper
             };
         }
 
-        private AutoCalculationSettings GetAutoCalculationSettings(SeriesSettings seriesSettings, Series series)
+        private AutoCalculationSettings GetAutoCalculationSettings(SeriesSettings seriesSettings)
         {
             if (seriesSettings.AutoCalculationSettings != null)
             {
@@ -48,7 +49,7 @@ namespace DDrop.AutoMapper
             return new AutoCalculationSettings();
         }
 
-        private GeneralSeriesSettings GetGeneralSeriesSettings(SeriesSettings seriesSettings, Series series)
+        private GeneralSeriesSettings GetGeneralSeriesSettings(SeriesSettings seriesSettings)
         {
             if (seriesSettings.GeneralSeriesSettings != null)
             {
@@ -61,6 +62,20 @@ namespace DDrop.AutoMapper
             }
 
             return new GeneralSeriesSettings();
+        }
+
+        private ErrorSettings GetErrorSettings(SeriesSettings seriesSettings)
+        {
+            if (seriesSettings.ErrorSettings != null)
+            {
+                return new ErrorSettings()
+                {
+                    FullRadiusError = seriesSettings.ErrorSettings.FullRadiusError,
+                    FullTemperatureError = seriesSettings.ErrorSettings.FullTemperatureError
+                };
+            }
+
+            return new ErrorSettings();
         }
     }
 }

@@ -1367,8 +1367,7 @@ namespace DDrop.Views
                         {
                             Username = User.Email,
                             LogCategory = LogCategory.Series,
-                            Message =
-                                $"Сохранен новый интервал между снимками для серии {CurrentSeries.Title}. Не удалось установить подключение. Проверьте интернет соединение."
+                            Message = $"Сохранен новый интервал между снимками для серии {CurrentSeries.Title}."
                         });
                     }
                     catch (TimeoutException)
@@ -3094,7 +3093,10 @@ namespace DDrop.Views
                 AutoCalculationGridSplitter.IsEnabled = true;
                 ToolBox.Visibility = Visibility.Visible;
                 SeriesSettings.Visibility = Visibility.Collapsed;
-                
+
+                CloseSeriesSettingsButton.Visibility = Visibility.Hidden;
+                SeriesSettingsButton.Visibility = Visibility.Visible;
+
                 if (CurrentDropPhoto != null)
                     ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
 
@@ -6137,6 +6139,79 @@ namespace DDrop.Views
             await AnimationHelper.AnimateGridColumnExpandCollapseAsync(AutoCalculationColumn, false, 300, 0, AutoCalculationColumn.MinWidth, 0, 200);
 
             SeriesSettings.Visibility = Visibility.Hidden;
+        }
+
+        private async void SaveTemperatureError_Click(object sender, RoutedEventArgs e)
+        {
+            SingleSeriesLoading();
+            await SaveTemperatureErrorAsync();
+            SingleSeriesLoadingComplete();
+        }
+
+        private async Task SaveTemperatureErrorAsync()
+        {
+            if (CurrentSeries != null)
+            {
+                if (double.TryParse(IntervalBetweenPhotos?.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var fullTemperatureError))
+                {
+                    try
+                    {
+                        SaveTemperatureError.Visibility = Visibility.Hidden;
+                        SaveTemperatureError.Visibility = Visibility.Visible;
+                        if (FullTemperatureError != null) FullTemperatureError.IsEnabled = false;
+                        ProgressBar.IsIndeterminate = true;
+
+                        var currentSeries = CurrentSeries;
+                        await Task.Run(() => _seriesBL.UpdateSeriesSettings(JsonSerializeProvider.SerializeToString(currentSeries.Settings), currentSeries.SeriesId));
+
+                        CurrentSeries.IntervalBetweenPhotos = fullTemperatureError;
+
+                        _logger.LogInfo(new LogEntry
+                        {
+                            Username = User.Email,
+                            LogCategory = LogCategory.Series,
+                            Message = $"Сохранена новая температурная погрешность для серии {CurrentSeries.Title}."
+                        });
+                    }
+                    catch (TimeoutException)
+                    {
+                        _notifier.ShowError(
+                            $"Не удалось сохранить новую температурную погрешность для серии {CurrentSeries.Title}. Не удалось установить подключение. Проверьте интернет соединение.");
+                        if (IntervalBetweenPhotos != null)
+                            IntervalBetweenPhotos.Text =
+                                CurrentSeries.IntervalBetweenPhotos.ToString(CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogError(new LogEntry
+                        {
+                            Exception = exception.ToString(),
+                            LogCategory = LogCategory.Common,
+                            InnerException = exception.InnerException?.Message,
+                            Message = exception.Message,
+                            StackTrace = exception.StackTrace,
+                            Username = User.Email,
+                            Details = exception.TargetSite.Name
+                        });
+                        throw;
+                    }
+
+                    ProgressBar.IsIndeterminate = false;
+                }
+                else
+                {
+                    CurrentSeries.Settings.ErrorSettings.FullTemperatureError = 0;
+                    _notifier.ShowInformation(
+                        "Некорректное значение для температурной погрешности.");
+                }
+            }
+        }
+
+        private void EditTemperatureError_Click(object sender, RoutedEventArgs e)
+        {
+            SaveTemperatureError.Visibility = Visibility.Visible;
+            EditTemperatureError.Visibility = Visibility.Hidden;
+            FullTemperatureError.IsEnabled = true;
         }
     }
 }

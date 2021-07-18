@@ -4,5 +4,6 @@
     {
         public AutoCalculationSettings AutoCalculationSettings { get; set; }
         public GeneralSeriesSettings GeneralSeriesSettings { get; set; }
+        public ErrorSettings ErrorSettings { get; set; }
     }
 }

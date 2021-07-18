@@ -23,5 +23,16 @@
                 RaisePropertyChanged("AutoCalculationSettings");
             }
         }
+
+        private ErrorSettingsView _errorSettings;
+        public ErrorSettingsView ErrorSettings
+        {
+            get => _errorSettings;
+            set
+            {
+                _errorSettings = value;
+                RaisePropertyChanged("ErrorSettings");
+            }
+        }
     }
 }

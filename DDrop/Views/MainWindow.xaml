@@ -1323,14 +1323,48 @@
                                                       Unchecked="UseThermalPlotCheckBox_OnUnchecked"
                                                       Content="Использовать температурный график" Margin="15,95,0,0"
                                                       HorizontalAlignment="Left" Width="245" />
-
-
                                     <Label Content="Количество измерений:" Margin="10,115,0,0"
                                                 VerticalAlignment="Top" Height="27" Background="{x:Null}"
                                                 HorizontalAlignment="Left" Width="180" HorizontalContentAlignment="Left" />
                                     <Label Content="{Binding ElementName=AppMainWindow, Path=CurrentSeries.MeasurementsSeries.Count}" Margin="145,115,0,0"
                                                    VerticalAlignment="Top" Height="27" Background="{x:Null}"
                                                    HorizontalAlignment="Left" Width="152" />
+                                    <Label Content="Погрешности:" Margin="10,145,0,0"
+                                                   VerticalAlignment="Top" Height="26" Background="{x:Null}"
+                                                   HorizontalAlignment="Left" Width="180"
+                                                   FontWeight="Bold"/>
+                                    <Label Content="Полная погрешность радиуса:" Margin="10,175,0,0"
+                                                VerticalAlignment="Top" Height="26" Background="{x:Null}"
+                                                HorizontalAlignment="Left" Width="180" />
+                                    <Label Content="{Binding ElementName=AppMainWindow, Path=CurrentSeries.Settings.ErrorSettings.FullRadiusError}" Margin="180,175,0,0"
+                                                   VerticalAlignment="Top" Height="27" Background="{x:Null}"
+                                                   HorizontalAlignment="Left" Width="152" />
+                                    <Label Content="Полная погрешность температуры:" Margin="10,200,0,0"
+                                                VerticalAlignment="Top" Height="26" Background="{x:Null}"
+                                                HorizontalAlignment="Left" Width="205" />
+                                    <TextBox IsEnabled="False" x:Name="FullTemperatureError"
+                                                     Text="{Binding ElementName=AppMainWindow, Path=CurrentSeries.Settings.ErrorSettings.FullTemperatureError}"
+                                                     Height="19" Margin="215,205,0,0" TextWrapping="Wrap"
+                                                     VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" />
+                                    <Button Grid.Row="0" Grid.Column="0" Name="EditTemperatureError"
+                                                    HorizontalAlignment="Left" Margin="270,200,0,0"
+                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
+                                                    BorderBrush="{x:Null}" Height="26"
+                                                    ToolTip="Редактировать."
+                                                    Click="EditTemperatureError_Click"        
+                                            >
+                                        <ContentControl Content="{StaticResource EditIcon}" Height="21"
+                                                                Width="23" />
+                                    </Button>
+                                    <Button Visibility="Hidden" Grid.Row="0" Grid.Column="0"
+                                                    Name="SaveTemperatureError" HorizontalAlignment="Left"
+                                                    Margin="250,10,0,0" VerticalAlignment="Top" Width="27"
+                                                    Background="{x:Null}" BorderBrush="{x:Null}" Height="26"
+                                                    Click="SaveTemperatureError_Click"
+                                                    ToolTip="Сохранить.">
+                                        <ContentControl Content="{StaticResource SaveIcon}" Height="21"
+                                                                Width="23" />
+                                    </Button>
                                 </Grid>
                             </Grid>
                         </TabItem>
