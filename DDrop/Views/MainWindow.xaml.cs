@@ -798,16 +798,20 @@ namespace DDrop.Views
             if (e.RemovedItems.Count > 0)
             {
                 var old = e.RemovedItems[0] as SeriesView;
-                old.Loaded = false;
 
-                old.MeasurementsSeries.Clear();
-                old.ReferencePhotoForSeries.Clear();
-
-                foreach (var oldReferencePhotoForSeries in old.ReferencePhotoForSeries)
+                if (old != null)
                 {
-                    if (oldReferencePhotoForSeries?.Content != null)
+                    old.Loaded = false;
+
+                    old.MeasurementsSeries.Clear();
+                    old.ReferencePhotoForSeries.Clear();
+
+                    foreach (var oldReferencePhotoForSeries in old.ReferencePhotoForSeries)
                     {
-                        oldReferencePhotoForSeries.Content = null;
+                        if (oldReferencePhotoForSeries?.Content != null)
+                        {
+                            oldReferencePhotoForSeries.Content = null;
+                        }
                     }
                 }
             }

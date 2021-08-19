@@ -1304,7 +1304,7 @@
                                     </Button>
                                     <Button Visibility="Hidden" Grid.Row="0" Grid.Column="0"
                                                     Name="SaveIntervalBetweenPhotos" HorizontalAlignment="Left"
-                                                    Margin="250,10,0,0" VerticalAlignment="Top" Width="27"
+                                                    Margin="250,40,0,0" VerticalAlignment="Top" Width="27"
                                                     Background="{x:Null}" BorderBrush="{x:Null}" Height="26"
                                                     Click="SaveIntervalBetweenPhotos_Click"
                                                     ToolTip="Сохранить интервал между снимками.">

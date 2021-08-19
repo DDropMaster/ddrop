@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DDrop.Db;
 using DDrop.Db.DbEntities;
+using DDrop.Db.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace DDrop.DAL
@@ -992,7 +993,8 @@ namespace DDrop.DAL
                         CommentId = p.CommentId,
                         ContourId = p.ContourId,
                         Comment = p.Comment,
-                        Content = withContent ? p.Content : null
+                        Content = withContent ? p.Content : null,
+                        MeasurementId = p.MeasurementId,
                     }).ToListAsync();
 
                 var resultingDropPhotos = new List<DbDropPhoto>();
@@ -1013,7 +1015,8 @@ namespace DDrop.DAL
                         CommentId = dbDropPhoto.CommentId,
                         ContourId = dbDropPhoto.ContourId,
                         Comment = dbDropPhoto.Comment,
-                        Content = dbDropPhoto.Content
+                        Content = dbDropPhoto.Content,
+                        MeasurementId = dbDropPhoto.MeasurementId,
                     });
                 }
 
@@ -1438,7 +1441,11 @@ namespace DDrop.DAL
             {
                 try
                 {
-                    context.DropPhotos.Attach(dropPhoto);
+                    if (!context.Exists(dropPhoto))
+                    {
+                        context.DropPhotos.Attach(dropPhoto);
+                    }
+                                       
 
                     context.Entry(dropPhoto).State = EntityState.Modified;
                     

@@ -62,6 +62,7 @@
     <Compile Include="DbEntities\DbThermalPhoto.cs" />
     <Compile Include="DbEntities\DbUser.cs" />
     <Compile Include="DDropContext.cs" />
+    <Compile Include="Extensions\ContextExtensions.cs" />
     <Compile Include="Migrations\202003162023104_initial.cs" />
     <Compile Include="Migrations\202003162023104_initial.designer.cs">
       <DependentUpon>202003162023104_initial.cs</DependentUpon>
