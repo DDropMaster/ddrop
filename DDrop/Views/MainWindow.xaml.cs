@@ -1742,9 +1742,12 @@ namespace DDrop.Views
             {
                 foreach (var dropPhoto in measurement.DropPhotos)
                 {
-                    foreach (var line in dropPhoto.Lines)
+                    if (dropPhoto.Lines != null)
                     {
-                        canvas.Children.Remove(line.Line);
+                        foreach (var line in dropPhoto.Lines)
+                        {
+                            canvas.Children.Remove(line.Line);
+                        }
                     }
 
                     if (dropPhoto.Contour != null)
@@ -2053,7 +2056,7 @@ namespace DDrop.Views
 
         private async void SaveInputPhotoEditButton_Click(object sender, RoutedEventArgs e)
         {
-            if (IsSaveRequired()) await SavePixelDiameters();
+            if (true) await SavePixelDiameters();
 
             await PhotoEditModeOff(PhotoTypeView.FrontDropPhoto);
             ShowLinesOnPhotosPreview(CurrentDropPhoto, ImgCurrent.CanDrawing);
@@ -5038,7 +5041,8 @@ namespace DDrop.Views
 
             if (simpleLine != null)
             {
-                simpleLine = lineForAdd;
+                var lineIndex = CurrentDropPhoto.SimpleLines.IndexOf(simpleLine);
+                CurrentDropPhoto.SimpleLines[lineIndex] = lineForAdd;
             }
             else
             {

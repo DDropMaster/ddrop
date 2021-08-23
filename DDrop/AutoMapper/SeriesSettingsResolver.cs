@@ -28,6 +28,7 @@ namespace DDrop.AutoMapper
             {
                 AutoCalculationSettings = new AutoCalculationSettings(),
                 GeneralSeriesSettings = new GeneralSeriesSettings(),
+                ErrorSettings = new ErrorSettings(),
             };
         }
 
