@@ -1503,25 +1503,29 @@ namespace DDrop.Views
             if (e.RemovedItems.Count > 0)
             {
                 var oldCurrentMeasurement = e.RemovedItems[0] as MeasurementView;
-                var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
-                    oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
-                if (singleOldMeasurement != null)
+                if (oldCurrentMeasurement != null)
                 {
-                    foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
-                    {
-                        dropPhoto.Content = null;
-                        dropPhoto.Contour = null;
+                    var singleOldMeasurement = CurrentSeries.MeasurementsSeries.FirstOrDefault(x =>
+                        oldCurrentMeasurement != null && x.MeasurementId == oldCurrentMeasurement.MeasurementId);
 
-                        for (int i = ImgCurrent.CanDrawing.Children.Count; i-- > 1;)
+                    if (singleOldMeasurement != null)
+                    {
+                        foreach (var dropPhoto in singleOldMeasurement.DropPhotos)
                         {
-                            ImgCurrent.CanDrawing.Children.RemoveAt(i);
+                            dropPhoto.Content = null;
+                            dropPhoto.Contour = null;
+
+                            for (int i = ImgCurrent.CanDrawing.Children.Count; i-- > 1;)
+                            {
+                                ImgCurrent.CanDrawing.Children.RemoveAt(i);
+                            }
                         }
                     }
-                }
 
-                if (singleOldMeasurement?.ThermalPhoto?.Content != null)
-                    singleOldMeasurement.ThermalPhoto.Content = null;
+                    if (singleOldMeasurement?.ThermalPhoto?.Content != null)
+                        singleOldMeasurement.ThermalPhoto.Content = null;
+                }
             }
 
             var photosSelectedItem = (MeasurementView) Measurements.SelectedItem;
@@ -5152,7 +5156,7 @@ namespace DDrop.Views
                     int index;
                     if (CustomPlots.SelectedIndex == -1)
                     {
-                        index = AvailableTemperaturePlots.Count - 1;
+                        index = AvailableRadiusPlots.Count - 1;
                     }
                     else
                     {
@@ -5247,7 +5251,11 @@ namespace DDrop.Views
                     PlotId = Guid.NewGuid(),
                     Name = inputDialog.Answer,
                     PlotType = _currentPlotType,
-                    Points = new ObservableCollection<SimplePointView>()
+                    Points = new ObservableCollection<SimplePointView>(),
+                    Settings = new PlotSettingsView()
+                    {
+                        DimensionlessSettings = new DimensionlessSettingsView(),
+                    }
                 };
 
                 await SaveAddedPlot(plotForAdd);
