@@ -743,7 +743,13 @@ namespace DDrop.Views
                     SeriesId = Guid.NewGuid(),
                     Title = OneLineSetterValue.Text,
                     AddedDate = DateTime.Now,
-                    CurrentUserId = User.UserId
+                    CurrentUserId = User.UserId,
+                    Settings = new SeriesSettingsView()
+                    {
+                        GeneralSeriesSettings = new GeneralSeriesSettingsView(),
+                        ErrorSettings = new ErrorSettingsView(),
+                        AutoCalculationSettings = new AutoCalculationSettingsView()                    
+                    }
                 };
 
                 try
@@ -3177,7 +3183,7 @@ namespace DDrop.Views
                             Treshold2 = Convert.ToInt32(Threshold2.Text)
                         };
 
-                    foreach (var photo in CurrentSeries.MeasurementsSeries[i].DropPhotos)
+                    foreach (var photo in CurrentSeries.MeasurementsSeries[i].DropPhotos.Where(dp => dp.PhotoId != Guid.Empty))
                     {
                         photo.Content = await GetContent(photo);
 
@@ -3206,9 +3212,19 @@ namespace DDrop.Views
                             photo.Content = null;
                         }
 
-                        await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(photo));
-                        await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
+                        CurrentSeries.MeasurementsSeries[i] = _mapper.Map<Measurement, MeasurementView>(
+                            _calculationBL.ReCalculateAllParametersFromLines(
+                                _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
+                                _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries)));
 
+                        var changingPhoto = CurrentSeries.MeasurementsSeries[i].DropPhotos.FirstOrDefault(dp => dp.PhotoId == photo.PhotoId);
+
+                        photo.XDiameterInPixels = changingPhoto.XDiameterInPixels;
+                        photo.YDiameterInPixels = changingPhoto.YDiameterInPixels;
+                        photo.ZDiameterInPixels = changingPhoto.ZDiameterInPixels;
+
+                        await _dropPhotoBl.UpdateDropPhoto(_mapper.Map<DropPhotoView, DropPhoto>(photo));
+                        
                         photo.Contour = null;
                     }
 
@@ -3239,8 +3255,12 @@ namespace DDrop.Views
 
                         photo.EllipseCoordinate = new Point(thermalData.X, thermalData.Y);
 
-                        await _thermalPhotoBl.UpdateThermalPhoto(_mapper.Map<ThermalPhotoView, ThermalPhoto>(photo));
-                        await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
+                        CurrentSeries.MeasurementsSeries[i] = _mapper.Map<Measurement, MeasurementView>(
+                            _calculationBL.ReCalculateAllParametersFromLines(
+                                _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
+                                _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries)));
+
+                        await _thermalPhotoBl.UpdateThermalPhoto(_mapper.Map<ThermalPhotoView, ThermalPhoto>(photo));              
                     }
 
                     pbu.CurValue[pbuHandle1] += 1;
@@ -3257,10 +3277,7 @@ namespace DDrop.Views
                             thermalPhoto.Content = null;
                     }
 
-                    CurrentSeries.MeasurementsSeries[i] = _mapper.Map<Measurement, MeasurementView>(
-                        _calculationBL.ReCalculateAllParametersFromLines(
-                            _mapper.Map<MeasurementView, Measurement>(CurrentSeries.MeasurementsSeries[i]),
-                            _mapper.Map<ObservableCollection<ReferencePhotoView>, List<ReferencePhoto>>(CurrentSeries.ReferencePhotoForSeries)));
+                    await _dropBl.UpdateDrop(_mapper.Map<DropView, Drop>(CurrentSeries.MeasurementsSeries[i].Drop));
                 }
 
                 pbu.ResetValue(pbuHandle1);

@@ -95,7 +95,7 @@ namespace DDrop.BL.Calculation
 
             var sideDropPhoto = measurement.DropPhotos.FirstOrDefault(x => x.PhotoType == PhotoType.SideDropPhoto);
 
-            if (frontDropPhoto.PhotoId != null && sideDropPhoto.PhotoId != null)
+            if (frontDropPhoto?.PhotoId != null && frontDropPhoto?.PhotoId != Guid.Empty && sideDropPhoto?.PhotoId != null && sideDropPhoto?.PhotoId != Guid.Empty)
             {
                 var frontHorizontalLine = frontDropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == Enums.LineType.Horizontal);
 
@@ -162,7 +162,7 @@ namespace DDrop.BL.Calculation
                     sideDropPhoto.ZDiameterInPixels,
                     measurement.Drop);
             }
-            else if (frontDropPhoto.PhotoId == null && sideDropPhoto.PhotoId != null)
+            else if ((frontDropPhoto?.PhotoId == null || frontDropPhoto?.PhotoId == Guid.Empty) && sideDropPhoto?.PhotoId != null && sideDropPhoto?.PhotoId != Guid.Empty)
             {
                 var sideHorizontalLine = sideDropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == Enums.LineType.Horizontal);
 
@@ -194,11 +194,11 @@ namespace DDrop.BL.Calculation
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
                     0,
-                    sideDropPhoto.YDiameterInPixels / sideReferencePixelsInMillimeter.Value,
-                    sideDropPhoto.ZDiameterInPixels / sideReferencePixelsInMillimeter.Value,
+                    sideDropPhoto.YDiameterInPixels / (double)sideReferencePixelsInMillimeter.Value,
+                    sideDropPhoto.ZDiameterInPixels / (double)sideReferencePixelsInMillimeter.Value,
                     measurement.Drop);
             }
-            else if (frontDropPhoto.PhotoId != null && sideDropPhoto.PhotoId == null)
+            else if (frontDropPhoto?.PhotoId != null && frontDropPhoto?.PhotoId != Guid.Empty && (sideDropPhoto?.PhotoId == null || sideDropPhoto?.PhotoId == Guid.Empty))
             {
                 var frontHorizontalLine = frontDropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == Enums.LineType.Horizontal);
 
@@ -229,8 +229,8 @@ namespace DDrop.BL.Calculation
                 }
 
                 DropletSizeCalculator.DropletSizeCalculator.PerformCalculation(
-                    frontDropPhoto.XDiameterInPixels / frontReferencePixelsInMillimeter.Value,
-                    frontDropPhoto.YDiameterInPixels / frontReferencePixelsInMillimeter.Value,
+                    frontDropPhoto.XDiameterInPixels / (double)frontReferencePixelsInMillimeter.Value,
+                    frontDropPhoto.YDiameterInPixels / (double)frontReferencePixelsInMillimeter.Value,
                     0,
                     measurement.Drop);
             }

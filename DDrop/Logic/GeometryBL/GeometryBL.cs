@@ -62,14 +62,26 @@ namespace DDrop.Logic.GeometryBL
                 }
             }
 
-            var horizontalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal) ?? new SimpleLineView { LineType = LineTypeView.Horizontal };
+            var horizontalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal);
+
+            if (horizontalSimpleLine == null)
+            {
+                dropPhoto.SimpleLines.Add(new SimpleLineView { LineType = LineTypeView.Horizontal });
+                horizontalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal);
+            }
 
             horizontalSimpleLine.X1 = simpleHorizontalDiameter.X1;
             horizontalSimpleLine.X2 = simpleHorizontalDiameter.X2;
             horizontalSimpleLine.Y1 = simpleHorizontalDiameter.Y1;
             horizontalSimpleLine.Y2 = simpleHorizontalDiameter.Y1;
 
-            var horizontalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal) ?? new TypedLineView { LineType = LineTypeView.Horizontal, Line = new Line() };
+            var horizontalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal);
+
+            if (horizontalLine == null)
+            {
+                dropPhoto.Lines.Add(new TypedLineView { LineType = LineTypeView.Horizontal, Line = new Line() });
+                horizontalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Horizontal);
+            }
 
             horizontalLine.Line.X1 = simpleHorizontalDiameter.X1;
             horizontalLine.Line.X2 = simpleHorizontalDiameter.X2;
@@ -78,21 +90,33 @@ namespace DDrop.Logic.GeometryBL
             horizontalLine.Line.StrokeThickness = 2;
             horizontalLine.Line.Stroke = Brushes.DeepPink;
 
-            var verticalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical) ?? new SimpleLineView { LineType = LineTypeView.Vertical };
+            var verticalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical);
 
-            horizontalSimpleLine.X1 = simpleHorizontalDiameter.X1;
-            horizontalSimpleLine.X2 = simpleHorizontalDiameter.X2;
-            horizontalSimpleLine.Y1 = simpleHorizontalDiameter.Y1;
-            horizontalSimpleLine.Y2 = simpleHorizontalDiameter.Y1;
+            if (verticalSimpleLine == null)
+            {
+                dropPhoto.SimpleLines.Add(new SimpleLineView { LineType = LineTypeView.Vertical });
+                verticalSimpleLine = dropPhoto.SimpleLines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical);
+            }
 
-            var verticalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical) ?? new TypedLineView { LineType = LineTypeView.Vertical, Line = new Line() };
+            verticalSimpleLine.X1 = simpleVerticalDiameter.X1;
+            verticalSimpleLine.X2 = simpleVerticalDiameter.X1;
+            verticalSimpleLine.Y1 = simpleVerticalDiameter.Y1;
+            verticalSimpleLine.Y2 = simpleVerticalDiameter.Y2;
+
+            var verticalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical);
+
+            if (verticalLine == null)
+            {
+                dropPhoto.Lines.Add(new TypedLineView { LineType = LineTypeView.Vertical, Line = new Line() });
+                verticalLine = dropPhoto.Lines.FirstOrDefault(x => x.LineType == LineTypeView.Vertical);
+            }
 
             verticalLine.Line.X1 = simpleVerticalDiameter.X1;
-            verticalLine.Line.X2 = simpleVerticalDiameter.X2;
+            verticalLine.Line.X2 = simpleVerticalDiameter.X1;
             verticalLine.Line.Y1 = simpleVerticalDiameter.Y1;
-            verticalLine.Line.Y2 = simpleVerticalDiameter.Y1;
+            verticalLine.Line.Y2 = simpleVerticalDiameter.Y2;
             verticalLine.Line.StrokeThickness = 2;
-            verticalLine.Line.Stroke = Brushes.DeepPink;
+            verticalLine.Line.Stroke = Brushes.Green;
         }
 
         public void PrepareContour(DropPhotoView selectedPhoto, out ObservableCollection<Line> contour, bool showContourOnPreview)
