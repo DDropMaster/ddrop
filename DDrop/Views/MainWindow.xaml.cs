@@ -3920,6 +3920,8 @@ namespace DDrop.Views
                 if (User.UserSeries != null)
                 {
                     User.UserSeries.Clear();
+                    AvailableRadiusPlots.Clear();
+                    AvailableTemperaturePlots.Clear();
                     User = null;
                 }
 
