@@ -296,6 +296,14 @@
                                                     ToolTip="Начать автоматический расчет.">
                                                 <ContentControl Content="{StaticResource Play}" Height="22" />
                                             </Button>
+                                            <Button Grid.Row="0" Grid.Column="0" Name="CopyPhotosToNewSeries"
+                                                    HorizontalAlignment="Left" Margin="169,6,0,0"
+                                                    VerticalAlignment="Top" Width="27" Background="{x:Null}"
+                                                    BorderBrush="{x:Null}" Height="27"
+                                                    Click="CopyPhotosToNewSeries_Click"
+                                                    ToolTip="Копировать фотографии в новую серию.">
+                                                <ContentControl Content="{StaticResource Play}" Height="22" />
+                                            </Button>
                                             <Button Grid.Row="0" Grid.Column="0" Name="SeriesSettingsButton" Margin="0,6,10,0"
                                                     VerticalAlignment="Top" Background="{x:Null}"
                                                     BorderBrush="{x:Null}" Height="27"

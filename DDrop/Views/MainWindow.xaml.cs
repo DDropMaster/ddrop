@@ -52,6 +52,7 @@ using DDrop.Properties;
 using DDrop.Utility.Animation;
 using DDrop.Utility.Calculation;
 using DDrop.Utility.DataGrid;
+using DDrop.Utility.Extensions;
 using DDrop.Utility.FileOperations;
 using DDrop.Utility.ImageOperations;
 using DDrop.Utility.ImageOperations.ImageValidator;
@@ -983,7 +984,7 @@ namespace DDrop.Views
 
                             await _seriesLogic.DeleteSeries(User.UserSeries[i], MainWindowPixelDrawer.CanDrawing, User.UserSeries);
 
-                            if (CurrentDropPhoto != null)
+                            if (CurrentDropPhoto != null && CurrentDropPhoto.Lines != null)
                             {
                                 foreach (var line in CurrentDropPhoto.Lines)
                                 {
@@ -4208,7 +4209,7 @@ namespace DDrop.Views
 
                         CurrentDropPhoto.SimpleLines = _mapper.Map<List<SimpleLine>,ObservableCollection<SimpleLineView>>(await _dropPhotoBl.GetDropPhotoLines(CurrentDropPhoto.PhotoId));
 
-                        if (CurrentDropPhoto.SimpleLines != null)
+                        if (CurrentDropPhoto.SimpleLines != null && CurrentDropPhoto.SimpleLines.Count > 0)
                         {
                             CurrentDropPhoto.Lines = _mapper.Map<ObservableCollection<SimpleLineView>, ObservableCollection<TypedLineView>>(CurrentDropPhoto.SimpleLines);
                         }
@@ -6253,6 +6254,93 @@ namespace DDrop.Views
             SaveTemperatureError.Visibility = Visibility.Visible;
             EditTemperatureError.Visibility = Visibility.Hidden;
             FullTemperatureError.IsEnabled = true;
+        }
+
+        private async void CopyPhotosToNewSeries_Click(object sender, RoutedEventArgs e)
+        {
+            var seriesToAdd = new SeriesView()
+            {
+                SeriesId = Guid.NewGuid(),
+                Title = CurrentSeries.Title + " (Копия)",
+                AddedDate = DateTime.Now,
+                CurrentUserId = User.UserId,
+                Settings = new SeriesSettingsView()
+                {
+                    GeneralSeriesSettings = new GeneralSeriesSettingsView(),
+                    ErrorSettings = new ErrorSettingsView(),
+                    AutoCalculationSettings = new AutoCalculationSettingsView()
+                }
+            };
+
+            try
+            {
+                await Task.Run(() => _seriesBL.CreateSeries(_mapper.Map<SeriesView, Series>(seriesToAdd)));
+
+                seriesToAdd.PropertyChanged += EntryOnPropertyChanged;
+
+                User.UserSeries.Add(seriesToAdd);
+                SeriesDataGrid.ItemsSource = User.UserSeries;
+                OneLineSetterValue.Text = "";
+
+                var measurementsToCopy = CurrentSeries.MeasurementsSeries.Every(1000);
+
+                var measurementsFull = new ObservableCollection<MeasurementView>();
+                measurementsFull.Add(CurrentSeries.MeasurementsSeries[0]);
+                foreach (var item in measurementsToCopy)
+                {
+                    measurementsFull.Add(item);
+                }
+
+                foreach (var measurement in measurementsFull)
+                {
+                    measurement.MeasurementId = Guid.NewGuid();
+                    measurement.CurrentSeriesId = seriesToAdd.SeriesId;
+
+                    foreach (var photo in measurement.DropPhotos)
+                    {
+                        photo.Content = await _dropPhotoBl.GetDropPhotoContent(photo.PhotoId, CancellationToken.None, false);
+                        photo.PhotoId = Guid.NewGuid();
+                        photo.MeasurementId = measurement.MeasurementId;
+                    }
+
+                    await Task.Run(() => _measurementBl.CreateMeasurement(_mapper.Map<MeasurementView, Measurement>(measurement), seriesToAdd.SeriesId));
+
+                    foreach (var dropPhoto in measurement.DropPhotos)
+                    {
+                        dropPhoto.Content = null;
+                    }
+
+                    if (measurement.ThermalPhoto != null)
+                        measurement.ThermalPhoto.Content = null;
+                }
+
+                _notifier.ShowSuccess($"Добавлена новая серия {seriesToAdd.Title}");
+                _logger.LogInfo(new LogEntry
+                {
+                    Username = User.Email,
+                    LogCategory = LogCategory.Series,
+                    Message = $"Добавлена новая серия {seriesToAdd.Title}"
+                });
+            }
+            catch (TimeoutException)
+            {
+                _notifier.ShowError(
+                    $"Серия {seriesToAdd.Title} не добавлена. Не удалось установить подключение. Проверьте интернет соединение.");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(new LogEntry
+                {
+                    Exception = exception.ToString(),
+                    LogCategory = LogCategory.Common,
+                    InnerException = exception.InnerException?.Message,
+                    Message = exception.Message,
+                    StackTrace = exception.StackTrace,
+                    Username = User.Email,
+                    Details = exception.TargetSite.Name
+                });
+                throw;
+            }
         }
     }
 }

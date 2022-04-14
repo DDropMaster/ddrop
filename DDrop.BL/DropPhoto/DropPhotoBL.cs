@@ -105,7 +105,14 @@ namespace DDrop.BL.Measurement
     
         public async Task<List<SimpleLine>> GetDropPhotoLines(Guid photoId)
         {
-            return JsonSerializeProvider.DeserializeFromString<List<SimpleLine>>(await _dDropRepository.GetDropPhotoLines(photoId));
+            var lines = await _dDropRepository.GetDropPhotoLines(photoId);
+
+            if (string.IsNullOrEmpty(lines))
+            {
+                return null;
+            }
+
+            return JsonSerializeProvider.DeserializeFromString<List<SimpleLine>>(lines);
         }
 
         public async Task<DropPhoto> GetDropPhoto(Guid photoId)
